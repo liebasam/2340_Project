@@ -5,6 +5,6 @@ From the project directory:
 
 2. `gradle jar`
 
-3. `java -jar build/libs/2340_Project.jar` (adjust for your jar title)
+3. `java -jar build/libs/project_ifrit.jar` (adjust for your jar title)
 
 This should print `Successful launch!` to the console.
