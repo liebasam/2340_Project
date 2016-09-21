@@ -4,5 +4,6 @@ import java.util.Date;
 
 public interface IUser {
     String getUsername();
+    String getPassword();
     Date getRegistraterDate();
 }
