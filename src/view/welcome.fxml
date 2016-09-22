@@ -8,14 +8,14 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
-            prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.76-ea">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0"
+            prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.76-ea">
     <center>
-        <TabPane prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+        <TabPane prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
             <Tab text="Login">
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="400" prefWidth="600.0">
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="600" prefWidth="800.0">
                     <GridPane  alignment="center" hgap="10" vgap="10">
-                        <padding><Insets top="100" right="40" bottom="40" left="180"/></padding>
+                        <padding><Insets top="50" right="40" bottom="40" left="35"/></padding>
                         <Text text="Welcome"
                               GridPane.columnIndex="0" GridPane.rowIndex="0"
                               GridPane.columnSpan="2"/>

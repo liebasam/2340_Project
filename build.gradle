@@ -3,6 +3,7 @@ apply plugin: 'java'
 apply plugin: 'application'
 mainClassName = 'controller.AppLauncher'
 sourceSets.main.java.srcDirs = ['src']
+sourceSets.main.resources.srcDir 'src/view'
 
 // In this section you declare where to find the dependencies of your project
 repositories {
