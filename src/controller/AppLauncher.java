@@ -17,8 +17,8 @@ public class AppLauncher extends Application {
         loader.setLocation(getClass().getResource("../view/welcome.fxml"));
         Parent root = loader.load();
     
-        primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new Scene(root, 300, 275));
+        primaryStage.setTitle("Sign-in/Register");
+        primaryStage.setScene(new Scene(root, 400, 275));
         primaryStage.show();
         
         WelcomeController controller = loader.getController();
