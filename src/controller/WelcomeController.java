@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
 
 public class WelcomeController
@@ -40,7 +41,7 @@ public class WelcomeController
         }
         
         if(filledOutFields) {
-            
+
         } else {
             createErrorMessage("All fields not filled out:", errorMessage);
         }
@@ -60,4 +61,5 @@ public class WelcomeController
         alert.setContentText(message);
         alert.show();
     }
+
 }
