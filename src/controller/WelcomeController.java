@@ -10,6 +10,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import model.Model;
 
 import java.io.IOException;
 
@@ -47,7 +48,17 @@ public class WelcomeController
         }
         
         if(filledOutFields) {
-            showMainApp();
+            // TODO: This kinda demonstrates login like behavior but it isn,t.
+            // NEED TO ASK TA IF THIS IS OK!!!!!!
+            Model model = Model.getInstance();
+            if (model.checkAccount(username, password)) {
+                showMainApp(username);
+
+            } else {
+                createErrorMessage("Login-Failure",
+                        "Wrong username or password.");
+            }
+
         } else {
             createErrorMessage("All fields not filled out:", errorMessage);
         }
@@ -69,14 +80,11 @@ public class WelcomeController
     }
 
     /**
-     * Opens a dialog to edit details for the specified student. If the user
-     * clicks OK, the changes are saved into the provided person object and true
-     * is returned.
      *
-     * We can also open the dialog to add a completely new student if we pass null in
+     * Calls in main page
      *
      */
-    public void showMainApp() {
+    public void showMainApp(String username) {
         try {
             // Load the fxml file and create a new stage for the popup dialog.
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/app.fxml"));
@@ -84,6 +92,14 @@ public class WelcomeController
 
             Scene openScene = new Scene(page);
             stage.setScene(openScene);
+            stage.show();
+
+            // TODO: THIS IS A NOT SECURE AT ALL< BUT AT LEAST IT KINDA WORKS
+            // TODO: FIX IF NEEDED!!!!!
+
+            MainAppController mainAppCon = loader.getController();
+            mainAppCon.setStage(stage);
+            mainAppCon.setUser(Model.getInstance().getAccount(username));
 
         } catch (IOException e) {
             e.printStackTrace();
