@@ -2,6 +2,7 @@ package controller;
 
 /**
  * Sample Skeleton for 'app.fxml' Controller Class
+ * @author Soo Hyung Park
  */
 
 import java.net.URL;
@@ -14,7 +15,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import model.User;
 
 public class MainAppController {
 
@@ -30,10 +33,13 @@ public class MainAppController {
     private MenuBar AccountMenu;
 
     @FXML
-    private MenuItem login_logout;
+    private MenuItem logout;
 
     @FXML
     private MenuItem exit;
+
+    @FXML
+    Text login_name;
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
@@ -42,14 +48,12 @@ public class MainAppController {
 
     @FXML
     private void onExitPressed() {
-        System.out.println("EXITP PLZ");
         Platform.exit();
         System.exit(0);
     }
 
     @FXML
     private void onLogPressed() throws Exception {
-        System.out.println(current.getUsername() + " logged out");
         current = null;
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("../view/welcome.fxml"));
@@ -68,10 +72,10 @@ public class MainAppController {
         this.stage = stage;
     }
 
-    // TODO: Not good? NEED more encapsulation???
+    // TODO: Not good? NEED more encapsulation??? Maybe or maybe not.
     private model.User current;
     public void setUser(model.User user)  {
         current = user;
-        System.out.println(user.getUsername() + " logged in");
+        login_name.setText("Hello, " + current.getUsername() + "!");
     }
 }

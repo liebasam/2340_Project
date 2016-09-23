@@ -18,18 +18,15 @@ public class Model {
     }
 
     public boolean checkAccount(String username, String pw) {
-        if (users.get(username) == null) {
-            return false;
-        }
-        if (users.get(username).getPassword().equals(pw)) {
-            return true;
-        } else {
-            return false;
-        }
+        return users.get(username)
+                != null && users.get(username).getPassword().equals(pw);
     }
 
-    public User getAccount(String username) {
-        return users.get(username);
+    public User getAccount(String username, String pw) {
+        if (checkAccount(username, pw)) {
+            return users.get(username);
+        }
+        return null;
     }
 
 }

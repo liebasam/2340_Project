@@ -6,6 +6,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
@@ -48,16 +50,9 @@ public class WelcomeController
         }
         
         if(filledOutFields) {
-            // TODO: This kinda demonstrates login like behavior but it isn,t.
+            // TODO: This kinda demonstrates login like behavior.
             // NEED TO ASK TA IF THIS IS OK!!!!!!
-            Model model = Model.getInstance();
-            if (model.checkAccount(username, password)) {
-                showMainApp(username);
-
-            } else {
-                createErrorMessage("Login-Failure",
-                        "Wrong username or password.");
-            }
+            login(username, password);
 
         } else {
             createErrorMessage("All fields not filled out:", errorMessage);
@@ -79,12 +74,27 @@ public class WelcomeController
         alert.show();
     }
 
+
+
+    private void login(String username, String password) {
+        Model model = Model.getInstance();
+        if (model.checkAccount(username, password)) {
+            showMainApp(username, password);
+
+        } else {
+            createErrorMessage("Login Failure",
+                    "Wrong username and/or password.");
+        }
+    }
+
+
+
     /**
      *
      * Calls in main page
      *
      */
-    public void showMainApp(String username) {
+    private void showMainApp(String username, String pw) {
         try {
             // Load the fxml file and create a new stage for the popup dialog.
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/app.fxml"));
@@ -99,7 +109,7 @@ public class WelcomeController
 
             MainAppController mainAppCon = loader.getController();
             mainAppCon.setStage(stage);
-            mainAppCon.setUser(Model.getInstance().getAccount(username));
+            mainAppCon.setUser(Model.getInstance().getAccount(username, pw));
 
         } catch (IOException e) {
             e.printStackTrace();
