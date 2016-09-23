@@ -33,6 +33,7 @@
                         <PasswordField fx:id="passwordField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
                         <HBox alignment="center" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                     <Button mnemonicParsing="false" onAction="#onCancelPressed" text="Cancel" />
                             <Button onAction="#onSignInPressed" text="Sign In" />
                         </HBox>
 

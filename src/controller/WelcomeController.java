@@ -59,6 +59,13 @@ public class WelcomeController
         }
     }
     
+    @FXML
+    private void onCancelPressed()
+    {
+        usernameField.setText("");
+        passwordField.setText("");
+    }
+    
     private boolean isEmpty(String input)
     {
         return input == null || input.length() == 0;
