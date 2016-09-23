@@ -40,7 +40,7 @@ public class WelcomeController
         }
         
         if(filledOutFields) {
-            
+
         } else {
             createErrorMessage("All fields not filled out:", errorMessage);
         }
@@ -60,4 +60,5 @@ public class WelcomeController
         alert.setContentText(message);
         alert.show();
     }
+
 }
