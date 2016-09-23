@@ -11,6 +11,7 @@ import java.net.URLClassLoader;
 
 public class AppLauncher extends Application {
     //Run -> Run 'AppLauncher'
+    // sample username: abc, pw: def
     @Override
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader loader = new FXMLLoader();
