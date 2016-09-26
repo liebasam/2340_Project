@@ -10,9 +10,7 @@ public class Model {
     // TODO: I USED HASHMAP HERE! IDK IF WE HAVE TO CHANGE THIS TO OBSEVABLE LIST.
     private final Map<String, User> users = new HashMap<>();
 
-    private Model() {
-        users.put("abc", new User("abc", "def", 1));
-    }
+    private Model() {}
 
     /**
      * Checks the username/password pair to the database
