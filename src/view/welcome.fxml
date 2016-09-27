@@ -15,12 +15,12 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane fx:controller="controller.WelcomeController" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane centerShape="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200" prefWidth="300.0" xmlns="http://javafx.com/javafx/8.0.76-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.WelcomeController">
     <center>
-        <TabPane prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+        <TabPane accessibleRole="PARENT" prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="TOP_CENTER">
             <Tab text="Login">
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="600" prefWidth="800.0">
-                    <GridPane alignment="center" hgap="10" vgap="10">
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="300.0">
+                    <GridPane alignment="CENTER" hgap="10" vgap="10" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="-20.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="20.0">
                         <padding><Insets bottom="40" left="35" right="40" top="50" /></padding>
                         <Text text="Welcome" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="0" />
 
@@ -33,6 +33,7 @@
                         <PasswordField fx:id="passwordField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
                         <HBox alignment="center" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                     <Button mnemonicParsing="false" onAction="#onCancelPressed" text="Cancel" />
                             <Button onAction="#onSignInPressed" text="Sign In" />
                         </HBox>
 
@@ -54,7 +55,44 @@
                 </AnchorPane>
             </Tab>
             <Tab text="Register">
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200" prefWidth="300.0">
+                    <GridPane alignment="center" hgap="10" vgap="10" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="-20.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
+                        <padding><Insets bottom="40" left="35" right="40" top="50" /></padding>
+                        <Text text="Welcome" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="0" />
+
+                        <Label text="User Name:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+
+                        <TextField fx:id="regUsernameField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                        <Label text="Password:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+
+                        <PasswordField fx:id="regPasswordField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                        <Label text="Confirm Pass:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+
+                        <PasswordField fx:id="regPasswordConfirmField" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+                        <HBox alignment="center" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                            <Button mnemonicParsing="false" onAction="#onCancelRegPressed" text="Cancel" />
+                            <Button onAction="#onRegisterPressed" text="Register" />
+                        </HBox>
+
+                        <Text GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                        <columnConstraints>
+                            <ColumnConstraints />
+                            <ColumnConstraints />
+                        </columnConstraints>
+                        <rowConstraints>
+                            <RowConstraints />
+                            <RowConstraints />
+                            <RowConstraints />
+                            <RowConstraints />
+                            <RowConstraints />
+                            <RowConstraints />
+                            <RowConstraints />
+                        </rowConstraints>
+                    </GridPane>
+                </AnchorPane>
             </Tab>
         </TabPane>
     </center>
