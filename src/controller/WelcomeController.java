@@ -36,7 +36,7 @@ public class WelcomeController
     @FXML
     PasswordField regPasswordConfirmField;
     
-    public void setStage(Stage stage)
+    void setStage(Stage stage)
     {
         this.stage = stage;
     }
@@ -81,6 +81,13 @@ public class WelcomeController
     {
         usernameField.setText("");
         passwordField.setText("");
+    }
+
+    @FXML
+    private void onCancelRegPressed() {
+        regUsernameField.setText("");
+        regPasswordField.setText("");
+        regPasswordConfirmField.setText("");
     }
 
     //
