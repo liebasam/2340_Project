@@ -13,21 +13,11 @@ public class Model {
     private Model() {}
 
     /**
-     * Checks the username/password pair to the database
-     * @param username Username
-     * @param pw Password
-     * @return True if the user/pass combo is valid, false othewise
-     */
-    public boolean checkAccount(String username, String pw) {
-        return users.get(username)
-                != null && users.get(username).getPassword().equals(pw);
-    }
-
-    /**
      * Creates a new username/password pair
      * @param username Username
      * @param pw Password
      * @return The newly-created user
+     * @throws IllegalArgumentException if username is already in use
      */
     public User createAccount(String username, String pw) {
         if (users.get(username) != null) {
@@ -38,19 +28,27 @@ public class Model {
         users.put(username, user);
         return user;
     }
-
+    
     /**
-     * Retrieves an account with the given username/password combo
+     * Checks the username/password pair to the database
      * @param username Username
      * @param pw Password
-     * @return The user if the user/pass is correct, null otherwise
+     * @return True if the user/pass combo is valid, false otherwise
      */
-    public User getAccount(String username, String pw) {
-        if (checkAccount(username, pw)) {
-            return users.get(username);
-        }
-        return null;
+    public boolean checkAccount(String username, String pw) {
+        return users.get(username) != null && users.get(username).getPassword().equals(pw);
     }
-
-
+    
+    /**
+     * Retrieves an account with the given username
+     * @param username Username
+     * @return The user corresponding to the username
+     * @throws IllegalArgumentException if username is not associated with an account
+     */
+    public User getAccount(String username) {
+        if(users.get(username) == null) {
+            throw new IllegalArgumentException("Invalid username");
+        }
+        return users.get(username);
+    }
 }
