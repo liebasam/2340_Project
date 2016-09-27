@@ -15,12 +15,12 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane centerShape="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.76-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.WelcomeController">
+<BorderPane centerShape="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200" prefWidth="300.0" xmlns="http://javafx.com/javafx/8.0.76-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.WelcomeController">
     <center>
-        <TabPane prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+        <TabPane accessibleRole="PARENT" prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="TOP_CENTER">
             <Tab text="Login">
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="600" prefWidth="800.0">
-                    <GridPane alignment="center" hgap="10" vgap="10">
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="300.0">
+                    <GridPane alignment="CENTER" hgap="10" vgap="10" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="-20.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="20.0">
                         <padding><Insets bottom="40" left="35" right="40" top="50" /></padding>
                         <Text text="Welcome" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="0" />
 
@@ -55,8 +55,8 @@
                 </AnchorPane>
             </Tab>
             <Tab text="Register">
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="600" prefWidth="800.0">
-                    <GridPane alignment="center" hgap="10" vgap="10">
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200" prefWidth="300.0">
+                    <GridPane alignment="center" hgap="10" vgap="10" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="-20.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
                         <padding><Insets bottom="40" left="35" right="40" top="50" /></padding>
                         <Text text="Welcome" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="0" />
 
