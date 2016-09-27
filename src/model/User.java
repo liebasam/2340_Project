@@ -7,9 +7,9 @@ public class User implements IUser {
 
     private String username;
     private String password;
-
     private Integer id;
-
+    private AccountType accountType;
+    
     /**
      * getters and setters
      */
@@ -21,6 +21,9 @@ public class User implements IUser {
 
     public Integer getId() {return id;}
     public void setId(Integer Id) {id = Id;}
+    
+    public AccountType getAccountType() {return accountType;}
+    public void setAccountType(AccountType newAccountType) {accountType = newAccountType;}
 
     /**
      * make a new user
