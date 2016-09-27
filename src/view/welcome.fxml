@@ -73,7 +73,7 @@
                         <PasswordField fx:id="regPasswordConfirmField" GridPane.columnIndex="1" GridPane.rowIndex="3" />
 
                         <HBox alignment="center" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="4">
-                            <Button mnemonicParsing="false" onAction="#onCancelPressed" text="Cancel" />
+                            <Button mnemonicParsing="false" onAction="#onCancelRegPressed" text="Cancel" />
                             <Button onAction="#onRegisterPressed" text="Register" />
                         </HBox>
 
