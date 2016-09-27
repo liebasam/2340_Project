@@ -36,7 +36,7 @@ public class WelcomeController
     @FXML
     PasswordField regPasswordConfirmField;
     
-    private void setStage(Stage stage)
+    public void setStage(Stage stage)
     {
         this.stage = stage;
     }
