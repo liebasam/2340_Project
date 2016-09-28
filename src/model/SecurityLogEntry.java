@@ -73,7 +73,10 @@ class SecurityLogEntry {
     @Override
     public String toString() {
         if (this.eventType == EventType.LOGIN_ATTEMPT) {
-            return this.eventType.toString() + "\nUser ID: " + this.objectId + "\nStatus: " + this.eventStatus.toString();
+            return this.eventType.toString() +
+                    "\nTimestamp: " + this.timestamp.toString() +
+                    "\nUser ID: " + this.objectId +
+                    "\nStatus: " + this.eventStatus.toString();
         } else {
             //TODO
             return eventType.toString();
