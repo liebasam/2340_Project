@@ -110,13 +110,18 @@ public class WelcomeController
      */
     private void login(String username, String password) {
         Model model = Model.getInstance();
-        if(ControllerUtils.isEmpty(username, password)) {
-            ControllerUtils.createErrorMessage(stage, "Signin Error", "Not all fields are filled out");
-        } else if (model.checkAccount(username, password)) {
-            showMainApp(username);
-        } else {
+        try{
+            if(ControllerUtils.isEmpty(username, password)) {
+                ControllerUtils.createErrorMessage(stage, "Signin Error", "Not all fields are filled out");
+            } else if (model.checkAccount(username, password)) {
+                showMainApp(username);
+            } else {
+                ControllerUtils.createErrorMessage(stage, "Signin Error", "Wrong username and/or password.");
+            }
+        } catch (IllegalArgumentException e) {
             ControllerUtils.createErrorMessage(stage, "Signin Error", "Wrong username and/or password.");
         }
+
     }
 
     /**
