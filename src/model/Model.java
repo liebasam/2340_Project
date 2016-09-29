@@ -1,7 +1,9 @@
 package model;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class Model {
     private static final Model instance = new Model();
@@ -9,6 +11,7 @@ public class Model {
 
     // TODO: I USED HASHMAP HERE! IDK IF WE HAVE TO CHANGE THIS TO OBSEVABLE LIST.
     private final Map<String, User> users = new HashMap<>();
+    private final Set<SecurityLogEntry> securityLog = new HashSet<>();
 
     private Model() {}
 
@@ -36,7 +39,17 @@ public class Model {
      * @return True if the user/pass combo is valid, false otherwise
      */
     public boolean checkAccount(String username, String pw) {
-        return users.get(username) != null && users.get(username).getPassword().equals(pw);
+        User user = users.get(username);
+        if (user == null) {
+            securityLog.add(SecurityLogEntry.loginAttempt(null, SecurityLogEntry.EventStatus.INVALID_USER));
+            return false;
+        }
+        if (!user.getPassword().equals(pw)) {
+            securityLog.add(SecurityLogEntry.loginAttempt(user.getId(), SecurityLogEntry.EventStatus.INVALID_PASS));
+            return false;
+        }
+        securityLog.add(SecurityLogEntry.loginAttempt(user.getId(), SecurityLogEntry.EventStatus.SUCCESS));
+        return true;
     }
     
     /**
