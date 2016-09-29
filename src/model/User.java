@@ -31,6 +31,7 @@ public class User implements IUser {
     public User(String Username, String Password, AccountType accountType, Integer Id) {
         username = Username;
         password = Password;
+        this.accountType = accountType;
         id = Id;
     }
 }

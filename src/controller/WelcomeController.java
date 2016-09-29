@@ -1,8 +1,5 @@
 package controller;
 
-import javafx.beans.property.SimpleListProperty;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -10,11 +7,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.AccountType;
 import model.Model;
@@ -41,12 +34,12 @@ public class WelcomeController
     PasswordField regPasswordConfirmField;
     
     @FXML
-    ChoiceBox<AccountType> regAuthLevelChoiceBox;
+    ChoiceBox<AccountType> regUserTypeChoiceBox;
     
     @FXML
     private void initialize() {
-        regAuthLevelChoiceBox.getItems().setAll(AccountType.values());
-        regAuthLevelChoiceBox.setValue(AccountType.User);
+        regUserTypeChoiceBox.getItems().setAll(AccountType.values());
+        regUserTypeChoiceBox.setValue(AccountType.User);
     }
     
     void setStage(Stage stage)
@@ -68,18 +61,18 @@ public class WelcomeController
         String password = regPasswordField.getText();
         String confPass = regPasswordConfirmField.getText();
 
-        if(isEmpty(username, password, confPass)) {
-            createErrorMessage("Registration Error", "Not all fields are filled out");
+        if(ControllerUtils.isEmpty(username, password, confPass)) {
+            ControllerUtils.createErrorMessage(stage, "Registration Error", "Not all fields are filled out");
         } else if (!password.equals(confPass)) {
-            createErrorMessage("Registration Error", "Passwords do not match");
+            ControllerUtils.createErrorMessage(stage, "Registration Error", "Passwords do not match");
         } else {
             try {
-                register(username, password, regAuthLevelChoiceBox.getValue());
-                String userType = regAuthLevelChoiceBox.getValue().toString().toLowerCase();
-                createMessage("Registration", "Successfully registered", "New " + userType + " " + username + " created", Alert.AlertType.INFORMATION);
+                register(username, password, regUserTypeChoiceBox.getValue());
+                String userType = regUserTypeChoiceBox.getValue().toString().toLowerCase();
+                ControllerUtils.createMessage(stage, "Registration", "Successfully registered", "New " + userType + " " + username + " created", Alert.AlertType.INFORMATION);
                 resetRegistration();
             } catch(IllegalArgumentException e) {
-                createErrorMessage("Registration Error", "Username already exists");
+                ControllerUtils.createErrorMessage(stage, "Registration Error", "Username already exists");
             }
         }
     }
@@ -107,46 +100,7 @@ public class WelcomeController
         regUsernameField.setText("");
         regPasswordField.setText("");
         regPasswordConfirmField.setText("");
-        regAuthLevelChoiceBox.setValue(AccountType.User);
-    }
-
-    /**
-     * Helper method for testing if a group of strings is non-null & non-empty
-     * @param fields String(s) to test
-     * @return true if ANY entry is empty, false otherwise
-     */
-    private boolean isEmpty(String... fields) {
-        for (String field : fields) {
-            if (field == null || field.length() == 0) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Creates and shows an error alert with the given header and message
-     * @param header The error's header
-     * @param message The error's message
-     */
-    private void createErrorMessage(String header, String message) {
-        createMessage("Error", header, message, Alert.AlertType.ERROR);
-    }
-    
-    /**
-     * Creates and shows an alert with the given title, header, message, and alertType
-     * @param title The message's title
-     * @param header The message's header
-     * @param message The message's body text (ie message)
-     * @param alertType The type of alert the message is
-     */
-    private void createMessage(String title, String header, String message, Alert.AlertType alertType) {
-        Alert alert = new Alert(alertType);
-        alert.initOwner(stage);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(message);
-        alert.show();
+        regUserTypeChoiceBox.setValue(AccountType.User);
     }
 
     /**
@@ -156,12 +110,12 @@ public class WelcomeController
      */
     private void login(String username, String password) {
         Model model = Model.getInstance();
-        if(isEmpty(username, password)) {
-            createErrorMessage("Signin Error", "Not all fields are filled out");
+        if(ControllerUtils.isEmpty(username, password)) {
+            ControllerUtils.createErrorMessage(stage, "Signin Error", "Not all fields are filled out");
         } else if (model.checkAccount(username, password)) {
             showMainApp(username);
         } else {
-            createErrorMessage("Signin Error", "Wrong username and/or password.");
+            ControllerUtils.createErrorMessage(stage, "Signin Error", "Wrong username and/or password.");
         }
     }
 

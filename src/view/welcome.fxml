@@ -75,7 +75,7 @@
 
                         <Label text="Auth Level:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
 
-                        <ChoiceBox fx:id="regAuthLevelChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                        <ChoiceBox fx:id="regUserTypeChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
 
                         <HBox alignment="center" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="5">
                             <Button mnemonicParsing="false" onAction="#onCancelRegPressed" text="Cancel" />
