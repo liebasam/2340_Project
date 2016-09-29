@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainAppController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainAppController">
    <top>
        <MenuBar fx:id="AccountMenu" prefHeight="0.0" prefWidth="600.0" BorderPane.alignment="CENTER">
            <Menu mnemonicParsing="false" text="Account">
@@ -16,11 +21,31 @@
            </Menu>
        </MenuBar>
    </top>
-   <bottom>
-      <Text fx:id="login_name" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" BorderPane.alignment="CENTER">
-         <BorderPane.margin>
-            <Insets bottom="30.0" right="500.0" />
-         </BorderPane.margin>
-      </Text>
-   </bottom>
+   <center>
+      <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+        <tabs>
+          <Tab text="Home?">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Text fx:id="login_name" layoutX="15.0" layoutY="323.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+                     </children></AnchorPane>
+            </content>
+          </Tab>
+          <Tab text="Edit Profile">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Button layoutX="101.0" layoutY="301.0" mnemonicParsing="false" text="Confirm Changes" />
+                        <Button layoutX="232.0" layoutY="301.0" mnemonicParsing="false" text="Cancel" />
+                        <PasswordField layoutX="119.0" layoutY="61.0" />
+                        <PasswordField layoutX="119.0" layoutY="93.0" />
+                        <Label layoutX="32.0" layoutY="65.0" text="Label" />
+                        <Label layoutX="32.0" layoutY="97.0" text="Label" />
+                     </children></AnchorPane>
+            </content>
+          </Tab>
+        </tabs>
+      </TabPane>
+   </center>
 </BorderPane>

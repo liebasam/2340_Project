@@ -28,7 +28,7 @@ public class User implements IUser {
     /**
      * make a new user
      */
-    public User(String Username, String Password, Integer Id) {
+    public User(String Username, String Password, AccountType accountType, Integer Id) {
         username = Username;
         password = Password;
         id = Id;

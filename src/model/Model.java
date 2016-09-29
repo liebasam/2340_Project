@@ -8,8 +8,7 @@ import java.util.Set;
 public class Model {
     private static final Model instance = new Model();
     public static Model getInstance() { return instance; }
-
-    // TODO: I USED HASHMAP HERE! IDK IF WE HAVE TO CHANGE THIS TO OBSEVABLE LIST.
+    
     private final Map<String, User> users = new HashMap<>();
     private final Set<SecurityLogEntry> securityLog = new HashSet<>();
 
@@ -22,12 +21,12 @@ public class Model {
      * @return The newly-created user
      * @throws IllegalArgumentException if username is already in use
      */
-    public User createAccount(String username, String pw) {
+    public User createAccount(String username, String pw, AccountType accountType) {
         if (users.get(username) != null) {
             throw new IllegalArgumentException("Username is taken");
         }
         int id = 1; //UPDATE TO BE MEANINGFUL
-        User user = new User(username, pw, id);
+        User user = new User(username, pw, accountType, id);
         users.put(username, user);
         return user;
     }

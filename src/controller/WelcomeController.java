@@ -1,10 +1,13 @@
 package controller;
 
+import javafx.beans.property.SimpleListProperty;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -13,6 +16,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import model.AccountType;
 import model.Model;
 
 import java.io.IOException;
@@ -35,6 +39,15 @@ public class WelcomeController
 
     @FXML
     PasswordField regPasswordConfirmField;
+    
+    @FXML
+    ChoiceBox<AccountType> regAuthLevelChoiceBox;
+    
+    @FXML
+    private void initialize() {
+        regAuthLevelChoiceBox.getItems().setAll(AccountType.values());
+        regAuthLevelChoiceBox.setValue(AccountType.User);
+    }
     
     void setStage(Stage stage)
     {
@@ -61,8 +74,10 @@ public class WelcomeController
             createErrorMessage("Registration Error", "Passwords do not match");
         } else {
             try {
-                register(username, password);
-                createMessage("Registration", "Successfully registered", "New user " + username + " created", Alert.AlertType.INFORMATION);
+                register(username, password, regAuthLevelChoiceBox.getValue());
+                String userType = regAuthLevelChoiceBox.getValue().toString().toLowerCase();
+                createMessage("Registration", "Successfully registered", "New " + userType + " " + username + " created", Alert.AlertType.INFORMATION);
+                resetRegistration();
             } catch(IllegalArgumentException e) {
                 createErrorMessage("Registration Error", "Username already exists");
             }
@@ -78,14 +93,22 @@ public class WelcomeController
 
     @FXML
     private void onCancelRegPressed() {
-        regUsernameField.setText("");
-        regPasswordField.setText("");
-        regPasswordConfirmField.setText("");
+        resetRegistration();
     }
 
     //
     //HELPER METHODS BELOW THIS LINE
     //
+    
+    /**
+     * Sets all registration controls back to default state
+     */
+    private void resetRegistration() {
+        regUsernameField.setText("");
+        regPasswordField.setText("");
+        regPasswordConfirmField.setText("");
+        regAuthLevelChoiceBox.setValue(AccountType.User);
+    }
 
     /**
      * Helper method for testing if a group of strings is non-null & non-empty
@@ -147,9 +170,9 @@ public class WelcomeController
      * @param username Username
      * @param password Password
      */
-    private void register(String username, String password) {
+    private void register(String username, String password, AccountType accountType) {
         Model model = Model.getInstance();
-        model.createAccount(username, password);
+        model.createAccount(username, password, accountType);
     }
 
     /**
