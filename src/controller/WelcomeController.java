@@ -1,18 +1,15 @@
 package controller;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
+import model.AccountType;
 import model.Model;
 
 import java.io.IOException;
@@ -36,6 +33,15 @@ public class WelcomeController
     @FXML
     PasswordField regPasswordConfirmField;
     
+    @FXML
+    ChoiceBox<AccountType> regUserTypeChoiceBox;
+    
+    @FXML
+    private void initialize() {
+        regUserTypeChoiceBox.getItems().setAll(AccountType.values());
+        regUserTypeChoiceBox.setValue(AccountType.User);
+    }
+    
     void setStage(Stage stage)
     {
         this.stage = stage;
@@ -55,16 +61,18 @@ public class WelcomeController
         String password = regPasswordField.getText();
         String confPass = regPasswordConfirmField.getText();
 
-        if(isEmpty(username, password, confPass)) {
-            createErrorMessage("Registration Error", "Not all fields are filled out");
+        if(ControllerUtils.isEmpty(username, password, confPass)) {
+            ControllerUtils.createErrorMessage(stage, "Registration Error", "Not all fields are filled out");
         } else if (!password.equals(confPass)) {
-            createErrorMessage("Registration Error", "Passwords do not match");
+            ControllerUtils.createErrorMessage(stage, "Registration Error", "Passwords do not match");
         } else {
             try {
-                register(username, password);
-                createMessage("Registration", "Successfully registered", "New user " + username + " created", Alert.AlertType.INFORMATION);
+                register(username, password, regUserTypeChoiceBox.getValue());
+                String userType = regUserTypeChoiceBox.getValue().toString().toLowerCase();
+                ControllerUtils.createMessage(stage, "Registration", "Successfully registered", "New " + userType + " " + username + " created", Alert.AlertType.INFORMATION);
+                resetRegistration();
             } catch(IllegalArgumentException e) {
-                createErrorMessage("Registration Error", "Username already exists");
+                ControllerUtils.createErrorMessage(stage, "Registration Error", "Username already exists");
             }
         }
     }
@@ -78,52 +86,21 @@ public class WelcomeController
 
     @FXML
     private void onCancelRegPressed() {
-        regUsernameField.setText("");
-        regPasswordField.setText("");
-        regPasswordConfirmField.setText("");
+        resetRegistration();
     }
 
     //
     //HELPER METHODS BELOW THIS LINE
     //
-
-    /**
-     * Helper method for testing if a group of strings is non-null & non-empty
-     * @param fields String(s) to test
-     * @return true if ANY entry is empty, false otherwise
-     */
-    private boolean isEmpty(String... fields) {
-        for (String field : fields) {
-            if (field == null || field.length() == 0) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Creates and shows an error alert with the given header and message
-     * @param header The error's header
-     * @param message The error's message
-     */
-    private void createErrorMessage(String header, String message) {
-        createMessage("Error", header, message, Alert.AlertType.ERROR);
-    }
     
     /**
-     * Creates and shows an alert with the given title, header, message, and alertType
-     * @param title The message's title
-     * @param header The message's header
-     * @param message The message's body text (ie message)
-     * @param alertType The type of alert the message is
+     * Sets all registration controls back to default state
      */
-    private void createMessage(String title, String header, String message, Alert.AlertType alertType) {
-        Alert alert = new Alert(alertType);
-        alert.initOwner(stage);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(message);
-        alert.show();
+    private void resetRegistration() {
+        regUsernameField.setText("");
+        regPasswordField.setText("");
+        regPasswordConfirmField.setText("");
+        regUserTypeChoiceBox.setValue(AccountType.User);
     }
 
     /**
@@ -133,12 +110,12 @@ public class WelcomeController
      */
     private void login(String username, String password) {
         Model model = Model.getInstance();
-        if(isEmpty(username, password)) {
-            createErrorMessage("Signin Error", "Not all fields are filled out");
+        if(ControllerUtils.isEmpty(username, password)) {
+            ControllerUtils.createErrorMessage(stage, "Signin Error", "Not all fields are filled out");
         } else if (model.checkAccount(username, password)) {
             showMainApp(username);
         } else {
-            createErrorMessage("Signin Error", "Wrong username and/or password.");
+            ControllerUtils.createErrorMessage(stage, "Signin Error", "Wrong username and/or password.");
         }
     }
 
@@ -147,9 +124,9 @@ public class WelcomeController
      * @param username Username
      * @param password Password
      */
-    private void register(String username, String password) {
+    private void register(String username, String password, AccountType accountType) {
         Model model = Model.getInstance();
-        model.createAccount(username, password);
+        model.createAccount(username, password, accountType);
     }
 
     /**
