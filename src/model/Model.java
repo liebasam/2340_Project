@@ -61,6 +61,7 @@ public class Model {
      * @return True if the user/pass combo is valid, false otherwise
      */
     public boolean checkAccount(String username, String pw) {
+
         User user = getAccount(username);
         if (user == null) {
             securityLog.add(SecurityLogEntry.loginAttempt(null, SecurityLogEntry.EventStatus.INVALID_USER));
