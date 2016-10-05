@@ -1,12 +1,10 @@
 # 2340_Project
-~~From the project directory:~~
+From the project directory:
 
-~~1. `gradle clean`~~
+1. `gradle clean`
 
-~~2. `gradle jar`~~
+2. `gradle jar`
 
-~~3. `java -jar build/libs/project_ifrit.jar` (adjust for your jar title)~~
+3. `java -jar build/libs/project_ifrit.jar`
 
-~~This should print `Successful launch!` to the console.~~
-
-Compile the project and run the main method of `controller.AppLauncher`.
+This should print `Successful launch!` to the console.
