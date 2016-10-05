@@ -141,7 +141,7 @@ public class WelcomeController
     private void showMainApp(String username) {
         try {
             // Load the fxml file and create a new stage for the popup dialog.
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/app.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../fxml/app.fxml"));
             BorderPane page = loader.load();
 
             Scene openScene = new Scene(page);

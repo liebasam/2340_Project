@@ -75,7 +75,7 @@ public class MainAppController {
     private void onLogoutPressed() throws Exception {
         currentUser = null;
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("../view/welcome.fxml"));
+        loader.setLocation(getClass().getResource("../fxml/welcome.fxml"));
         Parent root = loader.load();
 
         stage.setTitle("Sign-in/Register");
