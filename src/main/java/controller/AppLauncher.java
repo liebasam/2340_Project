@@ -15,7 +15,7 @@ public class AppLauncher extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("../view/welcome.fxml"));
+        loader.setLocation(getClass().getResource("/fxml/welcome.fxml"));
         Parent root = loader.load();
     
         primaryStage.setTitle("Sign-in/Register");
