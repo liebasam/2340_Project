@@ -15,7 +15,11 @@ public class Model {
     private final Map<Integer, User> users = new HashMap<>();
     private final Set<SecurityLogEntry> securityLog = new HashSet<>();
 
-    private Model() {}
+    private final Set<WaterSourceReport> waterSourceReports = new HashSet<>();
+
+    private Model() {
+        createAccount("user", "pass", AccountType.Admin);
+    }
 
     /**
      * Creates a new username/password pair
