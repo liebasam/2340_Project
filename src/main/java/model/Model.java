@@ -40,6 +40,20 @@ public class Model {
         users.put(id, user);
         return user;
     }
+
+    /**
+     * Creates a new water source report
+     * @param username Username of the submitter
+     * @param location Location of submission
+     * @param source Source type
+     * @param quality Quality type
+     * @return The newly-created water source report
+     */
+    public WaterSourceReport createReport(String username, String location, SourceType source, QualityType quality) {
+        WaterSourceReport report = new WaterSourceReport(username, location, source, quality);
+        waterSourceReports.add(report);
+        return report;
+    }
     
     /**
      * Modifies the username of a user

@@ -9,15 +9,15 @@ public class WaterSourceReport {
 
     private final String submitterUsername;
     public String getSubmitterUsername() {return submitterUsername;}
-    private final Location waterLocation;
-    public Location getWaterLocation() {return waterLocation;}
-    private final WaterType waterType;
-    public WaterType getWaterType() {return waterType;}
-    private final WaterQuality waterQuality;
-    public WaterQuality getWaterQuality() {return waterQuality;}
+    private final String waterLocation;
+    public String getWaterLocation() {return waterLocation;}
+    private final SourceType waterType;
+    public SourceType getWaterType() {return waterType;}
+    private final QualityType waterQuality;
+    public QualityType getWaterQuality() {return waterQuality;}
 
-    public WaterSourceReport(String submitterUsername, Location waterLocation,
-                             WaterType waterType, WaterQuality waterQuality) {
+    public WaterSourceReport(String submitterUsername, String waterLocation,
+                             SourceType waterType, QualityType waterQuality) {
         this.submitterUsername = submitterUsername;
         this.waterLocation = waterLocation;
         this.waterType = waterType;
@@ -43,12 +43,5 @@ public class WaterSourceReport {
         double latitutde;
         double longitude;
     }
-    public enum WaterType {
-        //'STREAM' is a global variable that cannot be used
-        //Thus, it is replaced with 'RIVER'
-        BOTTLED, WELL, RIVER, LAKE, STREAM, OTHER;
-    }
-    public enum WaterQuality {
-        WASTE, TREATABLE_CLEAR, TREATABLE_MUDDY, POTABLE;
-    }
+
 }

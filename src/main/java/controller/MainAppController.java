@@ -1,8 +1,8 @@
 package controller;
 
 /**
- * Sample Skeleton for 'app.fxml' Controller Class
  * @author Soo Hyung Park
+ * @author Juan Duque
  */
 
 import java.net.URL;
@@ -21,9 +21,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import model.AccountType;
-import model.Model;
-import model.User;
+import model.*;
 
 public class MainAppController {
 
@@ -60,9 +58,20 @@ public class MainAppController {
     @FXML
     private ChoiceBox<AccountType> accountTypeChoiceBox;
 
+    @FXML
+    private TextField locationField;
+
+    @FXML
+    private ChoiceBox<SourceType> sourceTypeChoiceBox;
+
+    @FXML
+    private ChoiceBox<QualityType> qualityTypeChoiceBox;
+
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
         accountTypeChoiceBox.getItems().setAll(AccountType.values());
+        sourceTypeChoiceBox.getItems().setAll(SourceType.values());
+        qualityTypeChoiceBox.getItems().setAll(QualityType.values());
     }
 
     @FXML
@@ -93,7 +102,7 @@ public class MainAppController {
         String password = passwordField.getText();
         String confPass = passwordConfirmField.getText();
         AccountType accountType = accountTypeChoiceBox.getValue();
-    
+
         if(ControllerUtils.isEmpty(username, password, confPass)) {
             ControllerUtils.createErrorMessage(stage, "Account Edit Error", "One or more fields are empty");
         } else if (!password.equals(confPass)) {
@@ -123,6 +132,31 @@ public class MainAppController {
             
             ControllerUtils.createMessage(stage, "Account Edit", "Successfully edited account", changes, Alert.AlertType.INFORMATION);
         }
+    }
+
+    @FXML
+    private void onSubmitPressed() {
+        Model model = Model.getInstance();
+        String location = locationField.getText();
+        SourceType source = sourceTypeChoiceBox.getValue();
+        QualityType quality = qualityTypeChoiceBox.getValue();
+
+        if(ControllerUtils.isEmpty(location)) {
+            ControllerUtils.createErrorMessage(stage, "Submit Report Error", "One or more fields are empty");
+        } else if(source == null) {
+            ControllerUtils.createErrorMessage(stage, "Submit Report Error", "Please select a source type");
+        } else if(quality == null) {
+            ControllerUtils.createErrorMessage(stage, "Submit Report Error", "Please select a quality type");
+        } else {
+            model.createReport(currentUser.getUsername(), location, source, quality);
+            ControllerUtils.createMessage(stage, "Submit Report", "Success",
+                    "Your water source report has been added", Alert.AlertType.CONFIRMATION);
+        }
+    }
+
+    @FXML
+    private void onReportCancelPressed() {
+        locationField.setText("");
     }
     
     @FXML
