@@ -22,6 +22,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.*;
+import model.WaterSourceReport.*;
 
 public class MainAppController {
 

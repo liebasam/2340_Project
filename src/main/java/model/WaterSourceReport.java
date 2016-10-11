@@ -44,4 +44,13 @@ public class WaterSourceReport {
         double longitude;
     }
 
+    public enum SourceType {
+        //'STREAM' is a global variable that cannot be used
+                //Thus, it is replaced with 'RIVER'
+                BOTTLED, WELL, RIVER, LAKE, STREAM, OTHER
+    }
+
+    public enum QualityType {
+        WASTE, TREATABLE_CLEAR, TREATABLE_MUDDY, POTABLE
+    }
 }
