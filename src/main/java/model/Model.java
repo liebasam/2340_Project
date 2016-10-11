@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import model.WaterSourceReport.*;
 
 public class Model {
     private static final Model instance = new Model();
