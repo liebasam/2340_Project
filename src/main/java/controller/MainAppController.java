@@ -156,7 +156,7 @@ public class MainAppController {
 
     @FXML
     private void onReportCancelPressed() {
-
+        locationField.setText("");
     }
     
     @FXML
