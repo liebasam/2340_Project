@@ -1,30 +1,42 @@
 package model;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
+import javax.xml.transform.Source;
 import java.util.Date;
 
 public class WaterSourceReport {
-    private final Date submissionDate;
-    private final Integer reportNumber;
-    private static Integer LAST_REPORT_NUMBER = 0;
 
-    private final String submitterUsername;
-    public String getSubmitterUsername() {return submitterUsername;}
-    private final String waterLocation;
-    public String getWaterLocation() {return waterLocation;}
-    private final SourceType waterType;
-    public SourceType getWaterType() {return waterType;}
-    private final QualityType waterQuality;
-    public QualityType getWaterQuality() {return waterQuality;}
+    private Integer LAST_REPORT_NUMBER = 0;
 
-    public WaterSourceReport(String submitterUsername, String waterLocation,
-                             SourceType waterType, QualityType waterQuality) {
-        this.submitterUsername = submitterUsername;
-        this.waterLocation = waterLocation;
-        this.waterType = waterType;
-        this.waterQuality = waterQuality;
-        //Auto-generated when called
-        this.submissionDate = new Date();
-        this.reportNumber = WaterSourceReport.LAST_REPORT_NUMBER++;
+    // StringProperty is needed in order to populate the 'View Reports' table
+    private final StringProperty SubmitterUsername;
+    public String getSubmitterUsername() {return SubmitterUsername.get();}
+
+    private final StringProperty location;
+    public String getLocation() {return location.get();}
+
+    private final StringProperty type;
+    public String getType() {return type.get();}
+
+    private final StringProperty quality;
+    public String getQuality() {return quality.get();}
+
+    private final StringProperty SubmissionDate;
+    public String getSubmissionDate() {return SubmissionDate.get();}
+
+    private final StringProperty reportNumber;
+    public String getreportNumber() {return reportNumber.get();}
+
+    public WaterSourceReport(String submitterUsername, String location,
+                             SourceType type, QualityType quality) {
+        this.SubmitterUsername = new SimpleStringProperty(submitterUsername);
+        this.location = new SimpleStringProperty(location);
+        this.type = new SimpleStringProperty(type.toString());
+        this.quality = new SimpleStringProperty(quality.toString());
+        this.SubmissionDate = new SimpleStringProperty((new Date()).toString());
+        this.reportNumber = new SimpleStringProperty((LAST_REPORT_NUMBER++).toString());
     }
 
     @Override
@@ -35,7 +47,7 @@ public class WaterSourceReport {
 
     @Override
     public int hashCode() {
-        return reportNumber;
+        return Integer.parseInt(reportNumber.toString());
     }
 
     //These classes are more or less just place-holders for future info-holders

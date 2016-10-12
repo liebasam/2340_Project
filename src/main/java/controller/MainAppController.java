@@ -7,18 +7,14 @@ package controller;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.*;
@@ -68,11 +64,47 @@ public class MainAppController {
     @FXML
     private ChoiceBox<QualityType> qualityTypeChoiceBox;
 
+    @FXML
+    private TableView<WaterSourceReport> ReportsTable;
+
+    @FXML
+    private TableColumn<WaterSourceReport, String> colLocation;
+
+    @FXML
+    private TableColumn<WaterSourceReport, String> colQuality;
+
+    @FXML
+    private TableColumn<WaterSourceReport, String> colSource;
+
+    @FXML
+    private TableColumn<WaterSourceReport, String> colDate;
+
+    @FXML
+    private TableColumn<WaterSourceReport, String> colUser;
+
+    @FXML
+    private TableColumn<WaterSourceReport, String> colReportID;
+
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
         accountTypeChoiceBox.getItems().setAll(AccountType.values());
         sourceTypeChoiceBox.getItems().setAll(SourceType.values());
         qualityTypeChoiceBox.getItems().setAll(QualityType.values());
+
+        ReportsTable.setItems(getWaterSourceReports());
+        colLocation.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("location"));
+        colQuality.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("quality"));
+        colSource.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("type"));
+        colDate.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("SubmissionDate"));
+        colUser.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("SubmitterUsername"));
+        //colReportID.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("reportNumber"));
+        ReportsTable.getColumns().setAll(colUser, colDate, colLocation, colSource, colQuality);
+    }
+
+    private ObservableList<WaterSourceReport> getWaterSourceReports() {
+        Model model = Model.getInstance();
+        ObservableList<WaterSourceReport> waterSourceReports = model.waterSourceReports;
+        return waterSourceReports;
     }
 
     @FXML
