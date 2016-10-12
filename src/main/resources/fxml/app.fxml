@@ -9,6 +9,8 @@
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
@@ -18,7 +20,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainAppController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.76-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainAppController">
    <top>
        <MenuBar fx:id="AccountMenu" prefHeight="0.0" prefWidth="600.0" BorderPane.alignment="CENTER">
            <Menu mnemonicParsing="false" text="Account">
@@ -72,8 +74,8 @@
 
                               <HBox alignment="center" prefHeight="25.0" prefWidth="242.0" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="4">
                                  <children>
-                                     <Button onAction="#onCancelPressed" mnemonicParsing="false" prefHeight="25.0" prefWidth="81.0" text="Cancel" />
-                                     <Button onAction="#onConfirmPressed" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" text="Confirm" />
+                                     <Button mnemonicParsing="false" onAction="#onCancelPressed" prefHeight="25.0" prefWidth="81.0" text="Cancel" />
+                                     <Button mnemonicParsing="false" onAction="#onConfirmPressed" prefHeight="25.0" prefWidth="70.0" text="Confirm" />
                                  </children></HBox>
 
                            </children>
@@ -116,13 +118,29 @@
 
                                     <HBox alignment="center" prefHeight="40.0" prefWidth="242.0" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="3">
                                         <children>
-                                            <Button onAction="#onReportCancelPressed" mnemonicParsing="false" prefHeight="35.0" prefWidth="81.0" text="Cancel" />
-                                            <Button onAction="#onSubmitPressed" mnemonicParsing="false" prefHeight="35.0" prefWidth="70.0" text="Submit" />
+                                            <Button mnemonicParsing="false" onAction="#onReportCancelPressed" prefHeight="35.0" prefWidth="81.0" text="Cancel" />
+                                            <Button mnemonicParsing="false" onAction="#onSubmitPressed" prefHeight="35.0" prefWidth="70.0" text="Submit" />
                                         </children></HBox>
 
                                 </children>
                             </GridPane>
                         </children></AnchorPane>
+                </content>
+            </Tab>
+            <Tab text="View Reports">
+                <content>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="ReportsTable" layoutX="100.0" layoutY="45.0" prefHeight="338.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <columns>
+                            <TableColumn fx:id="colUser" prefWidth="75.0" text="User" />
+                            <TableColumn fx:id="colDate" prefWidth="122.0" text="Date" />
+                              <TableColumn fx:id="colLocation" prefWidth="91.0" text="Location" />
+                              <TableColumn fx:id="colSource" prefWidth="106.0" text="Source Type" />
+                              <TableColumn fx:id="colQuality" prefWidth="175.0" text="Quality" />
+                          </columns>
+                        </TableView>
+                     </children></AnchorPane>
                 </content>
             </Tab>
         </tabs>

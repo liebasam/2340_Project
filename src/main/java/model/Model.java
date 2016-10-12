@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import model.WaterSourceReport.*;
 
 public class Model {
@@ -16,7 +19,7 @@ public class Model {
     private final Map<Integer, User> users = new HashMap<>();
     private final Set<SecurityLogEntry> securityLog = new HashSet<>();
 
-    private final Set<WaterSourceReport> waterSourceReports = new HashSet<>();
+    public final ObservableList<WaterSourceReport> waterSourceReports = FXCollections.observableArrayList();
 
     private Model() {
         createAccount("user", "pass", AccountType.Admin);
