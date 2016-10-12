@@ -7,8 +7,6 @@ package controller;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-
-import com.sun.tools.javac.util.Name;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
