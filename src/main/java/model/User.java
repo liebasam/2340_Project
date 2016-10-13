@@ -3,7 +3,7 @@ package model;
 /**
  * Created by Karel on 9/22/16.
  */
-public class User implements IUser {
+public class User {
 
     private String username;
     private String password;
