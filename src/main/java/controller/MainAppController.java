@@ -5,6 +5,10 @@ package controller;
  * @author Juan Duque
  */
 
+import com.lynden.gmapsfx.GoogleMapView;
+import com.lynden.gmapsfx.MapComponentInitializedListener;
+import com.lynden.gmapsfx.javascript.event.UIEventType;
+import com.lynden.gmapsfx.javascript.object.*;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
@@ -19,12 +23,17 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.*;
 import model.WaterSourceReport.*;
+import netscape.javascript.JSObject;
 
-public class MainAppController {
+public class MainAppController implements MapComponentInitializedListener {
 
     private Stage stage;
     private User currentUser;
-
+    private GoogleMap map;
+    
+    @FXML
+    private GoogleMapView mapView;
+    
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
 
@@ -39,9 +48,6 @@ public class MainAppController {
 
     @FXML
     private MenuItem exit;
-
-    @FXML
-    private Text login_name;
     
     @FXML
     private TextField usernameField;
@@ -87,6 +93,8 @@ public class MainAppController {
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
+        mapView.addMapInializedListener(this);
+        
         accountTypeChoiceBox.getItems().setAll(AccountType.values());
         sourceTypeChoiceBox.getItems().setAll(SourceType.values());
         qualityTypeChoiceBox.getItems().setAll(QualityType.values());
@@ -99,6 +107,30 @@ public class MainAppController {
         colUser.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("SubmitterUsername"));
         //colReportID.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("reportNumber"));
         ReportsTable.getColumns().setAll(colUser, colDate, colLocation, colSource, colQuality);
+    }
+    
+    @Override
+    public void mapInitialized() {
+        MapOptions mapOptions = new MapOptions();
+        LatLong center = new LatLong(40, 40);
+        mapOptions.center(center)
+                .zoom(9)
+                .streetViewControl(false)
+                .mapType(MapTypeIdEnum.TERRAIN);
+    
+        map = mapView.createMap(mapOptions);
+        
+        /* TODO: This should create a new marker every time the user clicks, but if you step through
+         * it in the dubugger it seems to be interrupted midway by another handler. */
+        map.addUIEventHandler(UIEventType.click, (JSObject event) -> {
+            MarkerOptions markerOptions = new MarkerOptions();
+            LatLong pos = (LatLong) event.getMember("latlng");
+            markerOptions.position(pos)
+                    .visible(true)
+                    .title("title");
+        
+            map.addMarker(new Marker(markerOptions));
+        });
     }
 
     private ObservableList<WaterSourceReport> getWaterSourceReports() {
@@ -148,7 +180,6 @@ public class MainAppController {
                     return;
                 }
                 model.modifyUserName(currentUser, username);
-                resetHome();
                 changes += "Username changed to " + username + "\n";
             }
             if(!password.equals(currentUser.getPassword())) {
@@ -204,7 +235,6 @@ public class MainAppController {
     
     public void setUser(User user)  {
         currentUser = user;
-        resetHome();
         resetEditUser();
     }
     
@@ -213,9 +243,5 @@ public class MainAppController {
         passwordField.setText(currentUser.getPassword());
         passwordConfirmField.setText(currentUser.getPassword());
         accountTypeChoiceBox.setValue(currentUser.getAccountType());
-    }
-    
-    private void resetHome() {
-        login_name.setText("Hello, " + currentUser.getUsername() + "!");
     }
 }
