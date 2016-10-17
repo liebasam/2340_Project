@@ -40,6 +40,7 @@ public class WelcomeController
     private void initialize() {
         regUserTypeChoiceBox.getItems().setAll(AccountType.values());
         regUserTypeChoiceBox.setValue(AccountType.User);
+        Model.getInstance();
     }
     
     void setStage(Stage stage)
@@ -52,7 +53,12 @@ public class WelcomeController
     {
         String username = usernameField.getText();
         String password = passwordField.getText();
-        login(username, password);
+        try {
+            Model.getInstance().login(username, password);
+            showMainApp();
+        } catch (IllegalArgumentException e) {
+            ControllerUtils.createErrorMessage(stage, "Login Error", "Invalid user/pass");
+        }
     }
 
     @FXML
@@ -67,7 +73,7 @@ public class WelcomeController
             ControllerUtils.createErrorMessage(stage, "Registration Error", "Passwords do not match");
         } else {
             try {
-                register(username, password, regUserTypeChoiceBox.getValue());
+                Model.getInstance().createAccount(username, password, regUserTypeChoiceBox.getValue());
                 String userType = regUserTypeChoiceBox.getValue().toString().toLowerCase();
                 ControllerUtils.createMessage(stage, "Registration", "Successfully registered", "New " + userType + " " + username + " created", Alert.AlertType.INFORMATION);
                 resetRegistration();
@@ -104,41 +110,9 @@ public class WelcomeController
     }
 
     /**
-     * Logs in the user and shows the main app
-     * @param username Username
-     * @param password Password
-     */
-    private void login(String username, String password) {
-        Model model = Model.getInstance();
-        try{
-            if(ControllerUtils.isEmpty(username, password)) {
-                ControllerUtils.createErrorMessage(stage, "Signin Error", "Not all fields are filled out");
-            } else if (model.checkAccount(username, password)) {
-                showMainApp(username);
-            } else {
-                ControllerUtils.createErrorMessage(stage, "Signin Error", "Wrong username and/or password.");
-            }
-        } catch (IllegalArgumentException e) {
-            ControllerUtils.createErrorMessage(stage, "Signin Error", "Wrong username and/or password.");
-        }
-
-    }
-
-    /**
-     * Registers a new user
-     * @param username Username
-     * @param password Password
-     */
-    private void register(String username, String password, AccountType accountType) {
-        Model model = Model.getInstance();
-        model.createAccount(username, password, accountType);
-    }
-
-    /**
      * Calls in main page, user should be authenticated
-     * @param username Username of logged in user
      */
-    private void showMainApp(String username) {
+    private void showMainApp() {
         try {
             // Load the fxml file and create a new stage for the popup dialog.
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/app.fxml"));
@@ -153,7 +127,6 @@ public class WelcomeController
 
             MainAppController mainAppCon = loader.getController();
             mainAppCon.setStage(stage);
-            mainAppCon.setUser(Model.getInstance().getAccount(username));
 
         } catch (IOException e) {
             e.printStackTrace();

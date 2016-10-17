@@ -1,6 +1,8 @@
 package model;
 
-public enum AccountType
+import java.io.Serializable;
+
+public enum AccountType implements Serializable
 {
     User,
     Worker,

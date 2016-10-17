@@ -9,106 +9,59 @@ import com.lynden.gmapsfx.GoogleMapView;
 import com.lynden.gmapsfx.MapComponentInitializedListener;
 import com.lynden.gmapsfx.javascript.event.UIEventType;
 import com.lynden.gmapsfx.javascript.object.*;
-import java.net.URL;
-import java.util.ResourceBundle;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import model.*;
-import model.WaterSourceReport.*;
+import model.AccountType;
+import model.Location;
+import model.Model;
+import model.WaterSourceReport;
+import model.WaterSourceReport.QualityType;
+import model.WaterSourceReport.SourceType;
 import netscape.javascript.JSObject;
+
+import java.net.URL;
+import java.util.ResourceBundle;
 
 public class MainAppController implements MapComponentInitializedListener {
 
     private Stage stage;
-    private User currentUser;
-    private GoogleMap map;
-    
-    @FXML
-    private GoogleMapView mapView;
-    
-    @FXML // ResourceBundle that was given to the FXMLLoader
+    public void setStage(Stage stage)
+    {
+        this.stage = stage;
+    }
     private ResourceBundle resources;
-
     @FXML // URL location of the FXML file that was given to the FXMLLoader
     private URL location;
-
-    @FXML // It will call Logout/exit menu
-    private MenuBar AccountMenu;
-
-    @FXML
-    private MenuItem logout;
-
-    @FXML
-    private MenuItem exit;
-    
-    @FXML
-    private TextField usernameField;
-    
-    @FXML
-    private PasswordField passwordField;
-    
-    @FXML
-    private PasswordField passwordConfirmField;
-    
-    @FXML
-    private ChoiceBox<AccountType> accountTypeChoiceBox;
-
-    @FXML
-    private TextField locationField;
-
-    @FXML
-    private ChoiceBox<SourceType> sourceTypeChoiceBox;
-
-    @FXML
-    private ChoiceBox<QualityType> qualityTypeChoiceBox;
-
-    @FXML
-    private TableView<WaterSourceReport> ReportsTable;
-
-    @FXML
-    private TableColumn<WaterSourceReport, String> colLocation;
-
-    @FXML
-    private TableColumn<WaterSourceReport, String> colQuality;
-
-    @FXML
-    private TableColumn<WaterSourceReport, String> colSource;
-
-    @FXML
-    private TableColumn<WaterSourceReport, String> colDate;
-
-    @FXML
-    private TableColumn<WaterSourceReport, String> colUser;
-
-    @FXML
-    private TableColumn<WaterSourceReport, String> colReportID;
-
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
-        mapView.addMapInializedListener(this);
-        
-        accountTypeChoiceBox.getItems().setAll(AccountType.values());
-        sourceTypeChoiceBox.getItems().setAll(SourceType.values());
-        qualityTypeChoiceBox.getItems().setAll(QualityType.values());
-
-        ReportsTable.setItems(getWaterSourceReports());
-        colLocation.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("location"));
-        colQuality.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("quality"));
-        colSource.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("type"));
-        colDate.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("SubmissionDate"));
-        colUser.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("SubmitterUsername"));
-        //colReportID.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("reportNumber"));
-        ReportsTable.getColumns().setAll(colUser, colDate, colLocation, colSource, colQuality);
+        homeInit();
+        editProfileInit();
+        submitReportInit();
+        //viewReportInit();
     }
-    
+
+    /*
+            ~ HOME ~
+     */
+    private GoogleMap map;
+    @FXML
+    private GoogleMapView mapView;
+    @FXML // ResourceBundle that was given to the FXMLLoader
+    private void homeInit() {
+        mapView.addMapInializedListener(this);
+    }
+    private void addMarker(WaterSourceReport report) {
+        MarkerOptions opt = new MarkerOptions();
+        Location l = report.getLocation();
+        opt.position(new LatLong(l.getLatitude(), l.getLongitude()));
+        opt.title(report.getType().toString() + ", " + report.getQuality().toString());
+        map.addMarker(new Marker(opt));
+    }
     @Override
     public void mapInitialized() {
         MapOptions mapOptions = new MapOptions();
@@ -117,9 +70,12 @@ public class MainAppController implements MapComponentInitializedListener {
                 .zoom(9)
                 .streetViewControl(false)
                 .mapType(MapTypeIdEnum.TERRAIN);
-    
+
         map = mapView.createMap(mapOptions);
-        
+        for (WaterSourceReport report : Model.getInstance().getWaterSourceReports()) {
+            addMarker(report);
+        }
+
         /* TODO: This should create a new marker every time the user clicks, but if you step through
          * it in the dubugger it seems to be interrupted midway by another handler. */
         map.addUIEventHandler(UIEventType.click, (JSObject event) -> {
@@ -128,38 +84,32 @@ public class MainAppController implements MapComponentInitializedListener {
             markerOptions.position(pos)
                     .visible(true)
                     .title("title");
-        
+
             map.addMarker(new Marker(markerOptions));
         });
     }
 
-    private ObservableList<WaterSourceReport> getWaterSourceReports() {
-        Model model = Model.getInstance();
-        ObservableList<WaterSourceReport> waterSourceReports = model.waterSourceReports;
-        return waterSourceReports;
-    }
-
+    /*
+            ~ EDIT PROFILE ~
+     */
     @FXML
-    private void onExitPressed() {
-        Platform.exit();
-        System.exit(0);
-    }
-
+    private TextField usernameField;
     @FXML
-    private void onLogoutPressed() throws Exception {
-        currentUser = null;
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/fxml/welcome.fxml"));
-        Parent root = loader.load();
-
-        stage.setTitle("Sign-in/Register");
-        stage.setScene(new Scene(root, 400, 275));
-        stage.show();
-
-        WelcomeController controller = loader.getController();
-        controller.setStage(stage);
+    private PasswordField passwordField;
+    @FXML
+    private PasswordField passwordConfirmField;
+    @FXML
+    private ChoiceBox<AccountType> accountTypeChoiceBox;
+    private void editProfileInit() {
+        usernameField.setText(Model.CURRENT_USER.getUsername());
+        passwordField.setText(Model.CURRENT_USER.getPassword());
+        passwordConfirmField.setText(Model.CURRENT_USER.getPassword());
+        accountTypeChoiceBox.setValue(Model.CURRENT_USER.getAccountType());
     }
-    
+    @FXML
+    private void onCancelPressed() {
+        editProfileInit();
+    }
     @FXML
     private void onConfirmPressed() {
         Model model = Model.getInstance();
@@ -174,74 +124,133 @@ public class MainAppController implements MapComponentInitializedListener {
             ControllerUtils.createErrorMessage(stage, "Account Edit Error", "Passwords do not match");
         } else {
             String changes = "";
-            if(!username.equals(currentUser.getUsername())) {
-                if(model.usernameTaken(username)) {
+            if(!username.equals(Model.CURRENT_USER.getUsername())) {
+                try {
+                    model.modifyUserName(username);
+                    changes += "Username changed to " + username + "\n";
+                } catch (IllegalArgumentException e) {
                     ControllerUtils.createErrorMessage(stage, "Account Edit Error", "Username already exists");
-                    return;
                 }
-                model.modifyUserName(currentUser, username);
-                changes += "Username changed to " + username + "\n";
             }
-            if(!password.equals(currentUser.getPassword())) {
-                currentUser.setPassword(password);
-                changes += "Password changed\n";
+            if(!password.equals(Model.CURRENT_USER.getPassword())) {
+                try {
+                    model.setPassword(password);
+                    changes += "Password changed\n";
+                } catch (IllegalArgumentException e) {
+                    ControllerUtils.createErrorMessage(stage, "Account Edit Error", "New password is invalid");
+                }
             }
-            if(!accountType.equals(currentUser.getAccountType())) {
-                currentUser.setAccountType(accountType);
+            if(!accountType.equals(Model.CURRENT_USER.getAccountType())) {
+                model.setAccountType(accountType);
                 changes += "Account type changed to " + accountType.toString().toLowerCase();
+
             }
             if(changes.equals("")) {
                 changes = "No changes made";
             }
-            
+
             ControllerUtils.createMessage(stage, "Account Edit", "Successfully edited account", changes, Alert.AlertType.INFORMATION);
         }
     }
 
+    /*
+            ~ SUBMIT REPORT ~
+     */
+    @FXML
+    private ChoiceBox<SourceType> sourceTypeChoiceBox;
+    @FXML
+    private ChoiceBox<QualityType> qualityTypeChoiceBox;
+    private void submitReportInit() {
+        accountTypeChoiceBox.getItems().setAll(AccountType.values());
+        sourceTypeChoiceBox.getItems().setAll(SourceType.values());
+        qualityTypeChoiceBox.getItems().setAll(QualityType.values());
+    }
     @FXML
     private void onSubmitPressed() {
         Model model = Model.getInstance();
-        String location = locationField.getText();
         SourceType source = sourceTypeChoiceBox.getValue();
         QualityType quality = qualityTypeChoiceBox.getValue();
 
-        if(ControllerUtils.isEmpty(location)) {
-            ControllerUtils.createErrorMessage(stage, "Submit Report Error", "One or more fields are empty");
-        } else if(source == null) {
+        if(source == null) {
             ControllerUtils.createErrorMessage(stage, "Submit Report Error", "Please select a source type");
         } else if(quality == null) {
             ControllerUtils.createErrorMessage(stage, "Submit Report Error", "Please select a quality type");
         } else {
-            model.createReport(currentUser.getUsername(), location, source, quality);
+            Location l = new Location(map.getCenter().getLatitude(), map.getCenter().getLongitude());
+            WaterSourceReport report = model.createReport(Model.CURRENT_USER.getUsername(), l, source, quality);
             ControllerUtils.createMessage(stage, "Submit Report", "Success",
                     "Your water source report has been added", Alert.AlertType.CONFIRMATION);
+            addMarker(report);
         }
     }
 
     @FXML
     private void onReportCancelPressed() {
-        locationField.setText("");
-    }
-    
-    @FXML
-    private void onCancelPressed() {
-        resetEditUser();
+        submitReportInit();
     }
 
-    public void setStage(Stage stage)
-    {
-        this.stage = stage;
+    /*
+            ~ VIEW REPORTS ~
+     */
+    /*
+    @FXML
+    private TableView<WaterSourceReport> ReportsTable;
+    @FXML
+    private TableColumn<WaterSourceReport, String> colLocation;
+    @FXML
+    private TableColumn<WaterSourceReport, String> colQuality;
+    @FXML
+    private TableColumn<WaterSourceReport, String> colSource;
+    @FXML
+    private TableColumn<WaterSourceReport, String> colDate;
+    @FXML
+    private TableColumn<WaterSourceReport, String> colUser;
+    @FXML
+    private TableColumn<WaterSourceReport, String> colReportID;
+    private void viewReportInit() {
+        ReportsTable.setItems(getWaterSourceReports());
+        colLocation.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("location"));
+        colQuality.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("quality"));
+        colSource.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("type"));
+        colDate.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("SubmissionDate"));
+        colUser.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("SubmitterUsername"));
+        //colReportID.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("reportNumber"));
+        ReportsTable.getColumns().setAll(colUser, colDate, colLocation, colSource, colQuality);
     }
-    
-    public void setUser(User user)  {
-        currentUser = user;
-        resetEditUser();
+    private ObservableList<WaterSourceReport> getWaterSourceReports() {
+        return Model.getInstance().waterSourceReports;
     }
-    
-    private void resetEditUser() {
-        usernameField.setText(currentUser.getUsername());
-        passwordField.setText(currentUser.getPassword());
-        passwordConfirmField.setText(currentUser.getPassword());
-        accountTypeChoiceBox.setValue(currentUser.getAccountType());
+    */
+    /*
+            ~ MENU BAR ~
+     */
+    @FXML // It will call Logout/exit menu
+    private MenuBar AccountMenu;
+    @FXML
+    private MenuItem logout;
+    @FXML
+    private MenuItem exit;
+    private void menuBarInit() {
+
     }
+    @FXML
+    private void onExitPressed() {
+        Platform.exit();
+        System.exit(0);
+    }
+    @FXML
+    private void onLogoutPressed() throws Exception {
+        Model.getInstance().logout();
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/fxml/welcome.fxml"));
+        Parent root = loader.load();
+
+        stage.setTitle("Sign-in/Register");
+        stage.setScene(new Scene(root, 400, 275));
+        stage.show();
+
+        WelcomeController controller = loader.getController();
+        controller.setStage(stage);
+    }
+
 }

@@ -1,28 +1,54 @@
 package model;
 
+import model.WaterSourceReport.QualityType;
+import model.WaterSourceReport.SourceType;
+
+import java.io.*;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import model.WaterSourceReport.*;
-
-public class Model {
-    private static final Model instance = new Model();
+public class Model implements Serializable {
+    private static Model instance = new Model();
     public static Model getInstance() { return instance; }
-    
-    private static int numUsers = 0;
-    
-    private final Map<String, Integer> ids = new HashMap<>();
-    private final Map<Integer, User> users = new HashMap<>();
-    private final Set<SecurityLogEntry> securityLog = new HashSet<>();
 
-    public final ObservableList<WaterSourceReport> waterSourceReports = FXCollections.observableArrayList();
+    private static final String FILE_DIRECTORY = "./savedata/";
+    private static final String FILE_NAME_EXT = "model.ser";
+
+    private static int numUsers = 0;
+    public static User CURRENT_USER;
+
+    private final Map<String, User> users = new HashMap<>();
+    public Map<String, User> getUsers() {return users;}
+    private final Set<SecurityLogEntry> securityLog = new HashSet<>();
+    public Set<SecurityLogEntry> getSecurityLog() {return securityLog;}
+    private final Set<WaterSourceReport> waterSourceReports = new HashSet<>();
+    public Set<WaterSourceReport> getWaterSourceReports() {return waterSourceReports;}
 
     private Model() {
-        createAccount("user", "pass", AccountType.Admin);
+        //Attempt to load the model
+        try {
+            FileInputStream fis = new FileInputStream(FILE_DIRECTORY + FILE_NAME_EXT);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            Model obj = (Model) ois.readObject();
+            this.users.putAll(obj.users);
+            this.securityLog.addAll(obj.securityLog);
+            this.waterSourceReports.addAll(obj.waterSourceReports);
+            ois.close();
+            fis.close();
+            System.out.println("Model loaded");
+            System.out.println(waterSourceReports.size());
+        } catch (FileNotFoundException e) {
+            System.out.println("Could not find serialized file");
+            e.printStackTrace();
+            createAccount("user", "pass", AccountType.Admin);
+        } catch (Exception e) {
+            System.out.println("Failed to load model");
+            e.printStackTrace();
+            createAccount("user", "pass", AccountType.Admin);
+        }
+
     }
 
     /**
@@ -33,15 +59,12 @@ public class Model {
      * @throws IllegalArgumentException if username is already in use
      */
     public User createAccount(String username, String pw, AccountType accountType) {
-        if (usernameTaken(username)) {
+        if (users.containsKey(username)) {
             throw new IllegalArgumentException("Username is taken");
         }
-        int id = numUsers;
-        numUsers++;
-        User user = new User(username, pw, accountType, id);
-        
-        ids.put(username, id);
-        users.put(id, user);
+        User user = new User(username, pw, accountType, numUsers++);
+
+        users.put(username, user);
         return user;
     }
 
@@ -53,69 +76,95 @@ public class Model {
      * @param quality Quality type
      * @return The newly-created water source report
      */
-    public WaterSourceReport createReport(String username, String location, SourceType source, QualityType quality) {
+    public WaterSourceReport createReport(String username, Location location, SourceType source, QualityType quality) {
+        if (CURRENT_USER == null) {
+            throw new IllegalStateException("User is not logged in");
+        }
         WaterSourceReport report = new WaterSourceReport(username, location, source, quality);
         waterSourceReports.add(report);
         return report;
     }
+
+    public WaterSourceReport createReport(String username, double lat, double lng, SourceType source, QualityType quality) {
+        return this.createReport(username, new Location(lat, lng), source, quality);
+    }
     
     /**
      * Modifies the username of a user
-     * @param user The user
      * @param updatedUserName The new username of the user
-     * @throws IllegalArgumentException if user is not found in database
      */
-    public void modifyUserName(User user, String updatedUserName) {
-        if(!users.containsKey(user.getId())) {
-            throw new IllegalArgumentException("Invalid id");
+    public void modifyUserName(String updatedUserName) {
+        if (CURRENT_USER == null) {
+            throw new IllegalStateException("User is not logged in");
+        } else if (users.containsKey(updatedUserName)) {
+            throw new IllegalArgumentException("Username is taken");
         }
         
-        ids.remove(user.getUsername());
-        ids.put(updatedUserName, user.getId());
-        
-        user.setUsername(updatedUserName);
+        users.remove(CURRENT_USER.getUsername());
+        users.put(updatedUserName, CURRENT_USER);
+        CURRENT_USER.setUsername(updatedUserName);
     }
     
     /**
      * Checks the username/password pair to the database
      * @param username Username
      * @param pw Password
-     * @return True if the user/pass combo is valid, false otherwise
      */
-    public boolean checkAccount(String username, String pw) {
-
-        User user = getAccount(username);
+    public void login(String username, String pw) {
+        try {logout();} catch (IllegalStateException e) {}
+        User user = users.get(username);
         if (user == null) {
             securityLog.add(SecurityLogEntry.loginAttempt(null, SecurityLogEntry.EventStatus.INVALID_USER));
-            return false;
+            throw new IllegalArgumentException("Invalid user/pass");
         }
         if (!user.getPassword().equals(pw)) {
             securityLog.add(SecurityLogEntry.loginAttempt(user.getId(), SecurityLogEntry.EventStatus.INVALID_PASS));
-            return false;
+            throw new IllegalArgumentException("Invalid user/pass");
         }
         securityLog.add(SecurityLogEntry.loginAttempt(user.getId(), SecurityLogEntry.EventStatus.SUCCESS));
-        return true;
+        CURRENT_USER = user;
     }
-    
-    /**
-     * Retrieves an account with the given username
-     * @param username Username
-     * @return The user corresponding to the username
-     * @throws IllegalArgumentException if username is not associated with an account
-     */
-    public User getAccount(String username) {
-        if(!usernameTaken(username)) {
-            throw new IllegalArgumentException("Invalid username");
+
+    public void setPassword(String newPass) {
+        if (CURRENT_USER == null) {
+            throw new IllegalStateException("User is not logged in");
         }
-        return users.get(ids.get(username));
+        if (newPass.equals("")) {
+            throw new IllegalArgumentException("Invalid password");
+        }
+        CURRENT_USER.setPassword(newPass);
     }
-    
+
+    public void setAccountType(AccountType type) {
+        if (CURRENT_USER == null) {
+            throw new IllegalStateException("User is not logged in");
+        }
+        CURRENT_USER.setAccountType(type);
+    }
+
     /**
-     * Returns whether a given username is already taken
-     * @param username Username
-     * @return Whether username is taken
+     * Logs out the current user.
      */
-    public boolean usernameTaken(String username) {
-        return ids.containsKey(username);
+    public void logout() {
+        if (CURRENT_USER == null) {
+            throw new IllegalStateException("User is not logged in");
+        }
+        CURRENT_USER = null;
     }
+
+    /**
+     * Save the currently-held data
+     */
+    public void save() throws IOException {
+        File file = new File(FILE_DIRECTORY + FILE_NAME_EXT);
+        file.getParentFile().mkdirs();
+        file.createNewFile();
+        FileOutputStream fos = new FileOutputStream(file);
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+        oos.writeObject(this);
+        oos.close();
+        fos.close();
+        System.out.println("Model saved");
+    }
+
 }

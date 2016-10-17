@@ -1,42 +1,39 @@
 package model;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-
-import javax.xml.transform.Source;
+import java.io.Serializable;
 import java.util.Date;
 
-public class WaterSourceReport {
+public class WaterSourceReport implements Serializable {
 
-    private Integer LAST_REPORT_NUMBER = 0;
+    private static Integer LAST_REPORT_NUMBER = 0;
 
     // StringProperty is needed in order to populate the 'View Reports' table
-    private final StringProperty SubmitterUsername;
-    public String getSubmitterUsername() {return SubmitterUsername.get();}
+    private final String submitterUsername;
+    public String getSubmitterUsername() {return submitterUsername;}
 
-    private final StringProperty location;
-    public String getLocation() {return location.get();}
+    private final Location location;
+    public Location getLocation() {return location;}
 
-    private final StringProperty type;
-    public String getType() {return type.get();}
+    private final SourceType type;
+    public SourceType getType() {return type;}
 
-    private final StringProperty quality;
-    public String getQuality() {return quality.get();}
+    private final QualityType quality;
+    public QualityType getQuality() {return quality;}
 
-    private final StringProperty SubmissionDate;
-    public String getSubmissionDate() {return SubmissionDate.get();}
+    private final Date submissionDate;
+    public Date getSubmissionDate() {return submissionDate;}
 
-    private final StringProperty reportNumber;
-    public String getreportNumber() {return reportNumber.get();}
+    private final Integer reportNumber;
+    public Integer getreportNumber() {return reportNumber;}
 
-    public WaterSourceReport(String submitterUsername, String location,
+    public WaterSourceReport(String submitterUsername, Location location,
                              SourceType type, QualityType quality) {
-        this.SubmitterUsername = new SimpleStringProperty(submitterUsername);
-        this.location = new SimpleStringProperty(location);
-        this.type = new SimpleStringProperty(type.toString());
-        this.quality = new SimpleStringProperty(quality.toString());
-        this.SubmissionDate = new SimpleStringProperty((new Date()).toString());
-        this.reportNumber = new SimpleStringProperty((LAST_REPORT_NUMBER++).toString());
+        this.submitterUsername = submitterUsername;
+        this.location = location;
+        this.type = type;
+        this.quality = quality;
+        this.submissionDate = new Date();
+        this.reportNumber = LAST_REPORT_NUMBER++;
     }
 
     @Override
@@ -47,22 +44,16 @@ public class WaterSourceReport {
 
     @Override
     public int hashCode() {
-        return Integer.parseInt(reportNumber.toString());
+        return reportNumber;
     }
 
-    //These classes are more or less just place-holders for future info-holders
-    public class Location {
-        double latitutde;
-        double longitude;
-    }
-
-    public enum SourceType {
+    public enum SourceType implements Serializable {
         //'STREAM' is a global variable that cannot be used
                 //Thus, it is replaced with 'RIVER'
                 BOTTLED, WELL, RIVER, LAKE, STREAM, OTHER
     }
 
-    public enum QualityType {
+    public enum QualityType implements Serializable {
         WASTE, TREATABLE_CLEAR, TREATABLE_MUDDY, POTABLE
     }
 }

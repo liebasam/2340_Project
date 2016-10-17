@@ -1,9 +1,10 @@
 package model;
 
+import java.io.Serializable;
 import java.util.Date;
 
-class SecurityLogEntry {
-    enum EventType {
+class SecurityLogEntry implements Serializable {
+    enum EventType implements Serializable {
         LOGIN_ATTEMPT("LOGIN ATTEMPT"),
         ACCOUNT_DELETE("ACCOUNT DELETE"),
         USER_BAN("USER BAN"),
@@ -18,7 +19,7 @@ class SecurityLogEntry {
             return name;
         }
     }
-    enum EventStatus {
+    enum EventStatus implements Serializable {
         SUCCESS("SUCCESS"),
         INVALID_USER("INVALID USER"),
         INVALID_PASS("INVALID PASS");
