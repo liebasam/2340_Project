@@ -13,7 +13,7 @@ public class Model implements Serializable {
     private static Model instance = new Model();
     public static Model getInstance() { return instance; }
 
-    private static final String FILE_DIRECTORY = "D:/project_ifrit_data/";
+    private static final String FILE_DIRECTORY = "./savedata/";
     private static final String FILE_NAME_EXT = "model.ser";
 
     private static int numUsers = 0;
