@@ -1,13 +1,12 @@
 package controller;
 
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import java.net.URL;
-
-import java.net.URLClassLoader;
+import javafx.stage.WindowEvent;
 
 public class AppLauncher extends Application {
     //Run -> Run 'AppLauncher'
@@ -20,6 +19,12 @@ public class AppLauncher extends Application {
     
         primaryStage.setTitle("Sign-in/Register");
         primaryStage.setScene(new Scene(root, 400, 275));
+        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                //
+            }
+        });
         primaryStage.show();
         
         WelcomeController controller = loader.getController();

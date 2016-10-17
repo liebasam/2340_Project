@@ -28,7 +28,6 @@ import netscape.javascript.JSObject;
 public class MainAppController implements MapComponentInitializedListener {
 
     private Stage stage;
-    private User currentUser;
     private GoogleMap map;
     
     @FXML
@@ -147,7 +146,7 @@ public class MainAppController implements MapComponentInitializedListener {
 
     @FXML
     private void onLogoutPressed() throws Exception {
-        currentUser = null;
+        Model.getInstance().logout();
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/fxml/welcome.fxml"));
         Parent root = loader.load();
@@ -174,21 +173,26 @@ public class MainAppController implements MapComponentInitializedListener {
             ControllerUtils.createErrorMessage(stage, "Account Edit Error", "Passwords do not match");
         } else {
             String changes = "";
-            if(!username.equals(currentUser.getUsername())) {
-                if(model.usernameTaken(username)) {
+            if(!username.equals(Model.CURRENT_USER.getUsername())) {
+                try {
+                    model.modifyUserName(username);
+                    changes += "Username changed to " + username + "\n";
+                } catch (IllegalArgumentException e) {
                     ControllerUtils.createErrorMessage(stage, "Account Edit Error", "Username already exists");
-                    return;
                 }
-                model.modifyUserName(currentUser, username);
-                changes += "Username changed to " + username + "\n";
             }
-            if(!password.equals(currentUser.getPassword())) {
-                currentUser.setPassword(password);
-                changes += "Password changed\n";
+            if(!password.equals(Model.CURRENT_USER.getPassword())) {
+                try {
+                    model.setPassword(password);
+                    changes += "Password changed\n";
+                } catch (IllegalArgumentException e) {
+                    ControllerUtils.createErrorMessage(stage, "Account Edit Error", "New password is invalid");
+                }
             }
-            if(!accountType.equals(currentUser.getAccountType())) {
-                currentUser.setAccountType(accountType);
+            if(!accountType.equals(Model.CURRENT_USER.getAccountType())) {
+                model.setAccountType(accountType);
                 changes += "Account type changed to " + accountType.toString().toLowerCase();
+
             }
             if(changes.equals("")) {
                 changes = "No changes made";
@@ -212,7 +216,7 @@ public class MainAppController implements MapComponentInitializedListener {
         } else if(quality == null) {
             ControllerUtils.createErrorMessage(stage, "Submit Report Error", "Please select a quality type");
         } else {
-            model.createReport(currentUser.getUsername(), location, source, quality);
+            model.createReport(Model.CURRENT_USER.getUsername(), location, source, quality);
             ControllerUtils.createMessage(stage, "Submit Report", "Success",
                     "Your water source report has been added", Alert.AlertType.CONFIRMATION);
         }
@@ -234,14 +238,14 @@ public class MainAppController implements MapComponentInitializedListener {
     }
     
     public void setUser(User user)  {
-        currentUser = user;
+        Model.CURRENT_USER = user;
         resetEditUser();
     }
     
     private void resetEditUser() {
-        usernameField.setText(currentUser.getUsername());
-        passwordField.setText(currentUser.getPassword());
-        passwordConfirmField.setText(currentUser.getPassword());
-        accountTypeChoiceBox.setValue(currentUser.getAccountType());
+        usernameField.setText(Model.CURRENT_USER.getUsername());
+        passwordField.setText(Model.CURRENT_USER.getPassword());
+        passwordConfirmField.setText(Model.CURRENT_USER.getPassword());
+        accountTypeChoiceBox.setValue(Model.CURRENT_USER.getAccountType());
     }
 }

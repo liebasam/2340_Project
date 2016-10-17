@@ -14,10 +14,10 @@ public class Model {
     public static Model getInstance() { return instance; }
     
     private static int numUsers = 0;
-    
-    private final Map<String, Integer> ids = new HashMap<>();
-    private final Map<Integer, User> users = new HashMap<>();
+
+    private final Map<String, User> users = new HashMap<>();
     private final Set<SecurityLogEntry> securityLog = new HashSet<>();
+    public static User CURRENT_USER;
 
     public final ObservableList<WaterSourceReport> waterSourceReports = FXCollections.observableArrayList();
 
@@ -33,15 +33,12 @@ public class Model {
      * @throws IllegalArgumentException if username is already in use
      */
     public User createAccount(String username, String pw, AccountType accountType) {
-        if (usernameTaken(username)) {
+        if (users.containsKey(username)) {
             throw new IllegalArgumentException("Username is taken");
         }
-        int id = numUsers;
-        numUsers++;
-        User user = new User(username, pw, accountType, id);
-        
-        ids.put(username, id);
-        users.put(id, user);
+        User user = new User(username, pw, accountType, numUsers++);
+
+        users.put(username, user);
         return user;
     }
 
@@ -54,6 +51,9 @@ public class Model {
      * @return The newly-created water source report
      */
     public WaterSourceReport createReport(String username, String location, SourceType source, QualityType quality) {
+        if (CURRENT_USER == null) {
+            throw new IllegalStateException("User is not logged in");
+        }
         WaterSourceReport report = new WaterSourceReport(username, location, source, quality);
         waterSourceReports.add(report);
         return report;
@@ -61,19 +61,18 @@ public class Model {
     
     /**
      * Modifies the username of a user
-     * @param user The user
      * @param updatedUserName The new username of the user
-     * @throws IllegalArgumentException if user is not found in database
      */
-    public void modifyUserName(User user, String updatedUserName) {
-        if(!users.containsKey(user.getId())) {
-            throw new IllegalArgumentException("Invalid id");
+    public void modifyUserName(String updatedUserName) {
+        if (CURRENT_USER == null) {
+            throw new IllegalStateException("User is not logged in");
+        } else if (users.containsKey(updatedUserName)) {
+            throw new IllegalArgumentException("Username is taken");
         }
         
-        ids.remove(user.getUsername());
-        ids.put(updatedUserName, user.getId());
-        
-        user.setUsername(updatedUserName);
+        users.remove(CURRENT_USER.getUsername());
+        users.put(updatedUserName, CURRENT_USER);
+        CURRENT_USER.setUsername(updatedUserName);
     }
     
     /**
@@ -82,40 +81,46 @@ public class Model {
      * @param pw Password
      * @return True if the user/pass combo is valid, false otherwise
      */
-    public boolean checkAccount(String username, String pw) {
-
-        User user = getAccount(username);
+    public void login(String username, String pw) {
+        try {logout();} catch (IllegalStateException e) {}
+        User user = users.get(username);
         if (user == null) {
             securityLog.add(SecurityLogEntry.loginAttempt(null, SecurityLogEntry.EventStatus.INVALID_USER));
-            return false;
+            throw new IllegalArgumentException("Invalid user/pass");
         }
         if (!user.getPassword().equals(pw)) {
             securityLog.add(SecurityLogEntry.loginAttempt(user.getId(), SecurityLogEntry.EventStatus.INVALID_PASS));
-            return false;
+            throw new IllegalArgumentException("Invalid user/pass");
         }
         securityLog.add(SecurityLogEntry.loginAttempt(user.getId(), SecurityLogEntry.EventStatus.SUCCESS));
-        return true;
+        CURRENT_USER = user;
     }
-    
-    /**
-     * Retrieves an account with the given username
-     * @param username Username
-     * @return The user corresponding to the username
-     * @throws IllegalArgumentException if username is not associated with an account
-     */
-    public User getAccount(String username) {
-        if(!usernameTaken(username)) {
-            throw new IllegalArgumentException("Invalid username");
+
+    public void setPassword(String newPass) {
+        if (CURRENT_USER == null) {
+            throw new IllegalStateException("User is not logged in");
         }
-        return users.get(ids.get(username));
+        if (newPass.equals("")) {
+            throw new IllegalArgumentException("Invalid password");
+        }
+        CURRENT_USER.setPassword(newPass);
     }
-    
+
+    public void setAccountType(AccountType type) {
+        if (CURRENT_USER == null) {
+            throw new IllegalStateException("User is not logged in");
+        }
+        CURRENT_USER.setAccountType(type);
+    }
+
     /**
-     * Returns whether a given username is already taken
-     * @param username Username
-     * @return Whether username is taken
+     * Logs out the current user.
      */
-    public boolean usernameTaken(String username) {
-        return ids.containsKey(username);
+    public void logout() {
+        if (CURRENT_USER == null) {
+            throw new IllegalStateException("User is not logged in");
+        }
+        CURRENT_USER = null;
     }
+
 }
