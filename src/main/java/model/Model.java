@@ -59,12 +59,12 @@ public class Model implements Serializable {
      * @throws IllegalArgumentException if username is already in use
      */
     public User createAccount(String username, String pw, AccountType accountType) {
-        if (users.containsKey(username)) {
+        if (users.containsKey(username.toLowerCase())) {
             throw new IllegalArgumentException("Username is taken");
         }
-        User user = new User(username, pw, accountType, numUsers++);
+        User user = new User(username.toLowerCase(), pw, accountType, numUsers++);
 
-        users.put(username, user);
+        users.put(username.toLowerCase(), user);
         return user;
     }
 
