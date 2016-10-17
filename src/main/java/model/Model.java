@@ -96,7 +96,7 @@ public class Model implements Serializable {
     public void modifyUserName(String updatedUserName) {
         if (CURRENT_USER == null) {
             throw new IllegalStateException("User is not logged in");
-        } else if (users.containsKey(updatedUserName)) {
+        } else if (users.containsKey(updatedUserName.toLowerCase())) {
             throw new IllegalArgumentException("Username is taken");
         }
         
@@ -112,7 +112,7 @@ public class Model implements Serializable {
      */
     public void login(String username, String pw) {
         try {logout();} catch (IllegalStateException e) {}
-        User user = users.get(username);
+        User user = users.get(username.toLowerCase());
         if (user == null) {
             securityLog.add(SecurityLogEntry.loginAttempt(null, SecurityLogEntry.EventStatus.INVALID_USER));
             throw new IllegalArgumentException("Invalid user/pass");
