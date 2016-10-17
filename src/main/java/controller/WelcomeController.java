@@ -40,6 +40,7 @@ public class WelcomeController
     private void initialize() {
         regUserTypeChoiceBox.getItems().setAll(AccountType.values());
         regUserTypeChoiceBox.setValue(AccountType.User);
+        Model.getInstance();
     }
     
     void setStage(Stage stage)

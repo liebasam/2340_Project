@@ -1,28 +1,54 @@
 package model;
 
+import model.WaterSourceReport.QualityType;
+import model.WaterSourceReport.SourceType;
+
+import java.io.*;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import model.WaterSourceReport.*;
-
-public class Model {
-    private static final Model instance = new Model();
+public class Model implements Serializable {
+    private static Model instance = new Model();
     public static Model getInstance() { return instance; }
-    
-    private static int numUsers = 0;
 
-    private final Map<String, User> users = new HashMap<>();
-    private final Set<SecurityLogEntry> securityLog = new HashSet<>();
+    private static final String FILE_DIRECTORY = "D:/project_ifrit_data/";
+    private static final String FILE_NAME_EXT = "model.ser";
+
+    private static int numUsers = 0;
     public static User CURRENT_USER;
 
-    public final ObservableList<WaterSourceReport> waterSourceReports = FXCollections.observableArrayList();
+    private final Map<String, User> users = new HashMap<>();
+    public Map<String, User> getUsers() {return users;}
+    private final Set<SecurityLogEntry> securityLog = new HashSet<>();
+    public Set<SecurityLogEntry> getSecurityLog() {return securityLog;}
+    private final Set<WaterSourceReport> waterSourceReports = new HashSet<>();
+    public Set<WaterSourceReport> getWaterSourceReports() {return waterSourceReports;}
 
     private Model() {
-        createAccount("user", "pass", AccountType.Admin);
+        //Attempt to load the model
+        try {
+            FileInputStream fis = new FileInputStream(FILE_DIRECTORY + FILE_NAME_EXT);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            Model obj = (Model) ois.readObject();
+            this.users.putAll(obj.users);
+            this.securityLog.addAll(obj.securityLog);
+            this.waterSourceReports.addAll(obj.waterSourceReports);
+            ois.close();
+            fis.close();
+            System.out.println("Model loaded");
+            System.out.println(waterSourceReports.size());
+        } catch (FileNotFoundException e) {
+            System.out.println("Could not find serialized file");
+            e.printStackTrace();
+            createAccount("user", "pass", AccountType.Admin);
+        } catch (Exception e) {
+            System.out.println("Failed to load model");
+            e.printStackTrace();
+            createAccount("user", "pass", AccountType.Admin);
+        }
+
     }
 
     /**
@@ -50,13 +76,17 @@ public class Model {
      * @param quality Quality type
      * @return The newly-created water source report
      */
-    public WaterSourceReport createReport(String username, String location, SourceType source, QualityType quality) {
+    public WaterSourceReport createReport(String username, Location location, SourceType source, QualityType quality) {
         if (CURRENT_USER == null) {
             throw new IllegalStateException("User is not logged in");
         }
         WaterSourceReport report = new WaterSourceReport(username, location, source, quality);
         waterSourceReports.add(report);
         return report;
+    }
+
+    public WaterSourceReport createReport(String username, double lat, double lng, SourceType source, QualityType quality) {
+        return this.createReport(username, new Location(lat, lng), source, quality);
     }
     
     /**
@@ -79,7 +109,6 @@ public class Model {
      * Checks the username/password pair to the database
      * @param username Username
      * @param pw Password
-     * @return True if the user/pass combo is valid, false otherwise
      */
     public void login(String username, String pw) {
         try {logout();} catch (IllegalStateException e) {}
@@ -121,6 +150,21 @@ public class Model {
             throw new IllegalStateException("User is not logged in");
         }
         CURRENT_USER = null;
+    }
+
+    /**
+     * Save the currently-held data
+     */
+    public void save() throws IOException {
+        File file = new File(FILE_DIRECTORY + FILE_NAME_EXT);
+        file.getParentFile().mkdirs();
+        file.createNewFile();
+        FileOutputStream fos = new FileOutputStream(file);
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+        oos.writeObject(this);
+        oos.close();
+        fos.close();
+        System.out.println("Model saved");
     }
 
 }

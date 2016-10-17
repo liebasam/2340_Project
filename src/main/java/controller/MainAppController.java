@@ -9,20 +9,23 @@ import com.lynden.gmapsfx.GoogleMapView;
 import com.lynden.gmapsfx.MapComponentInitializedListener;
 import com.lynden.gmapsfx.javascript.event.UIEventType;
 import com.lynden.gmapsfx.javascript.object.*;
-import java.net.URL;
-import java.util.ResourceBundle;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import model.*;
-import model.WaterSourceReport.*;
+import model.AccountType;
+import model.Location;
+import model.Model;
+import model.WaterSourceReport;
+import model.WaterSourceReport.QualityType;
+import model.WaterSourceReport.SourceType;
 import netscape.javascript.JSObject;
+
+import java.net.URL;
+import java.util.ResourceBundle;
 
 public class MainAppController implements MapComponentInitializedListener {
 
@@ -39,7 +42,7 @@ public class MainAppController implements MapComponentInitializedListener {
         homeInit();
         editProfileInit();
         submitReportInit();
-        viewReportInit();
+        //viewReportInit();
     }
 
     /*
@@ -52,6 +55,13 @@ public class MainAppController implements MapComponentInitializedListener {
     private void homeInit() {
         mapView.addMapInializedListener(this);
     }
+    private void addMarker(WaterSourceReport report) {
+        MarkerOptions opt = new MarkerOptions();
+        Location l = report.getLocation();
+        opt.position(new LatLong(l.getLatitude(), l.getLongitude()));
+        opt.title(report.getType().toString() + ", " + report.getQuality().toString());
+        map.addMarker(new Marker(opt));
+    }
     @Override
     public void mapInitialized() {
         MapOptions mapOptions = new MapOptions();
@@ -62,6 +72,9 @@ public class MainAppController implements MapComponentInitializedListener {
                 .mapType(MapTypeIdEnum.TERRAIN);
 
         map = mapView.createMap(mapOptions);
+        for (WaterSourceReport report : Model.getInstance().getWaterSourceReports()) {
+            addMarker(report);
+        }
 
         /* TODO: This should create a new marker every time the user clicks, but if you step through
          * it in the dubugger it seems to be interrupted midway by another handler. */
@@ -144,8 +157,6 @@ public class MainAppController implements MapComponentInitializedListener {
             ~ SUBMIT REPORT ~
      */
     @FXML
-    private TextField locationField;
-    @FXML
     private ChoiceBox<SourceType> sourceTypeChoiceBox;
     @FXML
     private ChoiceBox<QualityType> qualityTypeChoiceBox;
@@ -157,31 +168,31 @@ public class MainAppController implements MapComponentInitializedListener {
     @FXML
     private void onSubmitPressed() {
         Model model = Model.getInstance();
-        String location = locationField.getText();
         SourceType source = sourceTypeChoiceBox.getValue();
         QualityType quality = qualityTypeChoiceBox.getValue();
 
-        if(ControllerUtils.isEmpty(location)) {
-            ControllerUtils.createErrorMessage(stage, "Submit Report Error", "One or more fields are empty");
-        } else if(source == null) {
+        if(source == null) {
             ControllerUtils.createErrorMessage(stage, "Submit Report Error", "Please select a source type");
         } else if(quality == null) {
             ControllerUtils.createErrorMessage(stage, "Submit Report Error", "Please select a quality type");
         } else {
-            model.createReport(Model.CURRENT_USER.getUsername(), location, source, quality);
+            Location l = new Location(map.getCenter().getLatitude(), map.getCenter().getLongitude());
+            WaterSourceReport report = model.createReport(Model.CURRENT_USER.getUsername(), l, source, quality);
             ControllerUtils.createMessage(stage, "Submit Report", "Success",
                     "Your water source report has been added", Alert.AlertType.CONFIRMATION);
+            addMarker(report);
         }
     }
 
     @FXML
     private void onReportCancelPressed() {
-        locationField.setText("");
+        submitReportInit();
     }
 
     /*
             ~ VIEW REPORTS ~
      */
+    /*
     @FXML
     private TableView<WaterSourceReport> ReportsTable;
     @FXML
@@ -209,7 +220,7 @@ public class MainAppController implements MapComponentInitializedListener {
     private ObservableList<WaterSourceReport> getWaterSourceReports() {
         return Model.getInstance().waterSourceReports;
     }
-
+    */
     /*
             ~ MENU BAR ~
      */
@@ -241,5 +252,5 @@ public class MainAppController implements MapComponentInitializedListener {
         WelcomeController controller = loader.getController();
         controller.setStage(stage);
     }
-    
+
 }

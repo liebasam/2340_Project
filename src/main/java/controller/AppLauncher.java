@@ -7,6 +7,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import model.Model;
 
 public class AppLauncher extends Application {
     //Run -> Run 'AppLauncher'
@@ -22,7 +23,11 @@ public class AppLauncher extends Application {
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
-                //
+                try {Model.getInstance().save();}
+                catch (Exception e) {
+                    System.out.println("Could not save model");
+                    e.printStackTrace();
+                }
             }
         });
         primaryStage.show();
