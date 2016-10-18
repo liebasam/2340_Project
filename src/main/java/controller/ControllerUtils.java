@@ -45,4 +45,24 @@ public class ControllerUtils
         alert.setContentText(message);
         alert.show();
     }
+
+    /**
+     * Returns whether the provided string is a valid username
+     * @param name The username
+     * @return True if valid, false otherwise
+     */
+    public static boolean isValidUsername(String name) {
+        final boolean[] isValid = {(name.length() <= 15)};
+        name.chars().forEach(e -> isValid[0] = isValid[0] && ((e >= 48 && e <= 57) || (e >= 97 && e <= 122)));
+        return isValid[0];
+    }
+
+    /**
+     * Returns whether the provided string is a valid password
+     * @param pass The password
+     * @return True if valid, false otherwise
+     */
+    public static boolean isValidPassword(String pass) {
+        return pass.length() >= 5;
+    }
 }
