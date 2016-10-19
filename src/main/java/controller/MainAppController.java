@@ -9,7 +9,13 @@ import com.lynden.gmapsfx.GoogleMapView;
 import com.lynden.gmapsfx.MapComponentInitializedListener;
 import com.lynden.gmapsfx.javascript.event.UIEventType;
 import com.lynden.gmapsfx.javascript.object.*;
+import com.lynden.gmapsfx.service.geocoding.GeocoderStatus;
+import com.lynden.gmapsfx.service.geocoding.GeocodingResult;
+import com.lynden.gmapsfx.service.geocoding.GeocodingService;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -48,18 +54,30 @@ public class MainAppController implements MapComponentInitializedListener {
     /*
             ~ HOME ~
      */
+    private GeocodingService geocodingService;
+
+
+    @FXML
+    private TextField addressTextField;
+
+    StringProperty address = new SimpleStringProperty();
+
     private GoogleMap map;
     @FXML
     private GoogleMapView mapView;
     @FXML // ResourceBundle that was given to the FXMLLoader
     private void homeInit() {
         mapView.addMapInializedListener(this);
+        address.bind(addressTextField.textProperty());
     }
     private void addMarker(WaterSourceReport report) {
         MarkerOptions opt = new MarkerOptions();
         Location l = report.getLocation();
         opt.position(new LatLong(l.getLatitude(), l.getLongitude()));
-        opt.title(report.getType().toString() + ", " + report.getQuality().toString());
+        opt.title("Type of the water source: "+ report.getType().toString()
+                + "\nThe quality of water: " + report.getQuality().toString()
+                + "\nSubmitted by: " + report.getSubmitterUsername()
+                + ", on [" + report.getSubmissionDate().toString() + "]");
         map.addMarker(new Marker(opt));
     }
     @Override
@@ -86,6 +104,33 @@ public class MainAppController implements MapComponentInitializedListener {
                     .title("title");
 
             map.addMarker(new Marker(markerOptions));
+        });
+
+        geocodingService = new GeocodingService();
+    }
+
+
+
+    @FXML
+    public void onAddressSearchButtonClicked(ActionEvent event) {
+        geocodingService.geocode(address.get(), (GeocodingResult[] results, GeocoderStatus status) -> {
+
+            LatLong latLong = null;
+
+            if( status == GeocoderStatus.ZERO_RESULTS) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "No locations matches with your search.");
+                alert.show();
+                return;
+            } else if( results.length > 1 ) {
+                Alert alert = new Alert(Alert.AlertType.WARNING, "Showing best result.\nAdd more specific keywords next time.");
+                alert.show();
+                latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
+            } else {
+                latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
+            }
+
+            map.setCenter(latLong);
+
         });
     }
 
