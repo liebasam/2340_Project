@@ -8,8 +8,8 @@ public class WaterSourceReport implements Serializable {
     private static Integer LAST_REPORT_NUMBER = 0;
 
     // StringProperty is needed in order to populate the 'View Reports' table
-    private final String submitterUsername;
-    public String getSubmitterUsername() {return submitterUsername;}
+    private final User submitter;
+    public User getSubmitter() {return submitter;}
 
     private final Location location;
     public Location getLocation() {return location;}
@@ -26,9 +26,9 @@ public class WaterSourceReport implements Serializable {
     private final Integer reportNumber;
     public Integer getreportNumber() {return reportNumber;}
 
-    public WaterSourceReport(String submitterUsername, Location location,
+    public WaterSourceReport(User submitter, Location location,
                              SourceType type, QualityType quality) {
-        this.submitterUsername = submitterUsername;
+        this.submitter = submitter;
         this.location = location;
         this.type = type;
         this.quality = quality;
@@ -44,7 +44,7 @@ public class WaterSourceReport implements Serializable {
 
     @Override
     public int hashCode() {
-        return reportNumber;
+        return location.hashCode();
     }
 
     public enum SourceType implements Serializable {

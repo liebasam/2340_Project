@@ -76,7 +76,7 @@ public class MainAppController implements MapComponentInitializedListener {
         opt.position(new LatLong(l.getLatitude(), l.getLongitude()));
         opt.title("Type of the water source: "+ report.getType().toString()
                 + "\nThe quality of water: " + report.getQuality().toString()
-                + "\nSubmitted by: " + report.getSubmitterUsername()
+                + "\nSubmitted by: " + report.getSubmitter()
                 + ", on [" + report.getSubmissionDate().toString() + "]");
         map.addMarker(new Marker(opt));
     }
@@ -222,7 +222,7 @@ public class MainAppController implements MapComponentInitializedListener {
             ControllerUtils.createErrorMessage(stage, "Submit Report Error", "Please select a quality type");
         } else {
             Location l = new Location(map.getCenter().getLatitude(), map.getCenter().getLongitude());
-            WaterSourceReport report = model.createReport(Model.CURRENT_USER.getUsername(), l, source, quality);
+            WaterSourceReport report = model.createSourceReport(l, source, quality);
             ControllerUtils.createMessage(stage, "Submit Report", "Success",
                     "Your water source report has been added", Alert.AlertType.CONFIRMATION);
             addMarker(report);
