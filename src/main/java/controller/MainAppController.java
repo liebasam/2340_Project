@@ -74,10 +74,10 @@ public class MainAppController implements MapComponentInitializedListener {
         MarkerOptions opt = new MarkerOptions();
         Location l = report.getLocation();
         opt.position(new LatLong(l.getLatitude(), l.getLongitude()));
-        opt.title("Type of the water source: "+ report.getType().toString()
-                + "\nThe quality of water: " + report.getQuality().toString()
-                + "\nSubmitted by: " + report.getSubmitter()
-                + ", on [" + report.getSubmissionDate().toString() + "]");
+        opt.title("Water type: "+ report.getType().toString()
+                + "\nWater quality: " + report.getQuality().toString()
+                + "\nSubmitted by: " + report.getSubmitter().getUsername()
+                + " on [" + report.getSubmissionDate().toString() + "]");
         map.addMarker(new Marker(opt));
     }
     @Override
