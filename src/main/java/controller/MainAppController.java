@@ -86,9 +86,12 @@ public class MainAppController implements MapComponentInitializedListener {
     }
 
     private void initializeMap() {
+        initializeMap(new LatLong(40, 40), 9);
+    }
+    private void initializeMap(LatLong center, int zoomLevel) {
         MapOptions mapOptions = new MapOptions();
-        mapOptions.center(new LatLong(40, 40))
-                .zoom(9)
+        mapOptions.center(center)
+                .zoom(zoomLevel)
                 .streetViewControl(false)
                 .mapType(MapTypeIdEnum.TERRAIN);
     
@@ -160,6 +163,7 @@ public class MainAppController implements MapComponentInitializedListener {
             if(!username.equals(Model.CURRENT_USER.getUsername())) {
                 try {
                     model.modifyUserName(username);
+                    initializeMap(map.getCenter(), map.getZoom());
                     changes += "Username changed to " + username + "\n";
                 } catch (IllegalArgumentException e) {
                     ControllerUtils.createErrorMessage(stage, "Account Edit Error", "Username already exists");
