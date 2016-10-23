@@ -7,5 +7,5 @@ public enum AccountType implements Serializable
     User,
     Worker,
     Manager,
-    Admin
+    Admin;
 }

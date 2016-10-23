@@ -25,6 +25,8 @@ public class Model implements Serializable {
     public Set<SecurityLogEntry> getSecurityLog() {return securityLog;}
     private final Set<WaterSourceReport> waterSourceReports = new HashSet<>();
     public Set<WaterSourceReport> getWaterSourceReports() {return waterSourceReports;}
+    private final Set<QualityReport> qualityReports = new HashSet<>();
+    public Set<QualityReport> getQualityReports() {return qualityReports;}
 
     private Model() {
         //Attempt to load the model
@@ -35,10 +37,10 @@ public class Model implements Serializable {
             this.users.putAll(obj.users);
             this.securityLog.addAll(obj.securityLog);
             this.waterSourceReports.addAll(obj.waterSourceReports);
+            this.qualityReports.addAll(obj.qualityReports);
             ois.close();
             fis.close();
             System.out.println("Model loaded");
-            System.out.println(waterSourceReports.size());
         } catch (FileNotFoundException e) {
             System.out.println("Could not find serialized file");
             e.printStackTrace();
@@ -70,23 +72,65 @@ public class Model implements Serializable {
 
     /**
      * Creates a new water source report
-     * @param username Username of the submitter
      * @param location Location of submission
      * @param source Source type
      * @param quality Quality type
      * @return The newly-created water source report
      */
-    public WaterSourceReport createReport(String username, Location location, SourceType source, QualityType quality) {
+    public WaterSourceReport createSourceReport(Location location, SourceType source, QualityType quality) {
         if (CURRENT_USER == null) {
             throw new IllegalStateException("User is not logged in");
         }
-        WaterSourceReport report = new WaterSourceReport(username, location, source, quality);
+        WaterSourceReport report = new WaterSourceReport(CURRENT_USER, location, source, quality);
         waterSourceReports.add(report);
         return report;
     }
 
-    public WaterSourceReport createReport(String username, double lat, double lng, SourceType source, QualityType quality) {
-        return this.createReport(username, new Location(lat, lng), source, quality);
+    /**
+     * Creates a new water source report
+     * @param lat Latitude of submission
+     * @param lng Longitude of submission
+     * @param source Source type
+     * @param quality Quality type
+     * @return The newly-created water source report
+     */
+    public WaterSourceReport createSourceReport(double lat, double lng, SourceType source, QualityType quality) {
+        return this.createSourceReport(new Location(lat, lng), source, quality);
+    }
+
+    /**
+     * Creates a new quality report
+     * @param location Location of submission
+     * @param waterCondition Water condition
+     * @param virusPpm Virus Parts per Million
+     * @param contaminantPpm Contaminent Parts per Million
+     * @return The newly-created quality report
+     */
+    public QualityReport createQualityReport(Location location, QualityReport.WaterCondition waterCondition,
+                                             Double virusPpm, Double contaminantPpm) {
+        if (CURRENT_USER == null) {
+            throw new IllegalStateException("User is not logged in");
+        }
+        if (AccountType.Worker.compareTo(CURRENT_USER.getAccountType()) > 0) {
+            throw new IllegalStateException("Insufficient permissions");
+        }
+        QualityReport report = new QualityReport(CURRENT_USER, location, waterCondition, virusPpm, contaminantPpm);
+        qualityReports.add(report);
+        return report;
+    }
+
+    /**
+     * Creates a new quality report
+     * @param lat Latitude of submission
+     * @param lng Longitude of submission
+     * @param waterCondition Water condition
+     * @param virusPpm Virus Parts per Million
+     * @param contaminantPpm Contaminant
+     * @return The newly-created quality report
+     */
+    public QualityReport createQualityReport(double lat, double lng, QualityReport.WaterCondition waterCondition,
+                                             Double virusPpm, Double contaminantPpm) {
+        return this.createQualityReport(new Location(lat, lng), waterCondition, virusPpm, contaminantPpm);
     }
     
     /**
@@ -111,7 +155,7 @@ public class Model implements Serializable {
      * @param pw Password
      */
     public void login(String username, String pw) {
-        try {logout();} catch (IllegalStateException e) {}
+        logout();
         User user = users.get(username.toLowerCase());
         if (user == null) {
             securityLog.add(SecurityLogEntry.loginAttempt(null, SecurityLogEntry.EventStatus.INVALID_USER));
@@ -125,6 +169,10 @@ public class Model implements Serializable {
         CURRENT_USER = user;
     }
 
+    /**
+     * Sets the current user's password
+     * @param newPass The updated password
+     */
     public void setPassword(String newPass) {
         if (CURRENT_USER == null) {
             throw new IllegalStateException("User is not logged in");
@@ -135,6 +183,10 @@ public class Model implements Serializable {
         CURRENT_USER.setPassword(newPass);
     }
 
+    /**
+     * Sets the permissions of the current user
+     * @param type Account type to change to
+     */
     public void setAccountType(AccountType type) {
         if (CURRENT_USER == null) {
             throw new IllegalStateException("User is not logged in");
@@ -143,12 +195,10 @@ public class Model implements Serializable {
     }
 
     /**
-     * Logs out the current user.
+     * Logs out the current user. If no user is logged in,
+     * nothing will happen.
      */
     public void logout() {
-        if (CURRENT_USER == null) {
-            throw new IllegalStateException("User is not logged in");
-        }
         CURRENT_USER = null;
     }
 
