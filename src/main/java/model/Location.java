@@ -25,4 +25,9 @@ public class Location implements Serializable {
         Location that = (Location) o;
         return this.lat == that.lat && this.lng == that.lng;
     }
+
+    @Override
+    public int hashCode() {
+        return 3 + (int)(lat * 5) + (int)(lng * 11);
+    }
 }
