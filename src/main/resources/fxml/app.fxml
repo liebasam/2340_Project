@@ -19,13 +19,18 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainAppController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainAppController">
    <top>
        <MenuBar fx:id="AccountMenu" prefHeight="30.0" prefWidth="600.0" BorderPane.alignment="CENTER">
            <Menu mnemonicParsing="false" text="Account">
-               <MenuItem fx:id="logout" mnemonicParsing="false" onAction="#onLogoutPressed" text="Logout" />
-               <MenuItem fx:id="exit" mnemonicParsing="false" onAction="#onExitPressed" text="Exit" />
+               <MenuItem mnemonicParsing="false" onAction="#onLogoutPressed" text="Logout" />
+               <MenuItem mnemonicParsing="false" onAction="#onExitPressed" text="Exit" />
            </Menu>
+         <Menu mnemonicParsing="false" text="Map">
+           <items>
+             <MenuItem mnemonicParsing="false" onAction="#onResetPressed" text="Reset" />
+           </items>
+         </Menu>
        </MenuBar>
    </top>
    <center>

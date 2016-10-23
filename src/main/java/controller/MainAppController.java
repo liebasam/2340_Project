@@ -82,34 +82,26 @@ public class MainAppController implements MapComponentInitializedListener {
     }
     @Override
     public void mapInitialized() {
+        initializeMap();
+    }
+
+    private void initializeMap() {
+        initializeMap(new LatLong(40, 40), 9);
+    }
+    private void initializeMap(LatLong center, int zoomLevel) {
         MapOptions mapOptions = new MapOptions();
-        LatLong center = new LatLong(40, 40);
         mapOptions.center(center)
-                .zoom(9)
+                .zoom(zoomLevel)
                 .streetViewControl(false)
                 .mapType(MapTypeIdEnum.TERRAIN);
-
+    
         map = mapView.createMap(mapOptions);
         for (WaterSourceReport report : Model.getInstance().getWaterSourceReports()) {
             addMarker(report);
         }
-
-        /* TODO: This should create a new marker every time the user clicks, but if you step through
-         * it in the dubugger it seems to be interrupted midway by another handler. */
-        map.addUIEventHandler(UIEventType.click, (JSObject event) -> {
-            MarkerOptions markerOptions = new MarkerOptions();
-            LatLong pos = (LatLong) event.getMember("latlng");
-            markerOptions.position(pos)
-                    .visible(true)
-                    .title("title");
-
-            map.addMarker(new Marker(markerOptions));
-        });
-
+    
         geocodingService = new GeocodingService();
     }
-
-
 
     @FXML
     public void onAddressSearchButtonClicked(ActionEvent event) {
@@ -130,7 +122,6 @@ public class MainAppController implements MapComponentInitializedListener {
             }
 
             map.setCenter(latLong);
-
         });
     }
 
@@ -172,6 +163,7 @@ public class MainAppController implements MapComponentInitializedListener {
             if(!username.equals(Model.CURRENT_USER.getUsername())) {
                 try {
                     model.modifyUserName(username);
+                    initializeMap(map.getCenter(), map.getZoom());
                     changes += "Username changed to " + username + "\n";
                 } catch (IllegalArgumentException e) {
                     ControllerUtils.createErrorMessage(stage, "Account Edit Error", "Username already exists");
@@ -266,18 +258,10 @@ public class MainAppController implements MapComponentInitializedListener {
         return Model.getInstance().waterSourceReports;
     }
     */
+    
     /*
             ~ MENU BAR ~
      */
-    @FXML // It will call Logout/exit menu
-    private MenuBar AccountMenu;
-    @FXML
-    private MenuItem logout;
-    @FXML
-    private MenuItem exit;
-    private void menuBarInit() {
-
-    }
     @FXML
     private void onExitPressed() {
         Platform.exit();
@@ -297,5 +281,8 @@ public class MainAppController implements MapComponentInitializedListener {
         WelcomeController controller = loader.getController();
         controller.setStage(stage);
     }
-
+    @FXML
+    private void onResetPressed() {
+        initializeMap();
+    }
 }
