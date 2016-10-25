@@ -20,7 +20,7 @@
     <center>
         <TabPane accessibleRole="PARENT" prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="TOP_CENTER">
             <Tab text="Login">
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="300.0">
+                <AnchorPane minHeight="0.0" minWidth="0.0" onKeyPressed="#onLoginKeyPressed" prefHeight="200.0" prefWidth="300.0">
                     <GridPane alignment="CENTER" hgap="10" vgap="10" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="-20.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="20.0">
                         <padding><Insets bottom="40" left="35" right="40" top="50" /></padding>
                         <Text text="Welcome" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="0" />
@@ -56,7 +56,7 @@
                 </AnchorPane>
             </Tab>
             <Tab text="Register">
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200" prefWidth="300.0">
+                <AnchorPane minHeight="0.0" minWidth="0.0" onKeyPressed="#onRegisterKeyPressed" prefHeight="200" prefWidth="300.0">
                     <GridPane alignment="center" hgap="10" layoutX="-20.0" layoutY="14.0" vgap="10" AnchorPane.bottomAnchor="26.0" AnchorPane.leftAnchor="-20.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="14.0">
                         <padding><Insets bottom="40" left="35" right="40" top="50" /></padding>
                         <Text text="Welcome" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="0" />
