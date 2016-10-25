@@ -21,6 +21,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import model.AccountType;
 import model.Location;
@@ -36,10 +38,7 @@ import java.util.ResourceBundle;
 public class MainAppController implements MapComponentInitializedListener {
 
     private Stage stage;
-    public void setStage(Stage stage)
-    {
-        this.stage = stage;
-    }
+    public void setStage(Stage stage) { this.stage = stage; }
     private ResourceBundle resources;
     @FXML // URL location of the FXML file that was given to the FXMLLoader
     private URL location;
@@ -147,6 +146,13 @@ public class MainAppController implements MapComponentInitializedListener {
         editProfileInit();
     }
     @FXML
+    private void onEditProfileKeyPressed(KeyEvent event)
+    {
+        if(event.getCode() == KeyCode.ENTER) {
+            onConfirmPressed();
+        }
+    }
+    @FXML
     private void onConfirmPressed() {
         Model model = Model.getInstance();
         String username = usernameField.getText();
@@ -201,6 +207,13 @@ public class MainAppController implements MapComponentInitializedListener {
         accountTypeChoiceBox.getItems().setAll(AccountType.values());
         sourceTypeChoiceBox.getItems().setAll(SourceType.values());
         qualityTypeChoiceBox.getItems().setAll(QualityType.values());
+    }
+    @FXML
+    private void onSubmitReportKeyPressed(KeyEvent event)
+    {
+        if(event.getCode() == KeyCode.ENTER) {
+            onSubmitPressed();
+        }
     }
     @FXML
     private void onSubmitPressed() {
