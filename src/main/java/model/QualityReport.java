@@ -3,12 +3,12 @@ package model;
 import java.io.Serializable;
 import java.util.Date;
 
-class QualityReport implements Serializable {
+public class QualityReport implements Serializable {
     private static Integer LAST_REPORT_NUMBER = 0;
 
     // StringProperty is needed in order to populate the 'View Reports' table
     private final User submitter;
-    public User getSubmitterUsername() {return submitter;}
+    public User getSubmitter() {return submitter;}
 
     private final Date submissionDate;
     public Date getSubmissionDate() {return submissionDate;}
@@ -39,7 +39,7 @@ class QualityReport implements Serializable {
         this.contaminantPpm = contaminantPpm;
     }
 
-    enum WaterCondition implements Serializable {
+    public enum WaterCondition implements Serializable {
         SAFE, TREATABLE, UNSAFE;
     }
 

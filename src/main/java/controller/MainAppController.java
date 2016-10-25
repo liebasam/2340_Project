@@ -7,7 +7,6 @@ package controller;
 
 import com.lynden.gmapsfx.GoogleMapView;
 import com.lynden.gmapsfx.MapComponentInitializedListener;
-import com.lynden.gmapsfx.javascript.event.UIEventType;
 import com.lynden.gmapsfx.javascript.object.*;
 import com.lynden.gmapsfx.service.geocoding.GeocoderStatus;
 import com.lynden.gmapsfx.service.geocoding.GeocodingResult;
@@ -20,17 +19,16 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
-import model.AccountType;
-import model.Location;
-import model.Model;
-import model.WaterSourceReport;
+import model.*;
 import model.WaterSourceReport.QualityType;
 import model.WaterSourceReport.SourceType;
-import netscape.javascript.JSObject;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -75,6 +73,17 @@ public class MainAppController implements MapComponentInitializedListener {
         opt.position(new LatLong(l.getLatitude(), l.getLongitude()));
         opt.title("Water type: "+ report.getType().toString()
                 + "\nWater quality: " + report.getQuality().toString()
+                + "\nSubmitted by: " + report.getSubmitter().getUsername()
+                + " on [" + report.getSubmissionDate().toString() + "]");
+        map.addMarker(new Marker(opt));
+    }
+    private void addMarker(QualityReport report) {
+        MarkerOptions opt = new MarkerOptions();
+        Location l = report.getLocation();
+        opt.position(new LatLong(l.getLatitude(), l.getLongitude()));
+        opt.title("Water condition: "+ report.getWaterCondition().toString()
+                + "\nVirus PPM: " + report.getVirusPpm()
+                + "\nContaminant PPM: " + report.getContaminantPpm()
                 + "\nSubmitted by: " + report.getSubmitter().getUsername()
                 + " on [" + report.getSubmissionDate().toString() + "]");
         map.addMarker(new Marker(opt));
