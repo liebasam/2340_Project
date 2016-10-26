@@ -7,6 +7,7 @@ package controller;
 
 import com.lynden.gmapsfx.GoogleMapView;
 import com.lynden.gmapsfx.MapComponentInitializedListener;
+import com.lynden.gmapsfx.javascript.event.UIEventType;
 import com.lynden.gmapsfx.javascript.object.*;
 import com.lynden.gmapsfx.service.geocoding.GeocoderStatus;
 import com.lynden.gmapsfx.service.geocoding.GeocodingResult;
@@ -29,6 +30,7 @@ import javafx.stage.Stage;
 import model.*;
 import model.WaterSourceReport.QualityType;
 import model.WaterSourceReport.SourceType;
+import netscape.javascript.JSObject;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -45,6 +47,7 @@ public class MainAppController implements MapComponentInitializedListener {
         homeInit();
         editProfileInit();
         submitReportInit();
+        submitQualityReportInit();
         //viewReportInit();
     }
 
@@ -77,6 +80,19 @@ public class MainAppController implements MapComponentInitializedListener {
                 + " on [" + report.getSubmissionDate().toString() + "]");
         map.addMarker(new Marker(opt));
     }
+
+    private void addMarker(QualityReport report) {
+        MarkerOptions opt = new MarkerOptions();
+        Location l = report.getLocation();
+        opt.position(new LatLong(l.getLatitude(), l.getLongitude()));
+        opt.title("Water condition: " + report.getWaterCondition().toString()
+                + "\nVirus PPM: " + report.getVirusPpm().toString()
+                + "\nContaminant PPM: " + report.getContaminantPpm().toString()
+                + "\nSubmitted by: " + report.getSubmitterUsername().toString()
+                + " on [" + report.getSubmissionDate().toString() + "]");
+        map.addMarker(new Marker(opt));
+    }
+
     private void addMarker(QualityReport report) {
         MarkerOptions opt = new MarkerOptions();
         Location l = report.getLocation();
@@ -247,6 +263,50 @@ public class MainAppController implements MapComponentInitializedListener {
     private void onReportCancelPressed() {
         submitReportInit();
     }
+
+    /*
+            ~ SUBMIT QUALITY REPORT ~
+     */
+    @FXML
+    private ChoiceBox<QualityReport.WaterCondition> conditionTypeChoiceBox;
+    @FXML
+    private TextField virusPpmField;
+    @FXML
+    private TextField contaminantPpmField;
+
+    private void submitQualityReportInit() {
+        conditionTypeChoiceBox.getItems().setAll(QualityReport.WaterCondition.values());
+        virusPpmField.setText("");
+        contaminantPpmField.setText("");
+    }
+
+    @FXML
+    private void onSubmitQualityPressed() {
+        Model model = Model.getInstance();
+        QualityReport.WaterCondition waterCondition = conditionTypeChoiceBox.getValue();
+        Double virusPpm = Double.parseDouble(virusPpmField.getText());
+        Double contaminantPpm = Double.parseDouble(contaminantPpmField.getText());
+
+        if (waterCondition == null) {
+            ControllerUtils.createErrorMessage(stage, "Submit Report Error", "Please select a Water Condition");
+        } else if (virusPpm == null) {
+            ControllerUtils.createErrorMessage(stage, "Submit Report Error", "Please enter Virus PPM");
+        } else if (contaminantPpm == null) {
+            ControllerUtils.createErrorMessage(stage, "Submit Report Error", "Please enter Contaminant PPM");
+        } else {
+            Location l = new Location(map.getCenter().getLatitude(), map.getCenter().getLongitude());
+            QualityReport report = model.createQualityReport(l, waterCondition, virusPpm, contaminantPpm);
+            ControllerUtils.createMessage(stage, "Submit Quality Report", "Success",
+                    "Your water quality report has been added", Alert.AlertType.CONFIRMATION);
+            addMarker(report);
+        }
+    }
+
+    @FXML
+    private void onQualityReportCancelPressed() {
+        submitQualityReportInit();
+    }
+
 
     /*
             ~ VIEW REPORTS ~
