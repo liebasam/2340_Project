@@ -7,7 +7,6 @@ package controller;
 
 import com.lynden.gmapsfx.GoogleMapView;
 import com.lynden.gmapsfx.MapComponentInitializedListener;
-import com.lynden.gmapsfx.javascript.event.UIEventType;
 import com.lynden.gmapsfx.javascript.object.*;
 import com.lynden.gmapsfx.service.geocoding.GeocoderStatus;
 import com.lynden.gmapsfx.service.geocoding.GeocodingResult;
@@ -30,7 +29,6 @@ import javafx.stage.Stage;
 import model.*;
 import model.WaterSourceReport.QualityType;
 import model.WaterSourceReport.SourceType;
-import netscape.javascript.JSObject;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -85,18 +83,6 @@ public class MainAppController implements MapComponentInitializedListener {
         MarkerOptions opt = new MarkerOptions();
         Location l = report.getLocation();
         opt.position(new LatLong(l.getLatitude(), l.getLongitude()));
-        opt.title("Water condition: " + report.getWaterCondition().toString()
-                + "\nVirus PPM: " + report.getVirusPpm().toString()
-                + "\nContaminant PPM: " + report.getContaminantPpm().toString()
-                + "\nSubmitted by: " + report.getSubmitterUsername().toString()
-                + " on [" + report.getSubmissionDate().toString() + "]");
-        map.addMarker(new Marker(opt));
-    }
-
-    private void addMarker(QualityReport report) {
-        MarkerOptions opt = new MarkerOptions();
-        Location l = report.getLocation();
-        opt.position(new LatLong(l.getLatitude(), l.getLongitude()));
         opt.title("Water condition: "+ report.getWaterCondition().toString()
                 + "\nVirus PPM: " + report.getVirusPpm()
                 + "\nContaminant PPM: " + report.getContaminantPpm()
@@ -121,6 +107,9 @@ public class MainAppController implements MapComponentInitializedListener {
     
         map = mapView.createMap(mapOptions);
         for (WaterSourceReport report : Model.getInstance().getWaterSourceReports()) {
+            addMarker(report);
+        }
+        for (QualityReport report : Model.getInstance().getQualityReports()) {
             addMarker(report);
         }
     
@@ -284,8 +273,15 @@ public class MainAppController implements MapComponentInitializedListener {
     private void onSubmitQualityPressed() {
         Model model = Model.getInstance();
         QualityReport.WaterCondition waterCondition = conditionTypeChoiceBox.getValue();
-        Double virusPpm = Double.parseDouble(virusPpmField.getText());
-        Double contaminantPpm = Double.parseDouble(contaminantPpmField.getText());
+        Double virusPpm, contaminantPpm;
+        try {
+            virusPpm = Double.parseDouble(virusPpmField.getText());
+            contaminantPpm = Double.parseDouble(contaminantPpmField.getText());
+        } catch (NumberFormatException e) {
+            ControllerUtils.createErrorMessage(stage, "Submit Report Error", "Please enter a valid number");
+            return;
+        }
+
 
         if (waterCondition == null) {
             ControllerUtils.createErrorMessage(stage, "Submit Report Error", "Please select a Water Condition");
@@ -294,11 +290,15 @@ public class MainAppController implements MapComponentInitializedListener {
         } else if (contaminantPpm == null) {
             ControllerUtils.createErrorMessage(stage, "Submit Report Error", "Please enter Contaminant PPM");
         } else {
-            Location l = new Location(map.getCenter().getLatitude(), map.getCenter().getLongitude());
-            QualityReport report = model.createQualityReport(l, waterCondition, virusPpm, contaminantPpm);
-            ControllerUtils.createMessage(stage, "Submit Quality Report", "Success",
-                    "Your water quality report has been added", Alert.AlertType.CONFIRMATION);
-            addMarker(report);
+            try {
+                Location l = new Location(map.getCenter().getLatitude(), map.getCenter().getLongitude());
+                QualityReport report = model.createQualityReport(l, waterCondition, virusPpm, contaminantPpm);
+                ControllerUtils.createMessage(stage, "Submit Quality Report", "Success",
+                        "Your water quality report has been added", Alert.AlertType.CONFIRMATION);
+                addMarker(report);
+            } catch (IllegalStateException e) {
+                ControllerUtils.createErrorMessage(stage, "Submit Report Error", "Illegal Permissions");
+            }
         }
     }
 
