@@ -127,21 +127,15 @@ public class MainAppController implements MapComponentInitializedListener {
 
 
             if( status == GeocoderStatus.ZERO_RESULTS) {
-                //searchList.clear();
                 Alert alert = new Alert(Alert.AlertType.ERROR, "No locations matches with your search.");
                 alert.show();
                 return;
             } else if( results.length > 1 ) {
-//                searchList.addAll(results);
                 searchList.clear();
                 for (GeocodingResult result : results) {
                     searchList.add(result.getFormattedAddress());
                 }
-//                addressTextField.setItems(searchList);
                 addressTextField.show();
-//                Alert alert = new Alert(Alert.AlertType.WARNING, "Showing best result.\nAdd more specific keywords next time.");
-//                alert.show();
-//                GeocodingResult fin = addressTextField.getSelectionModel().getSelectedItem();
                 addressTextField.getSelectionModel().select(0);
                 latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
             } else {
