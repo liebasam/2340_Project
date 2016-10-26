@@ -51,7 +51,7 @@
           </Tab>
           <Tab text="Edit Profile">
             <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              <AnchorPane minHeight="0.0" minWidth="0.0" onKeyPressed="#onEditProfileKeyPressed" prefHeight="180.0" prefWidth="200.0">
                      <children>
                         <GridPane alignment="center" hgap="10" layoutY="61.0" prefHeight="179.0" prefWidth="252.0" vgap="10" AnchorPane.leftAnchor="50" AnchorPane.topAnchor="61.0">
                           <columnConstraints>
@@ -94,7 +94,7 @@
           </Tab>
             <Tab text="Submit Report">
                 <content>
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                    <AnchorPane minHeight="0.0" minWidth="0.0" onKeyPressed="#onSubmitReportKeyPressed" prefHeight="180.0" prefWidth="200.0">
                         <children>
                             <GridPane alignment="center" hgap="10" layoutY="61.0" prefHeight="179.0" prefWidth="252.0" vgap="10" AnchorPane.leftAnchor="50" AnchorPane.topAnchor="61.0">
                                 <columnConstraints>

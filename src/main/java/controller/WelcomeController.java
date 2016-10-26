@@ -7,6 +7,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import model.AccountType;
@@ -49,6 +51,13 @@ public class WelcomeController
     }
     
     @FXML
+    private void onLoginKeyPressed(KeyEvent event)
+    {
+        if (event.getCode() == KeyCode.ENTER) {
+            onSignInPressed();
+        }
+    }
+    @FXML
     private void onSignInPressed()
     {
         String username = usernameField.getText();
@@ -60,7 +69,14 @@ public class WelcomeController
             ControllerUtils.createErrorMessage(stage, "Login Error", "Invalid user/pass");
         }
     }
-
+    
+    @FXML
+    private void onRegisterKeyPressed(KeyEvent event)
+    {
+        if (event.getCode() == KeyCode.ENTER) {
+            onRegisterPressed();
+        }
+    }
     @FXML
     public void onRegisterPressed() {
         String username = regUsernameField.getText();

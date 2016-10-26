@@ -8,7 +8,7 @@ public class QualityReport implements Serializable {
 
     // StringProperty is needed in order to populate the 'View Reports' table
     private final User submitter;
-    public User getSubmitterUsername() {return submitter;}
+    public User getSubmitter() {return submitter;}
 
     private final Date submissionDate;
     public Date getSubmissionDate() {return submissionDate;}
