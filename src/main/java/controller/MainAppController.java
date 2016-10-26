@@ -14,15 +14,14 @@ import com.lynden.gmapsfx.service.geocoding.GeocodingService;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
@@ -55,8 +54,10 @@ public class MainAppController implements MapComponentInitializedListener {
     private GeocodingService geocodingService;
 
 
+    private ObservableList<String> searchList = FXCollections.observableArrayList();
+
     @FXML
-    private TextField addressTextField;
+    private ComboBox<String> addressTextField;
 
     StringProperty address = new SimpleStringProperty();
 
@@ -66,7 +67,8 @@ public class MainAppController implements MapComponentInitializedListener {
     @FXML // ResourceBundle that was given to the FXMLLoader
     private void homeInit() {
         mapView.addMapInializedListener(this);
-        address.bind(addressTextField.textProperty());
+        addressTextField.setItems(searchList);
+        address.bind(addressTextField.getEditor().textProperty());
     }
     private void addMarker(WaterSourceReport report) {
         MarkerOptions opt = new MarkerOptions();
@@ -127,10 +129,17 @@ public class MainAppController implements MapComponentInitializedListener {
                 alert.show();
                 return;
             } else if( results.length > 1 ) {
-                Alert alert = new Alert(Alert.AlertType.WARNING, "Showing best result.\nAdd more specific keywords next time.");
-                alert.show();
+                searchList.clear();
+                for (GeocodingResult result : results) {
+                    searchList.add(result.getFormattedAddress());
+                }
+                addressTextField.show();
+                addressTextField.getSelectionModel().select(0);
                 latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
             } else {
+                searchList.clear();
+                searchList.add(results[0].getFormattedAddress());
+                addressTextField.getSelectionModel().select(0);
                 latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
             }
 
