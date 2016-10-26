@@ -19,7 +19,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.102-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainAppController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainAppController">
    <top>
        <MenuBar fx:id="AccountMenu" prefHeight="30.0" prefWidth="600.0" BorderPane.alignment="CENTER">
            <Menu mnemonicParsing="false" text="Account">
@@ -42,7 +42,7 @@
                      <children>
                         <GoogleMapView fx:id="mapView" layoutY="38.0" prefHeight="285.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="38.0" />
                         <Button layoutX="478.0" layoutY="1.0" mnemonicParsing="false" onAction="#onAddressSearchButtonClicked" prefHeight="35.0" prefWidth="116.0" text="Search" AnchorPane.rightAnchor="6.0" />
-                        <ComboBox fx:id="addressTextField" editable="true" layoutX="7.0" layoutY="1.0" prefHeight="35.0" prefWidth="468.0" />
+                        <ComboBox fx:id="addressTextField" editable="true" layoutX="7.0" layoutY="1.0" prefHeight="35.0" prefWidth="468.0" AnchorPane.leftAnchor="7.0" AnchorPane.rightAnchor="125.0" />
                      </children></AnchorPane>
             </content>
           </Tab>
