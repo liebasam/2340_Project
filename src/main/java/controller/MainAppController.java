@@ -358,6 +358,16 @@ public class MainAppController implements MapComponentInitializedListener {
         colUser.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("Submitter"));
         //colReportID.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("reportNumber"));
         SourceHistoryTable.getColumns().setAll(colUser, colDate, colLocation, colSource, colQuality);
+        SourceHistoryTable.setRowFactory( tv -> {
+            TableRow<WaterSourceReport> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
+                    WaterSourceReport rowData = row.getItem();
+                    System.out.println("This is " + rowData.getLocation().toString());
+                }
+            });
+            return row ;
+        });
     }
     private ObservableList<WaterSourceReport> getWaterSourceReports() {
         return FXCollections.observableArrayList(Model.getInstance().getWaterSourceReports());
