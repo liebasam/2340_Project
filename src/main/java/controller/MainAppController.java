@@ -7,6 +7,7 @@ package controller;
 
 import com.lynden.gmapsfx.GoogleMapView;
 import com.lynden.gmapsfx.MapComponentInitializedListener;
+import com.lynden.gmapsfx.javascript.event.UIEventType;
 import com.lynden.gmapsfx.javascript.object.*;
 import com.lynden.gmapsfx.service.geocoding.GeocoderStatus;
 import com.lynden.gmapsfx.service.geocoding.GeocodingResult;
@@ -29,6 +30,7 @@ import javafx.stage.Stage;
 import model.*;
 import model.WaterSourceReport.QualityType;
 import model.WaterSourceReport.SourceType;
+import netscape.javascript.JSObject;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -86,9 +88,24 @@ public class MainAppController implements MapComponentInitializedListener {
         infoWindowOptions.content("<h2>" + report.getType().toString() + "</h2>"
                 + "Location: " + l.toString() + "<br>");
 //        infoWindowOptions.disableAutoPan(true);
+        map.addUIEventHandler(newMark,
+                UIEventType.click,
+                (JSObject obj) -> {
+                    //InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
+                    //infoWindowOptions.content(l.getDescription());
+                    Alert reportEdit = new Alert(Alert.AlertType.CONFIRMATION, "Would you like to edit this source report?",
+                            new ButtonType("Edit"),
+                            new ButtonType("Add a new report at this location"),
+                            new ButtonType("Delete"),
+                            new ButtonType("Cancel", ButtonBar.ButtonData.BACK_PREVIOUS));
+                    reportEdit.show();
 
-        InfoWindow infoWindow = new InfoWindow(infoWindowOptions);
-        infoWindow.open(map, newMark);
+                    InfoWindow window = new InfoWindow(infoWindowOptions);
+                    window.open(map, newMark);
+                });
+
+        //InfoWindow infoWindow = new InfoWindow(infoWindowOptions);
+        //infoWindow.open(map, newMark);
 
         map.addMarker(newMark);
     }
@@ -102,7 +119,24 @@ public class MainAppController implements MapComponentInitializedListener {
                 + "\nContaminant PPM: " + report.getContaminantPpm()
                 + "\nSubmitted by: " + report.getSubmitter().getUsername()
                 + " on [" + report.getSubmissionDate().toString() + "]");
-        map.addMarker(new Marker(opt));
+        Marker newMark = new Marker(opt);
+        map.addUIEventHandler(newMark,
+                UIEventType.click,
+                (JSObject obj) -> {
+                    //InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
+                    //infoWindowOptions.content(l.getDescription());
+                    Alert reportEdit = new Alert(Alert.AlertType.CONFIRMATION, "Would you like to edit this quality report?",
+                            new ButtonType("Edit"),
+                            new ButtonType("Add a new report at this location"),
+                            new ButtonType("Delete"),
+                            new ButtonType("Cancel", ButtonBar.ButtonData.BACK_PREVIOUS));
+                    reportEdit.show();
+
+//                    InfoWindow window = new InfoWindow(infoWindowOptions);
+//                    window.open(map, newMark);
+                });
+
+        map.addMarker(newMark);
     }
     @Override
     public void mapInitialized() {
