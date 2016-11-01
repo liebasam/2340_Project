@@ -24,6 +24,9 @@ public class User implements Serializable {
     public AccountType getAccountType() {return accountType;}
     void setAccountType(AccountType newAccountType) {accountType = newAccountType;}
 
+    @Override
+    public String toString() { return getUsername(); }
+
     /**
      * make a new user
      */
