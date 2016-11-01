@@ -11,6 +11,8 @@
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
@@ -170,6 +172,41 @@
                             </GridPane>
                         </children></AnchorPane>
                 </content>
+            </Tab>
+            <Tab text="Source History">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="SourceHistoryTable" layoutX="14.0" layoutY="14.0" prefHeight="313.0" prefWidth="578.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="14.0">
+                          <columns>
+                            <TableColumn fx:id="colLocation" prefWidth="129.0" text="Location" />
+                            <TableColumn fx:id="colSource" prefWidth="117.0" text="Type" />
+                              <TableColumn fx:id="colQuality" prefWidth="142.0" text="Quality" />
+                              <TableColumn fx:id="colDate" prefWidth="112.0" text="Date" />
+                              <TableColumn fx:id="colUser" prefWidth="75.0" text="User" />
+                          </columns>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+            <Tab text="Quality History">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="QualityHistoryTable" layoutX="11.0" layoutY="12.0" prefHeight="313.0" prefWidth="579.0" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="11.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="12.0">
+                           <columns>
+                              <TableColumn fx:id="qColLocation" prefWidth="82.0" text="Location" />
+                              <TableColumn fx:id="qColWaterCon" prefWidth="148.0" text="Water Condition" />
+                              <TableColumn fx:id="qColVirPpm" prefWidth="103.0" text="Virus PPM" />
+                              <TableColumn fx:id="qColContPpm" prefWidth="103.0" text="Contaminant PPM" />
+                              <TableColumn fx:id="qColDate" prefWidth="62.0" text="Date" />
+                              <TableColumn fx:id="qColUser" prefWidth="77.0" text="User" />
+                           </columns>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+              </content>
             </Tab>
         </tabs>
       </TabPane>

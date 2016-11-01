@@ -22,6 +22,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
@@ -45,7 +46,8 @@ public class MainAppController implements MapComponentInitializedListener {
         editProfileInit();
         submitReportInit();
         submitQualityReportInit();
-        //viewReportInit();
+        viewReportInit();
+        viewQReportInit();
     }
 
     /*
@@ -78,7 +80,17 @@ public class MainAppController implements MapComponentInitializedListener {
                 + "\nWater quality: " + report.getQuality().toString()
                 + "\nSubmitted by: " + report.getSubmitter().getUsername()
                 + " on [" + report.getSubmissionDate().toString() + "]");
-        map.addMarker(new Marker(opt));
+
+        Marker newMark = new Marker(opt);
+        InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
+        infoWindowOptions.content("<h2>" + report.getType().toString() + "</h2>"
+                + "Location: " + l.toString() + "<br>");
+//        infoWindowOptions.disableAutoPan(true);
+
+        InfoWindow infoWindow = new InfoWindow(infoWindowOptions);
+        infoWindow.open(map, newMark);
+
+        map.addMarker(newMark);
     }
 
     private void addMarker(QualityReport report) {
@@ -251,6 +263,7 @@ public class MainAppController implements MapComponentInitializedListener {
         } else {
             Location l = new Location(map.getCenter().getLatitude(), map.getCenter().getLongitude());
             WaterSourceReport report = model.createSourceReport(l, source, quality);
+            viewReportInit();
             ControllerUtils.createMessage(stage, "Submit Report", "Success",
                     "Your water source report has been added", Alert.AlertType.CONFIRMATION);
             addMarker(report);
@@ -302,6 +315,7 @@ public class MainAppController implements MapComponentInitializedListener {
             try {
                 Location l = new Location(map.getCenter().getLatitude(), map.getCenter().getLongitude());
                 QualityReport report = model.createQualityReport(l, waterCondition, virusPpm, contaminantPpm);
+                viewQReportInit();
                 ControllerUtils.createMessage(stage, "Submit Quality Report", "Success",
                         "Your water quality report has been added", Alert.AlertType.CONFIRMATION);
                 addMarker(report);
@@ -320,9 +334,9 @@ public class MainAppController implements MapComponentInitializedListener {
     /*
             ~ VIEW REPORTS ~
      */
-    /*
+
     @FXML
-    private TableView<WaterSourceReport> ReportsTable;
+    private TableView<WaterSourceReport> SourceHistoryTable;
     @FXML
     private TableColumn<WaterSourceReport, String> colLocation;
     @FXML
@@ -334,21 +348,57 @@ public class MainAppController implements MapComponentInitializedListener {
     @FXML
     private TableColumn<WaterSourceReport, String> colUser;
     @FXML
-    private TableColumn<WaterSourceReport, String> colReportID;
+//    private TableColumn<WaterSourceReport, String> colReportID;
     private void viewReportInit() {
-        ReportsTable.setItems(getWaterSourceReports());
-        colLocation.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("location"));
-        colQuality.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("quality"));
-        colSource.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("type"));
+        SourceHistoryTable.setItems(getWaterSourceReports());
+        colLocation.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("Location"));
+        colQuality.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("Quality"));
+        colSource.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("Type"));
         colDate.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("SubmissionDate"));
-        colUser.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("SubmitterUsername"));
+        colUser.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("Submitter"));
         //colReportID.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("reportNumber"));
-        ReportsTable.getColumns().setAll(colUser, colDate, colLocation, colSource, colQuality);
+        SourceHistoryTable.getColumns().setAll(colUser, colDate, colLocation, colSource, colQuality);
     }
     private ObservableList<WaterSourceReport> getWaterSourceReports() {
-        return Model.getInstance().waterSourceReports;
+        return FXCollections.observableArrayList(Model.getInstance().getWaterSourceReports());
     }
-    */
+
+
+    /*
+            ~ VIEW QUALITY REPORTS ~
+     */
+
+    @FXML
+    private TableView<QualityReport> QualityHistoryTable;
+    @FXML
+    private TableColumn<QualityReport, String> qColLocation;
+    @FXML
+    private TableColumn<QualityReport, String> qColVirPpm;
+    @FXML
+    private TableColumn<QualityReport, String> qColContPpm;
+    @FXML
+    private TableColumn<QualityReport, String> qColWaterCon;
+    @FXML
+    private TableColumn<QualityReport, String> qColDate;
+    @FXML
+    private TableColumn<QualityReport, String> qColUser;
+    @FXML
+//    private TableColumn<WaterSourceReport, String> colReportID;
+    private void viewQReportInit() {
+        QualityHistoryTable.setItems(getQualityReports());
+        qColLocation.setCellValueFactory(new PropertyValueFactory<QualityReport, String>("Location"));
+        qColWaterCon.setCellValueFactory(new PropertyValueFactory<QualityReport, String>("WaterCondition"));
+        qColVirPpm.setCellValueFactory(new PropertyValueFactory<QualityReport, String>("VirusPpm"));
+        qColContPpm.setCellValueFactory(new PropertyValueFactory<QualityReport, String>("ContaminantPpm"));
+        qColDate.setCellValueFactory(new PropertyValueFactory<QualityReport, String>("SubmissionDate"));
+        qColUser.setCellValueFactory(new PropertyValueFactory<QualityReport, String>("Submitter"));
+        //colReportID.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("reportNumber"));
+        QualityHistoryTable.getColumns().setAll(qColUser, qColDate, qColLocation, qColWaterCon, qColVirPpm, qColContPpm);
+    }
+    private ObservableList<QualityReport> getQualityReports() {
+        return FXCollections.observableArrayList(Model.getInstance().getQualityReports());
+    }
+
     
     /*
             ~ MENU BAR ~
