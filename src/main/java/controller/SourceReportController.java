@@ -48,7 +48,7 @@ public class SourceReportController extends Controller
         } else {
             model.createSourceReport(reportLocation, source, quality);
             Alert message = ControllerUtils.createMessage(stage, "Submit Report", "Success",
-                    "Your water source report has been added", Alert.AlertType.CONFIRMATION);
+                    "Your water source report has been added", Alert.AlertType.INFORMATION);
             message.setOnCloseRequest(event -> stage.close());
         }
     }

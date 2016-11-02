@@ -129,6 +129,7 @@ public class WelcomeController extends Controller
 
             Scene openScene = new Scene(page);
             stage.setScene(openScene);
+            stage.setTitle("Clean Water Finder");
             stage.show();
 
             MainAppController mainAppCon = loader.getController();
