@@ -22,6 +22,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
@@ -263,6 +266,7 @@ public class MainAppController implements MapComponentInitializedListener {
 
             ControllerUtils.createMessage(stage, "Account Edit", "Successfully edited account", changes, Alert.AlertType.INFORMATION);
         }
+        clearQualityGraph();
     }
 
     /*
@@ -469,5 +473,52 @@ public class MainAppController implements MapComponentInitializedListener {
     @FXML
     private void onResetPressed() {
         initializeMap();
+    }
+
+    // View Quality Graph //
+
+    @FXML
+    private void onViewQualityGraphPressed() {
+        if (Model.getInstance().CURRENT_USER.getAccountType() == AccountType.Manager) {
+            QualityGraphInit();
+            tabPane.getSelectionModel().select(qualityGraphTab);
+        } else {
+            ControllerUtils.createErrorMessage(stage, "View Quality Graph Error", "Illegal Permissions");
+        }
+    }
+
+    @FXML
+    private TabPane tabPane;
+    @FXML
+    private Tab qualityGraphTab;
+    @FXML
+    private LineChart<String, Double> qualityGraph;
+
+    @FXML
+    private void QualityGraphInit() {
+        Location myLocation = new Location(map.getCenter().getLatitude(), map.getCenter().getLongitude());
+
+        clearQualityGraph();
+        LineChart.Series<String, Double> virusPpmSeries = new LineChart.Series<String, Double>();
+        virusPpmSeries.setName("Virus PPM");
+        LineChart.Series<String, Double> contaminantPpmSeries = new LineChart.Series<String, Double>();
+        contaminantPpmSeries.setName("Contaminant PPM");
+
+        for (QualityReport report : Model.getInstance().getQualityReports()) {
+            if (myLocation.equals(report.getLocation())) {
+                String date = report.getSubmissionDate().toString().substring(4, 16)
+                        + " " + report.getSubmissionDate().toString().substring(24, 28);
+                Double virusPpm = report.getVirusPpm();
+                Double contaminantPpm = report.getContaminantPpm();
+
+                virusPpmSeries.getData().add(new LineChart.Data<>(date, virusPpm));
+                contaminantPpmSeries.getData().add(new LineChart.Data<>(date, contaminantPpm));
+            }
+        }
+        qualityGraph.getData().addAll(virusPpmSeries, contaminantPpmSeries);
+    }
+
+    private void clearQualityGraph() {
+        qualityGraph.getData().clear();
     }
 }
