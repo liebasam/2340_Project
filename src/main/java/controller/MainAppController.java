@@ -24,25 +24,24 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.*;
 import model.WaterSourceReport.QualityType;
 import model.WaterSourceReport.SourceType;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class MainAppController implements MapComponentInitializedListener {
-
-    private Stage stage;
-    public void setStage(Stage stage) { this.stage = stage; }
+public class MainAppController extends Controller implements MapComponentInitializedListener
+{
     private ResourceBundle resources;
     @FXML // URL location of the FXML file that was given to the FXMLLoader
     private URL location;
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
         homeInit();
-        editProfileInit();
         submitReportInit();
         submitQualityReportInit();
         //viewReportInit();
@@ -52,7 +51,6 @@ public class MainAppController implements MapComponentInitializedListener {
             ~ HOME ~
      */
     private GeocodingService geocodingService;
-
 
     private ObservableList<String> searchList = FXCollections.observableArrayList();
 
@@ -148,78 +146,6 @@ public class MainAppController implements MapComponentInitializedListener {
     }
 
     /*
-            ~ EDIT PROFILE ~
-     */
-    @FXML
-    private TextField usernameField;
-    @FXML
-    private PasswordField passwordField;
-    @FXML
-    private PasswordField passwordConfirmField;
-    @FXML
-    private ChoiceBox<AccountType> accountTypeChoiceBox;
-    private void editProfileInit() {
-        usernameField.setText(Model.CURRENT_USER.getUsername());
-        passwordField.setText(Model.CURRENT_USER.getPassword());
-        passwordConfirmField.setText(Model.CURRENT_USER.getPassword());
-        accountTypeChoiceBox.setValue(Model.CURRENT_USER.getAccountType());
-    }
-    @FXML
-    private void onCancelPressed() {
-        editProfileInit();
-    }
-    @FXML
-    private void onEditProfileKeyPressed(KeyEvent event)
-    {
-        if(event.getCode() == KeyCode.ENTER) {
-            onConfirmPressed();
-        }
-    }
-    @FXML
-    private void onConfirmPressed() {
-        Model model = Model.getInstance();
-        String username = usernameField.getText();
-        String password = passwordField.getText();
-        String confPass = passwordConfirmField.getText();
-        AccountType accountType = accountTypeChoiceBox.getValue();
-
-        if(ControllerUtils.isEmpty(username, password, confPass)) {
-            ControllerUtils.createErrorMessage(stage, "Account Edit Error", "One or more fields are empty");
-        } else if (!password.equals(confPass)) {
-            ControllerUtils.createErrorMessage(stage, "Account Edit Error", "Passwords do not match");
-        } else {
-            String changes = "";
-            if(!username.equals(Model.CURRENT_USER.getUsername())) {
-                try {
-                    model.modifyUserName(username);
-                    initializeMap(map.getCenter(), map.getZoom());
-                    changes += "Username changed to " + username + "\n";
-                } catch (IllegalArgumentException e) {
-                    ControllerUtils.createErrorMessage(stage, "Account Edit Error", "Username already exists");
-                }
-            }
-            if(!password.equals(Model.CURRENT_USER.getPassword())) {
-                try {
-                    model.setPassword(password);
-                    changes += "Password changed\n";
-                } catch (IllegalArgumentException e) {
-                    ControllerUtils.createErrorMessage(stage, "Account Edit Error", "New password is invalid");
-                }
-            }
-            if(!accountType.equals(Model.CURRENT_USER.getAccountType())) {
-                model.setAccountType(accountType);
-                changes += "Account type changed to " + accountType.toString().toLowerCase();
-
-            }
-            if(changes.equals("")) {
-                changes = "No changes made";
-            }
-
-            ControllerUtils.createMessage(stage, "Account Edit", "Successfully edited account", changes, Alert.AlertType.INFORMATION);
-        }
-    }
-
-    /*
             ~ SUBMIT REPORT ~
      */
     @FXML
@@ -227,7 +153,6 @@ public class MainAppController implements MapComponentInitializedListener {
     @FXML
     private ChoiceBox<QualityType> qualityTypeChoiceBox;
     private void submitReportInit() {
-        accountTypeChoiceBox.getItems().setAll(AccountType.values());
         sourceTypeChoiceBox.getItems().setAll(SourceType.values());
         qualityTypeChoiceBox.getItems().setAll(QualityType.values());
     }
@@ -354,6 +279,10 @@ public class MainAppController implements MapComponentInitializedListener {
             ~ MENU BAR ~
      */
     @FXML
+    private void onEditPressed() {
+        showModalWindow("/fxml/editUser.fxml", "Edit Account");
+    }
+    @FXML
     private void onExitPressed() {
         Platform.exit();
         System.exit(0);
@@ -372,8 +301,37 @@ public class MainAppController implements MapComponentInitializedListener {
         WelcomeController controller = loader.getController();
         controller.setStage(stage);
     }
+    
     @FXML
-    private void onResetPressed() {
-        initializeMap();
+    private void onAddSourceReportPressed() {
+        showModalWindow("/fxml/sourceReport.fxml", "Add Source Report");
+    }
+    @FXML
+    private void onAddQualityReportPressed() {
+        //TODO: check if user is at least a worker
+        showModalWindow("/fxml/qualityReport.fxml", "Add Quality Report");
+    }
+    @FXML
+    private void onResetPressed() { initializeMap(); }
+    
+    private void showModalWindow(String path, String title) {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource(path));
+            Parent root = loader.load();
+            Stage newStage = new Stage();
+    
+            newStage.setTitle(title);
+            newStage.setOnHiding(event -> initializeMap(map.getCenter(), map.getZoom()));
+            newStage.setScene(new Scene(root, 400, 275));
+            newStage.initModality(Modality.WINDOW_MODAL);
+            newStage.initOwner(stage.getScene().getWindow());
+            newStage.show();
+        
+            Controller controller = loader.getController();
+            controller.setStage(newStage);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
