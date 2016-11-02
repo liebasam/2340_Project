@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="240.0" prefWidth="430.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.QualityReportController">
-    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+    <AnchorPane minHeight="0.0" minWidth="0.0" onKeyPressed="#onKeyPressed" prefHeight="180.0" prefWidth="200.0">
         <children>
             <GridPane alignment="center" hgap="10" layoutY="62.0" prefHeight="244.0" prefWidth="303.0" vgap="10" AnchorPane.leftAnchor="50" AnchorPane.topAnchor="62.0">
                 <columnConstraints>

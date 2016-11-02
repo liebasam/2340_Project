@@ -4,6 +4,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import model.Location;
 import model.Model;
 import model.QualityReport;
@@ -26,6 +28,13 @@ public class QualityReportController extends Controller
         conditionTypeChoiceBox.getItems().setAll(QualityReport.WaterCondition.values());
         virusPpmField.setText("");
         contaminantPpmField.setText("");
+    }
+    
+    @FXML
+    private void onKeyPressed(KeyEvent event) {
+        if(event.getCode() == KeyCode.ENTER) {
+            onSubmitPressed();
+        }
     }
     
     @FXML

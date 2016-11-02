@@ -85,7 +85,7 @@ public class MainAppController extends Controller implements MapComponentInitial
         InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
         infoWindowOptions.content("<h2>" + report.getType().toString() + "</h2>"
                 + "Location: " + l.toString() + "<br>");
-//        infoWindowOptions.disableAutoPan(true);
+        //infoWindowOptions.disableAutoPan(true);
         map.addUIEventHandler(newMark,
                 UIEventType.click,
                 (JSObject obj) -> {
@@ -192,183 +192,11 @@ public class MainAppController extends Controller implements MapComponentInitial
             map.setCenter(latLong);
         });
     }
+
     
-    /*
-            ~ EDIT PROFILE ~
-     */
-    @FXML
-    private TextField usernameField;
-    @FXML
-    private PasswordField passwordField;
-    @FXML
-    private PasswordField passwordConfirmField;
-    @FXML
-    private ChoiceBox<AccountType> accountTypeChoiceBox;
-    private void editProfileInit() {
-        usernameField.setText(Model.CURRENT_USER.getUsername());
-        passwordField.setText(Model.CURRENT_USER.getPassword());
-        passwordConfirmField.setText(Model.CURRENT_USER.getPassword());
-        accountTypeChoiceBox.setValue(Model.CURRENT_USER.getAccountType());
-    }
-    @FXML
-    private void onCancelPressed() {
-        editProfileInit();
-    }
-    @FXML
-    private void onEditProfileKeyPressed(KeyEvent event)
-    {
-        if(event.getCode() == KeyCode.ENTER) {
-            onConfirmPressed();
-        }
-    }
-    @FXML
-    private void onConfirmPressed() {
-        Model model = Model.getInstance();
-        String username = usernameField.getText();
-        String password = passwordField.getText();
-        String confPass = passwordConfirmField.getText();
-        AccountType accountType = accountTypeChoiceBox.getValue();
-
-        if(ControllerUtils.isEmpty(username, password, confPass)) {
-            ControllerUtils.createErrorMessage(stage, "Account Edit Error", "One or more fields are empty");
-        } else if (!password.equals(confPass)) {
-            ControllerUtils.createErrorMessage(stage, "Account Edit Error", "Passwords do not match");
-        } else {
-            String changes = "";
-            if(!username.equals(Model.CURRENT_USER.getUsername())) {
-                try {
-                    model.modifyUserName(username);
-                    initializeMap(map.getCenter(), map.getZoom());
-                    changes += "Username changed to " + username + "\n";
-                } catch (IllegalArgumentException e) {
-                    ControllerUtils.createErrorMessage(stage, "Account Edit Error", "Username already exists");
-                }
-            }
-            if(!password.equals(Model.CURRENT_USER.getPassword())) {
-                try {
-                    model.setPassword(password);
-                    changes += "Password changed\n";
-                } catch (IllegalArgumentException e) {
-                    ControllerUtils.createErrorMessage(stage, "Account Edit Error", "New password is invalid");
-                }
-            }
-            if(!accountType.equals(Model.CURRENT_USER.getAccountType())) {
-                model.setAccountType(accountType);
-                changes += "Account type changed to " + accountType.toString().toLowerCase();
-
-            }
-            if(changes.equals("")) {
-                changes = "No changes made";
-            }
-
-            ControllerUtils.createMessage(stage, "Account Edit", "Successfully edited account", changes, Alert.AlertType.INFORMATION);
-        }
-    }
-
-    /*
-            ~ SUBMIT REPORT ~
-     */
-    @FXML
-    private ChoiceBox<SourceType> sourceTypeChoiceBox;
-    @FXML
-    private ChoiceBox<QualityType> qualityTypeChoiceBox;
-    private void submitReportInit() {
-        accountTypeChoiceBox.getItems().setAll(AccountType.values());
-        sourceTypeChoiceBox.getItems().setAll(SourceType.values());
-        qualityTypeChoiceBox.getItems().setAll(QualityType.values());
-    }
-    @FXML
-    private void onSubmitReportKeyPressed(KeyEvent event)
-    {
-        if(event.getCode() == KeyCode.ENTER) {
-            onSubmitPressed();
-        }
-    }
-    @FXML
-    private void onSubmitPressed() {
-        Model model = Model.getInstance();
-        SourceType source = sourceTypeChoiceBox.getValue();
-        QualityType quality = qualityTypeChoiceBox.getValue();
-
-        if(source == null) {
-            ControllerUtils.createErrorMessage(stage, "Submit Report Error", "Please select a source type");
-        } else if(quality == null) {
-            ControllerUtils.createErrorMessage(stage, "Submit Report Error", "Please select a quality type");
-        } else {
-            Location l = new Location(map.getCenter().getLatitude(), map.getCenter().getLongitude());
-            WaterSourceReport report = model.createSourceReport(l, source, quality);
-            viewReportInit();
-            ControllerUtils.createMessage(stage, "Submit Report", "Success",
-                    "Your water source report has been added", Alert.AlertType.CONFIRMATION);
-            addMarker(report);
-        }
-    }
-
-    @FXML
-    private void onReportCancelPressed() {
-        submitReportInit();
-    }
-
-    /*
-            ~ SUBMIT QUALITY REPORT ~
-     */
-    @FXML
-    private ChoiceBox<QualityReport.WaterCondition> conditionTypeChoiceBox;
-    @FXML
-    private TextField virusPpmField;
-    @FXML
-    private TextField contaminantPpmField;
-
-    private void submitQualityReportInit() {
-        conditionTypeChoiceBox.getItems().setAll(QualityReport.WaterCondition.values());
-        virusPpmField.setText("");
-        contaminantPpmField.setText("");
-    }
-
-    @FXML
-    private void onSubmitQualityPressed() {
-        Model model = Model.getInstance();
-        QualityReport.WaterCondition waterCondition = conditionTypeChoiceBox.getValue();
-        Double virusPpm, contaminantPpm;
-        try {
-            virusPpm = Double.parseDouble(virusPpmField.getText());
-            contaminantPpm = Double.parseDouble(contaminantPpmField.getText());
-        } catch (NumberFormatException e) {
-            ControllerUtils.createErrorMessage(stage, "Submit Report Error", "Please enter a valid number");
-            return;
-        }
-
-
-        if (waterCondition == null) {
-            ControllerUtils.createErrorMessage(stage, "Submit Report Error", "Please select a Water Condition");
-        } else if (virusPpm == null) {
-            ControllerUtils.createErrorMessage(stage, "Submit Report Error", "Please enter Virus PPM");
-        } else if (contaminantPpm == null) {
-            ControllerUtils.createErrorMessage(stage, "Submit Report Error", "Please enter Contaminant PPM");
-        } else {
-            try {
-                Location l = new Location(map.getCenter().getLatitude(), map.getCenter().getLongitude());
-                QualityReport report = model.createQualityReport(l, waterCondition, virusPpm, contaminantPpm);
-                viewQReportInit();
-                ControllerUtils.createMessage(stage, "Submit Quality Report", "Success",
-                        "Your water quality report has been added", Alert.AlertType.CONFIRMATION);
-                addMarker(report);
-            } catch (IllegalStateException e) {
-                ControllerUtils.createErrorMessage(stage, "Submit Report Error", "Illegal Permissions");
-            }
-        }
-    }
-
-    @FXML
-    private void onQualityReportCancelPressed() {
-        submitQualityReportInit();
-    }
-
-
     /*
             ~ VIEW REPORTS ~
      */
-
     @FXML
     private TableView<WaterSourceReport> SourceHistoryTable;
     @FXML
@@ -382,7 +210,7 @@ public class MainAppController extends Controller implements MapComponentInitial
     @FXML
     private TableColumn<WaterSourceReport, String> colUser;
     @FXML
-//    private TableColumn<WaterSourceReport, String> colReportID;
+    //private TableColumn<WaterSourceReport, String> colReportID;
     private void viewReportInit() {
         SourceHistoryTable.setItems(getWaterSourceReports());
         colLocation.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("Location"));
@@ -411,7 +239,6 @@ public class MainAppController extends Controller implements MapComponentInitial
     /*
             ~ VIEW QUALITY REPORTS ~
      */
-
     @FXML
     private TableView<QualityReport> QualityHistoryTable;
     @FXML
@@ -427,7 +254,7 @@ public class MainAppController extends Controller implements MapComponentInitial
     @FXML
     private TableColumn<QualityReport, String> qColUser;
     @FXML
-//    private TableColumn<WaterSourceReport, String> colReportID;
+    //private TableColumn<WaterSourceReport, String> colReportID;
     private void viewQReportInit() {
         QualityHistoryTable.setItems(getQualityReports());
         qColLocation.setCellValueFactory(new PropertyValueFactory<QualityReport, String>("Location"));
@@ -487,7 +314,10 @@ public class MainAppController extends Controller implements MapComponentInitial
     
     @FXML
     private void onAddSourceReportPressed() {
-        EventHandler<WindowEvent> handler = event -> initializeMap(map.getCenter(), map.getZoom());
+        EventHandler<WindowEvent> handler = event -> {
+            initializeMap(map.getCenter(), map.getZoom());
+            viewReportInit();
+        };
         SourceReportController controller = (SourceReportController) createModalWindow("/fxml/sourceReport.fxml", "Add Source Report", handler);
         controller.setReportLocation(new Location(map.getCenter().getLatitude(), map.getCenter().getLongitude()));
     }
@@ -495,7 +325,10 @@ public class MainAppController extends Controller implements MapComponentInitial
     @FXML
     private void onAddQualityReportPressed() {
         if(Model.CURRENT_USER.getAccountType().isAuthorized(AccountType.Worker)) {
-            EventHandler<WindowEvent> handler = event -> initializeMap(map.getCenter(), map.getZoom());
+            EventHandler<WindowEvent> handler = event -> {
+                initializeMap(map.getCenter(), map.getZoom());
+                viewQReportInit();
+            };
             QualityReportController controller = (QualityReportController) createModalWindow("/fxml/qualityReport.fxml", "Add Quality Report", handler);
             controller.setReportLocation(new Location(map.getCenter().getLatitude(), map.getCenter().getLongitude()));
         }
