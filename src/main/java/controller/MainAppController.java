@@ -37,7 +37,7 @@ import netscape.javascript.JSObject;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class MainAppController extends Controller implements MapComponentInitializedListener
 {
@@ -127,8 +127,39 @@ public class MainAppController extends Controller implements MapComponentInitial
                             new ButtonType("Edit"),
                             new ButtonType("Add a new report at this location"),
                             new ButtonType("Delete"),
+                            new ButtonType("See History"),
                             new ButtonType("Cancel", ButtonBar.ButtonData.BACK_PREVIOUS));
-                    reportEdit.show();
+//                    reportEdit.showAndWait();
+//                    if (reportEdit.getResult().getText().equals("Add a new report at this location")) {
+//                        System.out.print("WOW");
+//                        EventHandler<WindowEvent> handler = event -> {
+//                            initializeMap(map.getCenter(), map.getZoom());
+//                            viewReportInit();
+//                        };
+//                        QualityReportController controller = (QualityReportController) createModalWindow("/fxml/sourceReport.fxml", "Add Source Report", handler);
+//                        controller.setReportLocation(report.getLocation());
+//                    }
+                    reportEdit.showAndWait();
+                    if (reportEdit.getResult().getText().equals("See History")) {
+                        System.out.print("WOW");
+                        EventHandler<WindowEvent> handler = event -> {
+                            initializeMap(map.getCenter(), map.getZoom());
+                            viewReportInit();
+                        };
+                        Set<QualityReport> qlists = Model.getInstance().getQualityReports();
+                        List<QualityReport> neighbors = new ArrayList<QualityReport>();
+                        for(QualityReport e : qlists) {
+                            if (Math.abs(e.getLocation().getLatitude() - report.getLocation().getLatitude()) <= 2.0) {
+                                if (Math.abs(e.getLocation().getLongitude() - report.getLocation().getLongitude()) <= 2.0) {
+                                    neighbors.add(e);
+                                    System.out.print(e);
+                                }
+                            }
+                        }
+                        QGraphController controller;
+                        controller = (QGraphController) createModalWindow("/fxml/GraphView.fxml", "Graph", handler);
+                        controller.QualityGraphInit(neighbors);
+                    }
 
                     //InfoWindow window = new InfoWindow(infoWindowOptions);
                     //window.open(map, newMark);
