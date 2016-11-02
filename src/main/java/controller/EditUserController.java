@@ -37,8 +37,7 @@ public class EditUserController extends Controller
     }
     
     @FXML
-    private void onKeyPressed(KeyEvent event)
-    {
+    private void onKeyPressed(KeyEvent event) {
         if(event.getCode() == KeyCode.ENTER) {
             onConfirmPressed();
         }

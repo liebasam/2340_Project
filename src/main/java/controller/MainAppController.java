@@ -42,7 +42,6 @@ public class MainAppController extends Controller implements MapComponentInitial
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
         homeInit();
-        submitReportInit();
         submitQualityReportInit();
         //viewReportInit();
     }
@@ -146,48 +145,6 @@ public class MainAppController extends Controller implements MapComponentInitial
     }
 
     /*
-            ~ SUBMIT REPORT ~
-     */
-    @FXML
-    private ChoiceBox<SourceType> sourceTypeChoiceBox;
-    @FXML
-    private ChoiceBox<QualityType> qualityTypeChoiceBox;
-    private void submitReportInit() {
-        sourceTypeChoiceBox.getItems().setAll(SourceType.values());
-        qualityTypeChoiceBox.getItems().setAll(QualityType.values());
-    }
-    @FXML
-    private void onSubmitReportKeyPressed(KeyEvent event)
-    {
-        if(event.getCode() == KeyCode.ENTER) {
-            onSubmitPressed();
-        }
-    }
-    @FXML
-    private void onSubmitPressed() {
-        Model model = Model.getInstance();
-        SourceType source = sourceTypeChoiceBox.getValue();
-        QualityType quality = qualityTypeChoiceBox.getValue();
-
-        if(source == null) {
-            ControllerUtils.createErrorMessage(stage, "Submit Report Error", "Please select a source type");
-        } else if(quality == null) {
-            ControllerUtils.createErrorMessage(stage, "Submit Report Error", "Please select a quality type");
-        } else {
-            Location l = new Location(map.getCenter().getLatitude(), map.getCenter().getLongitude());
-            WaterSourceReport report = model.createSourceReport(l, source, quality);
-            ControllerUtils.createMessage(stage, "Submit Report", "Success",
-                    "Your water source report has been added", Alert.AlertType.CONFIRMATION);
-            addMarker(report);
-        }
-    }
-
-    @FXML
-    private void onReportCancelPressed() {
-        submitReportInit();
-    }
-
-    /*
             ~ SUBMIT QUALITY REPORT ~
      */
     @FXML
@@ -280,7 +237,7 @@ public class MainAppController extends Controller implements MapComponentInitial
      */
     @FXML
     private void onEditPressed() {
-        showModalWindow("/fxml/editUser.fxml", "Edit Account");
+        createModalWindow("/fxml/editUser.fxml", "Edit Account");
     }
     @FXML
     private void onExitPressed() {
@@ -295,7 +252,7 @@ public class MainAppController extends Controller implements MapComponentInitial
         Parent root = loader.load();
 
         stage.setTitle("Sign-in/Register");
-        stage.setScene(new Scene(root, 400, 275));
+        stage.setScene(new Scene(root));
         stage.show();
 
         WelcomeController controller = loader.getController();
@@ -304,17 +261,20 @@ public class MainAppController extends Controller implements MapComponentInitial
     
     @FXML
     private void onAddSourceReportPressed() {
-        showModalWindow("/fxml/sourceReport.fxml", "Add Source Report");
+        SourceReportController controller = (SourceReportController) createModalWindow("/fxml/sourceReport.fxml", "Add Source Report");
+        controller.setReportLocation(new Location(map.getCenter().getLatitude(), map.getCenter().getLongitude()));
     }
     @FXML
     private void onAddQualityReportPressed() {
         //TODO: check if user is at least a worker
-        showModalWindow("/fxml/qualityReport.fxml", "Add Quality Report");
+        QualityReportController controller = (QualityReportController) createModalWindow("/fxml/qualityReport.fxml", "Add Quality Report");
+        controller.setReportLocation(new Location(map.getCenter().getLatitude(), map.getCenter().getLongitude()));
     }
     @FXML
     private void onResetPressed() { initializeMap(); }
     
-    private void showModalWindow(String path, String title) {
+    private Controller createModalWindow(String path, String title) {
+        Controller controller = null;
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource(path));
@@ -323,15 +283,17 @@ public class MainAppController extends Controller implements MapComponentInitial
     
             newStage.setTitle(title);
             newStage.setOnHiding(event -> initializeMap(map.getCenter(), map.getZoom()));
-            newStage.setScene(new Scene(root, 400, 275));
+            newStage.setScene(new Scene(root));
             newStage.initModality(Modality.WINDOW_MODAL);
             newStage.initOwner(stage.getScene().getWindow());
             newStage.show();
         
-            Controller controller = loader.getController();
+            controller = loader.getController();
             controller.setStage(newStage);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        
+        return controller;
     }
 }
