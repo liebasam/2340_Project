@@ -1,20 +1,18 @@
 package controller;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
 import model.QualityReport;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * Created by Soo Hyung Park on 11/2/16.
  */
-
-
-
-public class QGraphController extends Controller {
-
+public class QGraphController extends Controller
+{
     @FXML
     private LineChart<Integer, Double> qualityGraph;
 
@@ -30,7 +28,7 @@ public class QGraphController extends Controller {
 //        clearQualityGraph();
         LineChart.Series<Integer, Double> virusPpmSeries = new LineChart.Series<Integer, Double>();
         virusPpmSeries.setName("Virus PPM");
-        LineChart.Series<Integer, Double> contaminantPpmSeries = new LineChart.Series<Integer, Double>();
+        LineChart.Series < Integer, Double > contaminantPpmSeries = new LineChart.Series<Integer, Double>();
         contaminantPpmSeries.setName("Contaminant PPM");
 
 //        for (QualityReport report : Model.getInstance().getQualityReports()) {
@@ -48,8 +46,7 @@ public class QGraphController extends Controller {
             Double virusPpm = q.getVirusPpm();
             Double contaminantPpm = q.getContaminantPpm();
             int date = q.getSubmissionDate().getDate();
-            System.out.print(virusPpm + ", " + contaminantPpm + ", " + date);
-
+            
             virusPpmSeries.getData().add(new LineChart.Data<>(date, virusPpm));
             contaminantPpmSeries.getData().add(new LineChart.Data<>(date, contaminantPpm));
         }

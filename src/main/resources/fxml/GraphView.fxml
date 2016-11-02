@@ -4,9 +4,9 @@
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 
-<LineChart fx:id="qualityGraph" title="Quality Changes in area" xmlns="http://javafx.com/javafx/8.0.102-ea" xmlns:fx="http://javafx.com/fxml/1">
+<LineChart fx:id="qualityGraph" title="Quality Changes in area" xmlns="http://javafx.com/javafx/8.0.102-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.QGraphController">
   <xAxis>
-    <CategoryAxis side="BOTTOM" />
+    <NumberAxis side="BOTTOM" />
   </xAxis>
   <yAxis>
     <NumberAxis side="LEFT" />

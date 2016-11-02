@@ -64,12 +64,15 @@ public class MainAppController extends Controller implements MapComponentInitial
     private GoogleMap map;
     @FXML
     private GoogleMapView mapView;
+    @FXML
+    Tab viewQualityTab;
     
     @FXML // ResourceBundle that was given to the FXMLLoader
     private void homeInit() {
         mapView.addMapInializedListener(this);
         addressTextField.setItems(searchList);
         address.bind(addressTextField.getEditor().textProperty());
+        viewQualityTab.setDisable(!Model.CURRENT_USER.getAccountType().isAuthorized(AccountType.Manager));
     }
     
     private void addMarker(WaterSourceReport report) {
@@ -121,17 +124,27 @@ public class MainAppController extends Controller implements MapComponentInitial
         map.addUIEventHandler(newMark,
                 UIEventType.click,
                 (JSObject obj) -> {
-                    //InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
-                    //infoWindowOptions.content(l.getDescription());
-                    Alert reportEdit = new Alert(Alert.AlertType.CONFIRMATION, "Would you like to edit this quality report?",
-                            new ButtonType("Edit"),
-                            new ButtonType("Add a new report at this location"),
-                            new ButtonType("Delete"),
-                            new ButtonType("See History"),
-                            new ButtonType("Cancel", ButtonBar.ButtonData.BACK_PREVIOUS));
+                    //synchronized (obj) {
+                        //InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
+                        //infoWindowOptions.content(l.getDescription());
+                    
+                        Alert reportEdit;
+                        if(Model.CURRENT_USER.getAccountType().isAuthorized(AccountType.Manager)) {
+                            reportEdit = new Alert(Alert.AlertType.CONFIRMATION, "Would you like to edit this quality report?",
+                                    new ButtonType("Edit"),
+                                    new ButtonType("Add a new report at this location"),
+                                    new ButtonType("Delete"),
+                                    new ButtonType("See History"),
+                                    new ButtonType("Cancel", ButtonBar.ButtonData.BACK_PREVIOUS));
+                        } else {
+                            reportEdit = new Alert(Alert.AlertType.CONFIRMATION, "Would you like to edit this quality report?",
+                                    new ButtonType("Edit"),
+                                    new ButtonType("Add a new report at this location"),
+                                    new ButtonType("Delete"),
+                                    new ButtonType("Cancel", ButtonBar.ButtonData.BACK_PREVIOUS));
+                        }
 //                    reportEdit.showAndWait();
 //                    if (reportEdit.getResult().getText().equals("Add a new report at this location")) {
-//                        System.out.print("WOW");
 //                        EventHandler<WindowEvent> handler = event -> {
 //                            initializeMap(map.getCenter(), map.getZoom());
 //                            viewReportInit();
@@ -139,30 +152,25 @@ public class MainAppController extends Controller implements MapComponentInitial
 //                        QualityReportController controller = (QualityReportController) createModalWindow("/fxml/sourceReport.fxml", "Add Source Report", handler);
 //                        controller.setReportLocation(report.getLocation());
 //                    }
-                    reportEdit.showAndWait();
-                    if (reportEdit.getResult().getText().equals("See History")) {
-                        System.out.print("WOW");
-                        EventHandler<WindowEvent> handler = event -> {
-                            initializeMap(map.getCenter(), map.getZoom());
-                            viewReportInit();
-                        };
-                        Set<QualityReport> qlists = Model.getInstance().getQualityReports();
-                        List<QualityReport> neighbors = new ArrayList<QualityReport>();
-                        for(QualityReport e : qlists) {
-                            if (Math.abs(e.getLocation().getLatitude() - report.getLocation().getLatitude()) <= 2.0) {
-                                if (Math.abs(e.getLocation().getLongitude() - report.getLocation().getLongitude()) <= 2.0) {
-                                    neighbors.add(e);
-                                    System.out.print(e);
+                        reportEdit.showAndWait();
+                        if (Model.CURRENT_USER.getAccountType().isAuthorized(AccountType.Manager) && reportEdit.getResult().getText().equals("See History")) {
+                            Set<QualityReport> qlists = Model.getInstance().getQualityReports();
+                            List<QualityReport> neighbors = new ArrayList<QualityReport>();
+                            for(QualityReport e : qlists) {
+                                if (Math.abs(e.getLocation().getLatitude() - report.getLocation().getLatitude()) <= 2.0) {
+                                    if (Math.abs(e.getLocation().getLongitude() - report.getLocation().getLongitude()) <= 2.0) {
+                                        neighbors.add(e);
+                                    }
                                 }
                             }
+                            QGraphController controller;
+                            controller = (QGraphController) createModalWindow("/fxml/GraphView.fxml", "Graph");
+                            controller.QualityGraphInit(neighbors);
                         }
-                        QGraphController controller;
-                        controller = (QGraphController) createModalWindow("/fxml/GraphView.fxml", "Graph", handler);
-                        controller.QualityGraphInit(neighbors);
-                    }
-
-                    //InfoWindow window = new InfoWindow(infoWindowOptions);
-                    //window.open(map, newMark);
+    
+                        //InfoWindow window = new InfoWindow(infoWindowOptions);
+                        //window.open(map, newMark);
+                    //}
                 });
 
         map.addMarker(newMark);
@@ -256,7 +264,6 @@ public class MainAppController extends Controller implements MapComponentInitial
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
                     WaterSourceReport rowData = row.getItem();
-                    System.out.println("This is " + rowData.getLocation().toString());
                 }
             });
             return row ;
@@ -317,6 +324,7 @@ public class MainAppController extends Controller implements MapComponentInitial
     private void onEditPressed() {
         EventHandler<WindowEvent> handler = event -> {
             initializeMap(map.getCenter(), map.getZoom());
+            homeInit();
             menuInit();
         };
         createModalWindow("/fxml/editUser.fxml", "Edit Account", handler);
@@ -324,6 +332,7 @@ public class MainAppController extends Controller implements MapComponentInitial
     
     @FXML
     private void onExitPressed() {
+        stage.close();
         Platform.exit();
         System.exit(0);
     }
@@ -367,6 +376,10 @@ public class MainAppController extends Controller implements MapComponentInitial
     
     @FXML
     private void onResetPressed() { initializeMap(); }
+    
+    private Controller createModalWindow(String path, String title) {
+        return createModalWindow(path, title, event -> {});
+    }
     
     private Controller createModalWindow(String path, String title, EventHandler<WindowEvent> onClosed) {
         Controller controller = null;
