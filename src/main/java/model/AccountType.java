@@ -4,8 +4,15 @@ import java.io.Serializable;
 
 public enum AccountType implements Serializable
 {
-    User,
-    Worker,
-    Manager,
-    Admin;
+    User(0),
+    Worker(1),
+    Manager(2),
+    Admin(3);
+    
+    private int value;
+    AccountType(int value) { this.value = value; }
+    
+    public boolean isAuthorized(AccountType authLevel) {
+        return value >= authLevel.value;
+    }
 }

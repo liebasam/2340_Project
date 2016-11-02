@@ -9,7 +9,8 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import model.Model;
 
-public class AppLauncher extends Application {
+public class AppLauncher extends Application
+{
     //Run -> Run 'AppLauncher'
     // sample username: abc, pw: def
     @Override

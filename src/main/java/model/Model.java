@@ -111,7 +111,7 @@ public class Model implements Serializable {
         if (CURRENT_USER == null) {
             throw new IllegalStateException("User is not logged in");
         }
-        if (AccountType.Worker.compareTo(CURRENT_USER.getAccountType()) > 0) {
+        if (!CURRENT_USER.getAccountType().isAuthorized(AccountType.Worker)) {
             throw new IllegalStateException("Insufficient permissions");
         }
         QualityReport report = new QualityReport(CURRENT_USER, location, waterCondition, virusPpm, contaminantPpm);
