@@ -4,7 +4,6 @@ package controller;
  * @author Soo Hyung Park
  * @author Juan Duque
  */
-
 import com.lynden.gmapsfx.GoogleMapView;
 import com.lynden.gmapsfx.MapComponentInitializedListener;
 import com.lynden.gmapsfx.javascript.event.UIEventType;
@@ -33,9 +32,12 @@ import model.WaterSourceReport.SourceType;
 import netscape.javascript.JSObject;
 
 import java.net.URL;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 
 public class MainAppController implements MapComponentInitializedListener {
+
+    private final HashMap<Report, Marker> activeMarkers = new HashMap<>();
 
     private Stage stage;
     public void setStage(Stage stage) { this.stage = stage; }
@@ -75,8 +77,8 @@ public class MainAppController implements MapComponentInitializedListener {
         address.bind(addressTextField.getEditor().textProperty());
     }
     private void addMarker(WaterSourceReport report) {
-        MarkerOptions opt = new MarkerOptions();
         Location l = report.getLocation();
+        MarkerOptions opt = new MarkerOptions();
         opt.position(new LatLong(l.getLatitude(), l.getLongitude()));
         opt.title("Water type: "+ report.getType().toString()
                 + "\nWater quality: " + report.getQuality().toString()
@@ -107,12 +109,13 @@ public class MainAppController implements MapComponentInitializedListener {
         //InfoWindow infoWindow = new InfoWindow(infoWindowOptions);
         //infoWindow.open(map, newMark);
 
+        activeMarkers.put(report, newMark);
         map.addMarker(newMark);
     }
 
     private void addMarker(QualityReport report) {
-        MarkerOptions opt = new MarkerOptions();
         Location l = report.getLocation();
+        MarkerOptions opt = new MarkerOptions();
         opt.position(new LatLong(l.getLatitude(), l.getLongitude()));
         opt.title("Water condition: "+ report.getWaterCondition().toString()
                 + "\nVirus PPM: " + report.getVirusPpm()
@@ -136,8 +139,27 @@ public class MainAppController implements MapComponentInitializedListener {
 //                    window.open(map, newMark);
                 });
 
+        activeMarkers.put(report, newMark);
         map.addMarker(newMark);
     }
+
+    private void hideQualityReportsNear(Location l) {
+        for (Report closeReport : Model.getInstance().getQualityReportsNear(l)) {
+            closeReport.setHidden(true);
+            if (activeMarkers.containsKey(closeReport)) {
+                map.removeMarker(activeMarkers.get(closeReport));
+            }
+        }
+    }
+    private void hideSourceReportsNear(Location l) {
+        for (Report closeReport : Model.getInstance().getSourceReportsNear(l)) {
+            closeReport.setHidden(true);
+            if (activeMarkers.containsKey(closeReport)) {
+                map.removeMarker(activeMarkers.get(closeReport));
+            }
+        }
+    }
+
     @Override
     public void mapInitialized() {
         initializeMap();
@@ -155,10 +177,10 @@ public class MainAppController implements MapComponentInitializedListener {
     
         map = mapView.createMap(mapOptions);
         for (WaterSourceReport report : Model.getInstance().getWaterSourceReports()) {
-            addMarker(report);
+            if(!report.isHidden()) addMarker(report);
         }
         for (QualityReport report : Model.getInstance().getQualityReports()) {
-            addMarker(report);
+            if(!report.isHidden()) addMarker(report);
         }
     
         geocodingService = new GeocodingService();
@@ -296,6 +318,7 @@ public class MainAppController implements MapComponentInitializedListener {
             ControllerUtils.createErrorMessage(stage, "Submit Report Error", "Please select a quality type");
         } else {
             Location l = new Location(map.getCenter().getLatitude(), map.getCenter().getLongitude());
+            hideSourceReportsNear(l);
             WaterSourceReport report = model.createSourceReport(l, source, quality);
             viewReportInit();
             ControllerUtils.createMessage(stage, "Submit Report", "Success",
@@ -338,7 +361,6 @@ public class MainAppController implements MapComponentInitializedListener {
             return;
         }
 
-
         if (waterCondition == null) {
             ControllerUtils.createErrorMessage(stage, "Submit Report Error", "Please select a Water Condition");
         } else if (virusPpm == null) {
@@ -348,6 +370,7 @@ public class MainAppController implements MapComponentInitializedListener {
         } else {
             try {
                 Location l = new Location(map.getCenter().getLatitude(), map.getCenter().getLongitude());
+                hideQualityReportsNear(l);
                 QualityReport report = model.createQualityReport(l, waterCondition, virusPpm, contaminantPpm);
                 viewQReportInit();
                 ControllerUtils.createMessage(stage, "Submit Quality Report", "Success",
@@ -385,12 +408,12 @@ public class MainAppController implements MapComponentInitializedListener {
 //    private TableColumn<WaterSourceReport, String> colReportID;
     private void viewReportInit() {
         SourceHistoryTable.setItems(getWaterSourceReports());
-        colLocation.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("Location"));
-        colQuality.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("Quality"));
-        colSource.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("Type"));
-        colDate.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("SubmissionDate"));
-        colUser.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("Submitter"));
-        //colReportID.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("reportNumber"));
+        colLocation.setCellValueFactory(new PropertyValueFactory<>("Location"));
+        colQuality.setCellValueFactory(new PropertyValueFactory<>("Quality"));
+        colSource.setCellValueFactory(new PropertyValueFactory<>("Type"));
+        colDate.setCellValueFactory(new PropertyValueFactory<>("SubmissionDate"));
+        colUser.setCellValueFactory(new PropertyValueFactory<>("Submitter"));
+        //colReportID.setCellValueFactory(new PropertyValueFactory<>("reportNumber"));
         SourceHistoryTable.getColumns().setAll(colUser, colDate, colLocation, colSource, colQuality);
         SourceHistoryTable.setRowFactory( tv -> {
             TableRow<WaterSourceReport> row = new TableRow<>();
@@ -430,13 +453,13 @@ public class MainAppController implements MapComponentInitializedListener {
 //    private TableColumn<WaterSourceReport, String> colReportID;
     private void viewQReportInit() {
         QualityHistoryTable.setItems(getQualityReports());
-        qColLocation.setCellValueFactory(new PropertyValueFactory<QualityReport, String>("Location"));
-        qColWaterCon.setCellValueFactory(new PropertyValueFactory<QualityReport, String>("WaterCondition"));
-        qColVirPpm.setCellValueFactory(new PropertyValueFactory<QualityReport, String>("VirusPpm"));
-        qColContPpm.setCellValueFactory(new PropertyValueFactory<QualityReport, String>("ContaminantPpm"));
-        qColDate.setCellValueFactory(new PropertyValueFactory<QualityReport, String>("SubmissionDate"));
-        qColUser.setCellValueFactory(new PropertyValueFactory<QualityReport, String>("Submitter"));
-        //colReportID.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("reportNumber"));
+        qColLocation.setCellValueFactory(new PropertyValueFactory<>("Location"));
+        qColWaterCon.setCellValueFactory(new PropertyValueFactory<>("WaterCondition"));
+        qColVirPpm.setCellValueFactory(new PropertyValueFactory<>("VirusPpm"));
+        qColContPpm.setCellValueFactory(new PropertyValueFactory<>("ContaminantPpm"));
+        qColDate.setCellValueFactory(new PropertyValueFactory<>("SubmissionDate"));
+        qColUser.setCellValueFactory(new PropertyValueFactory<>("Submitter"));
+        //colReportID.setCellValueFactory(new PropertyValueFactory<>("reportNumber"));
         QualityHistoryTable.getColumns().setAll(qColUser, qColDate, qColLocation, qColWaterCon, qColVirPpm, qColContPpm);
     }
     private ObservableList<QualityReport> getQualityReports() {

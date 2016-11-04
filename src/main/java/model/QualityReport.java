@@ -3,7 +3,7 @@ package model;
 import java.io.Serializable;
 import java.util.Date;
 
-public class QualityReport implements Serializable {
+public class QualityReport implements Report, Serializable {
     private static Integer LAST_REPORT_NUMBER = 0;
 
     // StringProperty is needed in order to populate the 'View Reports' table
@@ -14,7 +14,7 @@ public class QualityReport implements Serializable {
     public Date getSubmissionDate() {return submissionDate;}
 
     private final Integer reportNumber;
-    public Integer getreportNumber() {return reportNumber;}
+    public Integer getReportNumber() {return reportNumber;}
 
     private final Location location;
     public Location getLocation() {return location;}
@@ -28,6 +28,10 @@ public class QualityReport implements Serializable {
     private final Double contaminantPpm;
     public Double getContaminantPpm() {return contaminantPpm;}
 
+    private boolean hidden;
+    public boolean isHidden() {return hidden;}
+    public void setHidden(boolean hidden) {this.hidden = hidden;}
+
     public QualityReport(User submitter, Location location, WaterCondition waterCondition,
                          Double virusPpm, Double contaminantPpm) {
         this.location = location;
@@ -37,6 +41,7 @@ public class QualityReport implements Serializable {
         this.waterCondition = waterCondition;
         this.virusPpm = virusPpm;
         this.contaminantPpm = contaminantPpm;
+        this.hidden = false;
     }
 
     public enum WaterCondition implements Serializable {
