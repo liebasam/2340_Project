@@ -16,10 +16,8 @@ import model.Model;
 
 import java.io.IOException;
 
-public class WelcomeController
+public class WelcomeController extends Controller
 {
-    private Stage stage;
-    
     @FXML
     TextField usernameField;
 
@@ -43,11 +41,6 @@ public class WelcomeController
         regUserTypeChoiceBox.getItems().setAll(AccountType.values());
         regUserTypeChoiceBox.setValue(AccountType.User);
         Model.getInstance();
-    }
-    
-    void setStage(Stage stage)
-    {
-        this.stage = stage;
     }
     
     @FXML
@@ -136,10 +129,8 @@ public class WelcomeController
 
             Scene openScene = new Scene(page);
             stage.setScene(openScene);
+            stage.setTitle("Clean Water Finder");
             stage.show();
-
-            // TODO: THIS IS A NOT SECURE AT ALL< BUT AT LEAST IT KINDA WORKS
-            // TODO: FIX IF NEEDED!!!!!
 
             MainAppController mainAppCon = loader.getController();
             mainAppCon.setStage(stage);

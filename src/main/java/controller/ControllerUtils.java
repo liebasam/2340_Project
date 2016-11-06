@@ -26,8 +26,8 @@ public class ControllerUtils
      * @param header The error's header
      * @param message The error's message
      */
-    public static void createErrorMessage(Stage stage, String header, String message) {
-        createMessage(stage, "Error", header, message, Alert.AlertType.ERROR);
+    public static Alert createErrorMessage(Stage stage, String header, String message) {
+        return createMessage(stage, "Error", header, message, Alert.AlertType.ERROR);
     }
     
     /**
@@ -37,13 +37,14 @@ public class ControllerUtils
      * @param message The message's body text (ie message)
      * @param alertType The type of alert the message is
      */
-    public static void createMessage(Stage stage, String title, String header, String message, Alert.AlertType alertType) {
+    public static Alert createMessage(Stage stage, String title, String header, String message, Alert.AlertType alertType) {
         Alert alert = new Alert(alertType);
         alert.initOwner(stage);
         alert.setTitle(title);
         alert.setHeaderText(header);
         alert.setContentText(message);
         alert.show();
+        return alert;
     }
 
     /**
