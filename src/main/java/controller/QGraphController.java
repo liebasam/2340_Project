@@ -1,11 +1,7 @@
 package controller;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
-import javafx.scene.chart.XYChart;
 import model.QualityReport;
-
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,43 +10,26 @@ import java.util.List;
 public class QGraphController extends Controller
 {
     @FXML
-    private LineChart<Integer, Double> qualityGraph;
-
+    private LineChart<String, Double> qualityGraph;
+    
     @FXML
-    private void initialize() {
-
-    }
-
-    @FXML
-    public void QualityGraphInit(List<QualityReport> list) {
-//        Location myLocation = new Location(map.getCenter().getLatitude(), map.getCenter().getLongitude());
-//
-//        clearQualityGraph();
-        LineChart.Series<Integer, Double> virusPpmSeries = new LineChart.Series<Integer, Double>();
+    public void QualityGraphInit(List<QualityReport> list)
+    {
+        LineChart.Series<String, Double> virusPpmSeries = new LineChart.Series<String, Double>();
         virusPpmSeries.setName("Virus PPM");
-        LineChart.Series < Integer, Double > contaminantPpmSeries = new LineChart.Series<Integer, Double>();
+        LineChart.Series<String, Double> contaminantPpmSeries = new LineChart.Series<String, Double>();
         contaminantPpmSeries.setName("Contaminant PPM");
-
-//        for (QualityReport report : Model.getInstance().getQualityReports()) {
-//            if (myLocation.equals(report.getLocation())) {
-//                String date = report.getSubmissionDate().toString().substring(4, 16)
-//                        + " " + report.getSubmissionDate().toString().substring(24, 28);
-//                Double virusPpm = report.getVirusPpm();
-//                Double contaminantPpm = report.getContaminantPpm();
-//
-//                virusPpmSeries.getData().add(new LineChart.Data<>(date, virusPpm));
-//                contaminantPpmSeries.getData().add(new LineChart.Data<>(date, contaminantPpm));
-//            }
-//        }
-        for (QualityReport q : list) {
-            Double virusPpm = q.getVirusPpm();
-            Double contaminantPpm = q.getContaminantPpm();
-            int date = q.getSubmissionDate().getDate();
+        
+        for (QualityReport report : list) {
+            String date = report.getSubmissionDate().toString().substring(4, 16)
+                    + " " + report.getSubmissionDate().toString().substring(24, 28);
+            Double virusPpm = report.getVirusPpm();
+            Double contaminantPpm = report.getContaminantPpm();
             
             virusPpmSeries.getData().add(new LineChart.Data<>(date, virusPpm));
             contaminantPpmSeries.getData().add(new LineChart.Data<>(date, contaminantPpm));
         }
+        
         qualityGraph.getData().addAll(virusPpmSeries, contaminantPpmSeries);
     }
-
 }
