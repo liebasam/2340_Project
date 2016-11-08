@@ -12,6 +12,7 @@ import java.util.Set;
 public class Model implements Serializable {
     private static Model instance = new Model();
     public static Model getInstance() { return instance; }
+    public static Model getTestInstance() { return new Model(true); }
 
     private static final String FILE_DIRECTORY = "./savedata/";
     private static final String FILE_NAME_EXT = "model.ser";
@@ -27,30 +28,35 @@ public class Model implements Serializable {
     public Set<WaterSourceReport> getWaterSourceReports() {return waterSourceReports;}
     private final Set<QualityReport> qualityReports = new HashSet<>();
     public Set<QualityReport> getQualityReports() {return qualityReports;}
-
+    
     private Model() {
-        //Attempt to load the model
-        try {
-            FileInputStream fis = new FileInputStream(FILE_DIRECTORY + FILE_NAME_EXT);
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            Model obj = (Model) ois.readObject();
-            this.users.putAll(obj.users);
-            this.securityLog.addAll(obj.securityLog);
-            this.waterSourceReports.addAll(obj.waterSourceReports);
-            this.qualityReports.addAll(obj.qualityReports);
-            ois.close();
-            fis.close();
-            System.out.println("Model loaded");
-        } catch (FileNotFoundException e) {
-            System.out.println("Could not find serialized file");
-            e.printStackTrace();
-            createAccount("user", "pass", AccountType.Admin);
-        } catch (Exception e) {
-            System.out.println("Failed to load model");
-            e.printStackTrace();
-            createAccount("user", "pass", AccountType.Admin);
-        }
+        this(false);
+    }
 
+    private Model(boolean testInstance) {
+        if(!testInstance) {
+            //Attempt to load the model
+            try {
+                FileInputStream fis = new FileInputStream(FILE_DIRECTORY + FILE_NAME_EXT);
+                ObjectInputStream ois = new ObjectInputStream(fis);
+                Model obj = (Model) ois.readObject();
+                this.users.putAll(obj.users);
+                this.securityLog.addAll(obj.securityLog);
+                this.waterSourceReports.addAll(obj.waterSourceReports);
+                this.qualityReports.addAll(obj.qualityReports);
+                ois.close();
+                fis.close();
+                System.out.println("Model loaded");
+            } catch (FileNotFoundException e) {
+                System.out.println("Could not find serialized file");
+                e.printStackTrace();
+                createAccount("user", "pass", AccountType.Admin);
+            } catch (Exception e) {
+                System.out.println("Failed to load model");
+                e.printStackTrace();
+                createAccount("user", "pass", AccountType.Admin);
+            }
+        }
     }
 
     /**
