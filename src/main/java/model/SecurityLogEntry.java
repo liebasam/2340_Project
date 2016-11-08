@@ -10,7 +10,7 @@ class SecurityLogEntry implements Serializable {
         USER_BAN("USER BAN"),
         UNBLOCK_ACCOUNT("UNBLOCK ACCOUNT"),
         REPORT_DELETE("REPORT DELETE");
-        private String name;
+        private final String name;
         EventType(String name) {
             this.name = name;
         }
@@ -23,7 +23,7 @@ class SecurityLogEntry implements Serializable {
         SUCCESS("SUCCESS"),
         INVALID_USER("INVALID USER"),
         INVALID_PASS("INVALID PASS");
-        private String name;
+        private final String name;
         EventStatus(String name) {
             this.name = name;
         }
@@ -32,20 +32,20 @@ class SecurityLogEntry implements Serializable {
             return name;
         }
     }
-    private Date timestamp;
-    private Integer issuerId;
-    private Integer objectId;
-    private EventType eventType;
+    private final Date timestamp;
+    private final Integer issuerId;
+    private final Integer objectId;
+    private final EventType eventType;
     //0 = Success
     //1 = Invalid ID
     //2 = Invalid password
-    private EventStatus eventStatus;
+    private final EventStatus eventStatus;
 
     static SecurityLogEntry loginAttempt(Integer userId, EventStatus eventStatus) {
         return new SecurityLogEntry(null, userId, EventType.LOGIN_ATTEMPT, eventStatus);
     }
 
-    static SecurityLogEntry acountDelete(Integer issuerId, Integer userId) {
+    static SecurityLogEntry acountdelete(Integer issuerId, Integer userId) {
         return new SecurityLogEntry(issuerId, userId, EventType.ACCOUNT_DELETE, null);
     }
 

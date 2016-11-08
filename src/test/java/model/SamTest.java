@@ -13,7 +13,6 @@ public class SamTest {
 
     private User userObj2;
     private final String user2 = "bob";
-    private final String pass2 = "lel";
 
     private Model model;
 
@@ -26,6 +25,7 @@ public class SamTest {
 
     @Test
     public void testCreateAccount() {
+        String pass2 = "lel";
         userObj2 = model.createAccount(user2, pass2, AccountType.Manager);
         assertEquals(userObj2, model.getUsers().get(user2));
     }

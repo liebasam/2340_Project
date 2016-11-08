@@ -3,8 +3,8 @@ package model;
 import java.io.Serializable;
 
 public class Location implements Serializable {
-    private double lat;
-    private double lng;
+    private final double lat;
+    private final double lng;
     public double getLatitude() {return lat;}
     public double getLongitude() {return lng;}
     public Location(double lat, double lng) {

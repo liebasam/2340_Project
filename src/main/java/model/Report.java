@@ -2,7 +2,7 @@ package model;
 
 import java.util.Date;
 
-public interface Report {
+interface Report {
     boolean isHidden();
     void setHidden(boolean hidden);
     Location getLocation();

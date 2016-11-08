@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Model implements Serializable {
     private static Model instance = new Model();
@@ -97,7 +98,7 @@ public class Model implements Serializable {
      * @param l Location around which nearby quality reports will be hidden
      */
     public void hideQualityReportsNear(Location l) {
-        for (Report closeReport : Model.getInstance().getQualityReportsNear(l)) {
+        for (Report closeReport : (Set<Report>) Model.getInstance().getQualityReportsNear(l)) {
             closeReport.setHidden(true);
         }
     }
@@ -119,7 +120,7 @@ public class Model implements Serializable {
      * @param l Location around which nearby source reports will be hidden
      */
     public void hideSourceReportsNear(Location l) {
-        for (Report closeReport : Model.getInstance().getSourceReportsNear(l)) {
+        for (Report closeReport : (Set<Report>) Model.getInstance().getSourceReportsNear(l)) {
             closeReport.setHidden(true);
         }
     }
@@ -168,15 +169,10 @@ public class Model implements Serializable {
     private Set<Report> getReportsNear(Location location, Double miles, Set<Report> reportsToCheck) {
         //Degree of latitude is ~69 miles apart
         //lol 69
-        Set<Report> out = new HashSet<>();
-        for (Report report : reportsToCheck) {
-            if (!report.isHidden() && Math.abs(location.getLatitude() - report.getLocation().getLatitude()) * 69 < miles) {
-                if (distBetween(location, report.getLocation()) < miles) {
-                    out.add(report);
-                }
-            }
-        }
-        return out;
+        return reportsToCheck.stream()
+                .filter(report -> !report.isHidden() && Math.abs(location.getLatitude() - report.getLocation().getLatitude()) * 69 < miles)
+                .filter(report -> distBetween(location, report.getLocation()) < miles)
+                .collect(Collectors.toSet());
     }
 
     private double distBetween(Location loc1, Location loc2) {
@@ -188,7 +184,7 @@ public class Model implements Serializable {
      * @param location Search origin
      * @return Set of reports within 2 miles of location
      */
-    public Set<Report> getQualityReportsNear(Location location) {
+    public Set getQualityReportsNear(Location location) {
         return getReportsNear(location, 2.0, (Set) qualityReports);
     }
     /**
@@ -196,7 +192,7 @@ public class Model implements Serializable {
      * @param location Search origin
      * @return Set of reports within 2 miles of location
      */
-    public Set<Report> getSourceReportsNear(Location location) {
+    public Set getSourceReportsNear(Location location) {
         return getReportsNear(location, 2.0, (Set) waterSourceReports);
     }
     

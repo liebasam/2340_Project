@@ -45,7 +45,7 @@ public class QualityReport implements Report, Serializable {
     }
 
     public enum WaterCondition implements Serializable {
-        SAFE, TREATABLE, UNSAFE;
+        SAFE, TREATABLE, UNSAFE
     }
 
     @Override

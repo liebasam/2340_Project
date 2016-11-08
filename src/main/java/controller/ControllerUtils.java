@@ -3,7 +3,7 @@ package controller;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
-public class ControllerUtils
+class ControllerUtils
 {
     private ControllerUtils() {}
     
@@ -26,8 +26,8 @@ public class ControllerUtils
      * @param header The error's header
      * @param message The error's message
      */
-    public static Alert createErrorMessage(Stage stage, String header, String message) {
-        return createMessage(stage, "Error", header, message, Alert.AlertType.ERROR);
+    public static void createErrorMessage(Stage stage, String header, String message) {
+        createMessage(stage, "Error", header, message, Alert.AlertType.ERROR);
     }
     
     /**

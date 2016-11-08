@@ -19,8 +19,7 @@ public class User implements Serializable {
     void setPassword(String Password) {password = Password;}
 
     public Integer getId() {return id;}
-    void setId(Integer Id) {id = Id;}
-    
+
     public AccountType getAccountType() {return accountType;}
     void setAccountType(AccountType newAccountType) {accountType = newAccountType;}
 

@@ -10,7 +10,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.stage.Stage;
 import model.AccountType;
 import model.Model;
 
@@ -71,7 +70,7 @@ public class WelcomeController extends Controller
         }
     }
     @FXML
-    public void onRegisterPressed() {
+    private void onRegisterPressed() {
         String username = regUsernameField.getText();
         String password = regPasswordField.getText();
         String confPass = regPasswordConfirmField.getText();

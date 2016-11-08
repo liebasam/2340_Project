@@ -1,9 +1,5 @@
 package controller;
 
-/**
- * @author Soo Hyung Park
- * @author Juan Duque
- */
 import com.lynden.gmapsfx.GoogleMapView;
 import com.lynden.gmapsfx.MapComponentInitializedListener;
 import com.lynden.gmapsfx.javascript.event.UIEventType;
@@ -24,19 +20,16 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import model.*;
-import model.WaterSourceReport.QualityType;
-import model.WaterSourceReport.SourceType;
 import netscape.javascript.JSObject;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class MainAppController extends Controller implements MapComponentInitializedListener {
     
@@ -64,7 +57,7 @@ public class MainAppController extends Controller implements MapComponentInitial
     @FXML
     private ComboBox<String> addressTextField;
 
-    StringProperty address = new SimpleStringProperty();
+    private StringProperty address = new SimpleStringProperty();
 
     private GoogleMap map;
     @FXML
@@ -148,12 +141,10 @@ public class MainAppController extends Controller implements MapComponentInitial
                     reportEdit.showAndWait();
                     if (Model.CURRENT_USER.getAccountType().isAuthorized(AccountType.Manager) && reportEdit.getResult().getText().equals("See History")) {
                         Set<QualityReport> qlists = Model.getInstance().getQualityReports();
-                        List<QualityReport> neighbors = new ArrayList<QualityReport>();
-                        for(QualityReport e : qlists) {
-                            if(e.getLocation().distanceTo(report.getLocation()) <= 2.0) {
-                                neighbors.add(e);
-                            }
-                        }
+                        List<QualityReport> neighbors = qlists.stream()
+                                .filter(e ->
+                                        e.getLocation().distanceTo(report.getLocation()) <= 2.0)
+                                .collect(Collectors.toList());
                         QGraphController controller;
                         controller = (QGraphController) createModalWindow("/fxml/GraphView.fxml", "Graph");
                         controller.QualityGraphInit(neighbors);
@@ -180,12 +171,12 @@ public class MainAppController extends Controller implements MapComponentInitial
                 .mapType(MapTypeIdEnum.TERRAIN);
     
         map = mapView.createMap(mapOptions);
-        for (WaterSourceReport report : Model.getInstance().getWaterSourceReports()) {
-            if(!report.isHidden()) addMarker(report);
-        }
-        for (QualityReport report : Model.getInstance().getQualityReports()) {
-            if(!report.isHidden()) addMarker(report);
-        }
+        Model.getInstance().getWaterSourceReports().stream()
+                .filter(report -> !report.isHidden())
+                .forEachOrdered(this::addMarker);
+        Model.getInstance().getQualityReports().stream()
+                .filter(report -> !report.isHidden())
+                .forEachOrdered(this::addMarker);
     
         geocodingService = new GeocodingService();
     }

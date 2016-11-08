@@ -9,7 +9,7 @@ public enum AccountType implements Serializable
     Manager(2),
     Admin(3);
     
-    private int value;
+    private final int value;
     AccountType(int value) { this.value = value; }
     
     public boolean isAuthorized(AccountType authLevel) {
