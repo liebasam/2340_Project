@@ -13,7 +13,9 @@ public class Location implements Serializable {
     }
     
     public double distanceTo(Location other) {
-        return Math.sqrt(Math.pow(lat - other.lat, 2) + Math.pow(lng - other.lng, 2));
+        return 2 * Math.asin(Math.sqrt( Math.pow(Math.sin((this.getLatitude() - other.getLatitude())/2), 2) +
+                Math.cos(this.getLatitude())*Math.cos(other.getLatitude())
+                        * Math.pow(Math.sin((this.getLongitude() - other.getLongitude())/2), 2)));
     }
 
     @Override

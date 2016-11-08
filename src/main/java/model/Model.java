@@ -174,23 +174,21 @@ public class Model implements Serializable {
     }
 
     private double distBetween(Location loc1, Location loc2) {
-        return 2 * Math.asin(Math.sqrt( Math.pow(Math.sin((loc1.getLatitude() - loc2.getLatitude())/2), 2) +
-                Math.cos(loc1.getLatitude())*Math.cos(loc2.getLatitude())
-                        * Math.pow(Math.sin((loc1.getLongitude() - loc2.getLongitude())/2), 2)));
+        return loc1.distanceTo(loc2);
     }
 
     /**
-     * Gets all NON-HIDDEN quality reports within 1 mile of the given location
+     * Gets all NON-HIDDEN quality reports within 2 miles of the given location
      * @param location Search origin
-     * @return Set of reports within 1 mile of location
+     * @return Set of reports within 2 miles of location
      */
     public Set<Report> getQualityReportsNear(Location location) {
         return getReportsNear(location, 2.0, (Set) qualityReports);
     }
     /**
-     * Gets all NON-HIDDEN source reports within 1 mile of the given location
+     * Gets all NON-HIDDEN source reports within 2 miles of the given location
      * @param location Search origin
-     * @return Set of reports within 1 mile of location
+     * @return Set of reports within 2 miles of location
      */
     public Set<Report> getSourceReportsNear(Location location) {
         return getReportsNear(location, 2.0, (Set) waterSourceReports);
