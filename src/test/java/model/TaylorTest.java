@@ -1,4 +1,4 @@
-package testing;
+package model;
 
 import model.AccountType;
 import model.Model;
