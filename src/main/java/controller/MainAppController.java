@@ -4,7 +4,6 @@ package controller;
  * @author Soo Hyung Park
  * @author Juan Duque
  */
-
 import com.lynden.gmapsfx.GoogleMapView;
 import com.lynden.gmapsfx.MapComponentInitializedListener;
 import com.lynden.gmapsfx.javascript.event.UIEventType;
@@ -39,12 +38,15 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
-public class MainAppController extends Controller implements MapComponentInitializedListener
-{
+public class MainAppController extends Controller implements MapComponentInitializedListener {
+
+    private final HashMap<Report, Marker> activeMarkers = new HashMap<>();
+
+    private Stage stage;
+    public void setStage(Stage stage) { this.stage = stage; }
     private ResourceBundle resources;
     @FXML // URL location of the FXML file that was given to the FXMLLoader
     private URL location;
-    
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
         homeInit();
@@ -57,16 +59,21 @@ public class MainAppController extends Controller implements MapComponentInitial
             ~ HOME ~
      */
     private GeocodingService geocodingService;
+
+
     private ObservableList<String> searchList = FXCollections.observableArrayList();
+
     @FXML
     private ComboBox<String> addressTextField;
+
     StringProperty address = new SimpleStringProperty();
+
     private GoogleMap map;
     @FXML
     private GoogleMapView mapView;
     @FXML
     Tab viewQualityTab;
-    
+
     @FXML // ResourceBundle that was given to the FXMLLoader
     private void homeInit() {
         mapView.addMapInializedListener(this);
@@ -74,7 +81,7 @@ public class MainAppController extends Controller implements MapComponentInitial
         address.bind(addressTextField.getEditor().textProperty());
         viewQualityTab.setDisable(!Model.CURRENT_USER.getAccountType().isAuthorized(AccountType.Manager));
     }
-    
+
     private void addMarker(WaterSourceReport report) {
         MarkerOptions opt = new MarkerOptions();
         Location l = report.getLocation();
@@ -108,6 +115,7 @@ public class MainAppController extends Controller implements MapComponentInitial
         //InfoWindow infoWindow = new InfoWindow(infoWindowOptions);
         //infoWindow.open(map, newMark);
 
+        activeMarkers.put(report, newMark);
         map.addMarker(newMark);
     }
 
@@ -127,7 +135,7 @@ public class MainAppController extends Controller implements MapComponentInitial
                     //synchronized (obj) {
                         //InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
                         //infoWindowOptions.content(l.getDescription());
-                    
+
                         Alert reportEdit;
                         if(Model.CURRENT_USER.getAccountType().isAuthorized(AccountType.Manager)) {
                             reportEdit = new Alert(Alert.AlertType.CONFIRMATION, "Would you like to edit this quality report?",
@@ -167,15 +175,33 @@ public class MainAppController extends Controller implements MapComponentInitial
                             controller = (QGraphController) createModalWindow("/fxml/GraphView.fxml", "Graph");
                             controller.QualityGraphInit(neighbors);
                         }
-    
+
                         //InfoWindow window = new InfoWindow(infoWindowOptions);
                         //window.open(map, newMark);
                     //}
                 });
 
+        activeMarkers.put(report, newMark);
         map.addMarker(newMark);
     }
-    
+
+    private void hideQualityReportsNear(Location l) {
+        for (Report closeReport : Model.getInstance().getQualityReportsNear(l)) {
+            closeReport.setHidden(true);
+            if (activeMarkers.containsKey(closeReport)) {
+                map.removeMarker(activeMarkers.get(closeReport));
+            }
+        }
+    }
+    private void hideSourceReportsNear(Location l) {
+        for (Report closeReport : Model.getInstance().getSourceReportsNear(l)) {
+            closeReport.setHidden(true);
+            if (activeMarkers.containsKey(closeReport)) {
+                map.removeMarker(activeMarkers.get(closeReport));
+            }
+        }
+    }
+
     @Override
     public void mapInitialized() {
         initializeMap();
@@ -184,7 +210,7 @@ public class MainAppController extends Controller implements MapComponentInitial
     private void initializeMap() {
         initializeMap(new LatLong(40, 40), 9);
     }
-    
+
     private void initializeMap(LatLong center, int zoomLevel) {
         MapOptions mapOptions = new MapOptions();
         mapOptions.center(center)
@@ -194,10 +220,10 @@ public class MainAppController extends Controller implements MapComponentInitial
     
         map = mapView.createMap(mapOptions);
         for (WaterSourceReport report : Model.getInstance().getWaterSourceReports()) {
-            addMarker(report);
+            if(!report.isHidden()) addMarker(report);
         }
         for (QualityReport report : Model.getInstance().getQualityReports()) {
-            addMarker(report);
+            if(!report.isHidden()) addMarker(report);
         }
     
         geocodingService = new GeocodingService();
@@ -232,7 +258,7 @@ public class MainAppController extends Controller implements MapComponentInitial
         });
     }
 
-    
+
     /*
             ~ VIEW REPORTS ~
      */
@@ -252,12 +278,12 @@ public class MainAppController extends Controller implements MapComponentInitial
     //private TableColumn<WaterSourceReport, String> colReportID;
     private void viewReportInit() {
         SourceHistoryTable.setItems(getWaterSourceReports());
-        colLocation.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("Location"));
-        colQuality.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("Quality"));
-        colSource.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("Type"));
-        colDate.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("SubmissionDate"));
-        colUser.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("Submitter"));
-        //colReportID.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("reportNumber"));
+        colLocation.setCellValueFactory(new PropertyValueFactory<>("Location"));
+        colQuality.setCellValueFactory(new PropertyValueFactory<>("Quality"));
+        colSource.setCellValueFactory(new PropertyValueFactory<>("Type"));
+        colDate.setCellValueFactory(new PropertyValueFactory<>("SubmissionDate"));
+        colUser.setCellValueFactory(new PropertyValueFactory<>("Submitter"));
+        //colReportID.setCellValueFactory(new PropertyValueFactory<>("reportNumber"));
         SourceHistoryTable.getColumns().setAll(colUser, colDate, colLocation, colSource, colQuality);
         SourceHistoryTable.setRowFactory( tv -> {
             TableRow<WaterSourceReport> row = new TableRow<>();
@@ -295,13 +321,13 @@ public class MainAppController extends Controller implements MapComponentInitial
     //private TableColumn<WaterSourceReport, String> colReportID;
     private void viewQReportInit() {
         QualityHistoryTable.setItems(getQualityReports());
-        qColLocation.setCellValueFactory(new PropertyValueFactory<QualityReport, String>("Location"));
-        qColWaterCon.setCellValueFactory(new PropertyValueFactory<QualityReport, String>("WaterCondition"));
-        qColVirPpm.setCellValueFactory(new PropertyValueFactory<QualityReport, String>("VirusPpm"));
-        qColContPpm.setCellValueFactory(new PropertyValueFactory<QualityReport, String>("ContaminantPpm"));
-        qColDate.setCellValueFactory(new PropertyValueFactory<QualityReport, String>("SubmissionDate"));
-        qColUser.setCellValueFactory(new PropertyValueFactory<QualityReport, String>("Submitter"));
-        //colReportID.setCellValueFactory(new PropertyValueFactory<WaterSourceReport, String>("reportNumber"));
+        qColLocation.setCellValueFactory(new PropertyValueFactory<>("Location"));
+        qColWaterCon.setCellValueFactory(new PropertyValueFactory<>("WaterCondition"));
+        qColVirPpm.setCellValueFactory(new PropertyValueFactory<>("VirusPpm"));
+        qColContPpm.setCellValueFactory(new PropertyValueFactory<>("ContaminantPpm"));
+        qColDate.setCellValueFactory(new PropertyValueFactory<>("SubmissionDate"));
+        qColUser.setCellValueFactory(new PropertyValueFactory<>("Submitter"));
+        //colReportID.setCellValueFactory(new PropertyValueFactory<>("reportNumber"));
         QualityHistoryTable.getColumns().setAll(qColUser, qColDate, qColLocation, qColWaterCon, qColVirPpm, qColContPpm);
     }
     private ObservableList<QualityReport> getQualityReports() {
@@ -314,12 +340,12 @@ public class MainAppController extends Controller implements MapComponentInitial
      */
     @FXML
     MenuItem addQualityReportMenuItem;
-    
+
     private void menuInit() {
         boolean authorized = Model.CURRENT_USER.getAccountType().isAuthorized(AccountType.Worker);
         addQualityReportMenuItem.setVisible(authorized);
     }
-    
+
     @FXML
     private void onEditPressed() {
         EventHandler<WindowEvent> handler = event -> {
@@ -329,14 +355,14 @@ public class MainAppController extends Controller implements MapComponentInitial
         };
         createModalWindow("/fxml/editUser.fxml", "Edit Account", handler);
     }
-    
+
     @FXML
     private void onExitPressed() {
         stage.close();
         Platform.exit();
         System.exit(0);
     }
-    
+
     @FXML
     private void onLogoutPressed() throws Exception {
         Model.getInstance().logout();
@@ -351,7 +377,7 @@ public class MainAppController extends Controller implements MapComponentInitial
         WelcomeController controller = loader.getController();
         controller.setStage(stage);
     }
-    
+
     @FXML
     private void onAddSourceReportPressed() {
         EventHandler<WindowEvent> handler = event -> {
@@ -361,7 +387,7 @@ public class MainAppController extends Controller implements MapComponentInitial
         SourceReportController controller = (SourceReportController) createModalWindow("/fxml/sourceReport.fxml", "Add Source Report", handler);
         controller.setReportLocation(new Location(map.getCenter().getLatitude(), map.getCenter().getLongitude()));
     }
-    
+
     @FXML
     private void onAddQualityReportPressed() {
         if(Model.CURRENT_USER.getAccountType().isAuthorized(AccountType.Worker)) {
@@ -373,14 +399,14 @@ public class MainAppController extends Controller implements MapComponentInitial
             controller.setReportLocation(new Location(map.getCenter().getLatitude(), map.getCenter().getLongitude()));
         }
     }
-    
+
     @FXML
     private void onResetPressed() { initializeMap(); }
-    
+
     private Controller createModalWindow(String path, String title) {
         return createModalWindow(path, title, event -> {});
     }
-    
+
     private Controller createModalWindow(String path, String title, EventHandler<WindowEvent> onClosed) {
         Controller controller = null;
         try {
@@ -388,20 +414,20 @@ public class MainAppController extends Controller implements MapComponentInitial
             loader.setLocation(getClass().getResource(path));
             Parent root = loader.load();
             Stage newStage = new Stage();
-    
+
             newStage.setTitle(title);
             newStage.setOnHiding(onClosed);
             newStage.setScene(new Scene(root));
             newStage.initModality(Modality.WINDOW_MODAL);
             newStage.initOwner(stage.getScene().getWindow());
             newStage.show();
-        
+
             controller = loader.getController();
             controller.setStage(newStage);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
+
         return controller;
     }
 }

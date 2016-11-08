@@ -3,7 +3,7 @@ package model;
 import java.io.Serializable;
 import java.util.Date;
 
-public class WaterSourceReport implements Serializable {
+public class WaterSourceReport implements Report, Serializable {
 
     private static Integer LAST_REPORT_NUMBER = 0;
 
@@ -24,7 +24,11 @@ public class WaterSourceReport implements Serializable {
     public Date getSubmissionDate() {return submissionDate;}
 
     private final Integer reportNumber;
-    public Integer getreportNumber() {return reportNumber;}
+    public Integer getReportNumber() {return reportNumber;}
+
+    private boolean hidden;
+    public boolean isHidden() {return hidden;}
+    public void setHidden(boolean hidden) {this.hidden = hidden;}
 
     public WaterSourceReport(User submitter, Location location,
                              SourceType type, QualityType quality) {
@@ -34,6 +38,7 @@ public class WaterSourceReport implements Serializable {
         this.quality = quality;
         this.submissionDate = new Date();
         this.reportNumber = LAST_REPORT_NUMBER++;
+        this.hidden = false;
     }
 
     @Override

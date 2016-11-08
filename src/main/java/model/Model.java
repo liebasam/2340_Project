@@ -132,6 +132,49 @@ public class Model implements Serializable {
                                              Double virusPpm, Double contaminantPpm) {
         return this.createQualityReport(new Location(lat, lng), waterCondition, virusPpm, contaminantPpm);
     }
+
+    /**
+     * Gets all NON-HIDDEN reports within a distance of the given location
+     * @param location Search origin
+     * @param miles Distance from origin in miles
+     * @return Set of reports within miles of location
+     */
+    private Set<Report> getReportsNear(Location location, Double miles, Set<Report> reportsToCheck) {
+        //Degree of latitude is ~69 miles apart
+        //lol 69
+        Set<Report> out = new HashSet<>();
+        for (Report report : reportsToCheck) {
+            if (!report.isHidden() && Math.abs(location.getLatitude() - report.getLocation().getLatitude()) * 69 < miles) {
+                if (distBetween(location, report.getLocation()) < miles) {
+                    out.add(report);
+                }
+            }
+        }
+        return out;
+    }
+
+    private double distBetween(Location loc1, Location loc2) {
+        return 2 * Math.asin(Math.sqrt( Math.pow(Math.sin((loc1.getLatitude() - loc2.getLatitude())/2), 2) +
+                Math.cos(loc1.getLatitude())*Math.cos(loc2.getLatitude())
+                        * Math.pow(Math.sin((loc1.getLongitude() - loc2.getLongitude())/2), 2)));
+    }
+
+    /**
+     * Gets all NON-HIDDEN quality reports within 1 mile of the given location
+     * @param location Search origin
+     * @return Set of reports within 1 mile of location
+     */
+    public Set<Report> getQualityReportsNear(Location location) {
+        return getReportsNear(location, 2.0, (Set) qualityReports);
+    }
+    /**
+     * Gets all NON-HIDDEN source reports within 1 mile of the given location
+     * @param location Search origin
+     * @return Set of reports within 1 mile of location
+     */
+    public Set<Report> getSourceReportsNear(Location location) {
+        return getReportsNear(location, 2.0, (Set) waterSourceReports);
+    }
     
     /**
      * Modifies the username of a user
