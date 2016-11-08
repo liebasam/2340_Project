@@ -46,6 +46,7 @@ public class SourceReportController extends Controller
         } else if(quality == null) {
             ControllerUtils.createErrorMessage(stage, "Submit Report Error", "Please select a quality type");
         } else {
+            model.hideSourceReportsNear(reportLocation);
             model.createSourceReport(reportLocation, source, quality);
             Alert message = ControllerUtils.createMessage(stage, "Submit Report", "Success",
                     "Your water source report has been added", Alert.AlertType.INFORMATION);

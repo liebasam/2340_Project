@@ -85,6 +85,16 @@ public class Model implements Serializable {
         waterSourceReports.add(report);
         return report;
     }
+    
+    /**
+     * Hides all nearby quality reports
+     * @param l Location around which nearby quality reports will be hidden
+     */
+    public void hideQualityReportsNear(Location l) {
+        for (Report closeReport : Model.getInstance().getQualityReportsNear(l)) {
+            closeReport.setHidden(true);
+        }
+    }
 
     /**
      * Creates a new water source report
@@ -96,6 +106,16 @@ public class Model implements Serializable {
      */
     public WaterSourceReport createSourceReport(double lat, double lng, SourceType source, QualityType quality) {
         return this.createSourceReport(new Location(lat, lng), source, quality);
+    }
+    
+    /**
+     * Hides all nearby quality reports
+     * @param l Location around which nearby source reports will be hidden
+     */
+    public void hideSourceReportsNear(Location l) {
+        for (Report closeReport : Model.getInstance().getSourceReportsNear(l)) {
+            closeReport.setHidden(true);
+        }
     }
 
     /**

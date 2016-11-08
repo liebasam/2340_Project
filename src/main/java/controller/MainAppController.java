@@ -39,9 +39,7 @@ import java.net.URL;
 import java.util.*;
 
 public class MainAppController extends Controller implements MapComponentInitializedListener {
-
-    private final HashMap<Report, Marker> activeMarkers = new HashMap<>();
-
+    
     private Stage stage;
     public void setStage(Stage stage) { this.stage = stage; }
     private ResourceBundle resources;
@@ -114,8 +112,7 @@ public class MainAppController extends Controller implements MapComponentInitial
 
         //InfoWindow infoWindow = new InfoWindow(infoWindowOptions);
         //infoWindow.open(map, newMark);
-
-        activeMarkers.put(report, newMark);
+        
         map.addMarker(newMark);
     }
 
@@ -132,76 +129,40 @@ public class MainAppController extends Controller implements MapComponentInitial
         map.addUIEventHandler(newMark,
                 UIEventType.click,
                 (JSObject obj) -> {
-                    //synchronized (obj) {
-                        //InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
-                        //infoWindowOptions.content(l.getDescription());
+                    Alert reportEdit;
+                    if(Model.CURRENT_USER.getAccountType().isAuthorized(AccountType.Manager)) {
+                        reportEdit = new Alert(Alert.AlertType.CONFIRMATION, "Would you like to edit this quality report?",
+                                new ButtonType("Edit"),
+                                new ButtonType("Add a new report at this location"),
+                                new ButtonType("Delete"),
+                                new ButtonType("See History"),
+                                new ButtonType("Cancel", ButtonBar.ButtonData.BACK_PREVIOUS));
+                    } else {
+                        reportEdit = new Alert(Alert.AlertType.CONFIRMATION, "Would you like to edit this quality report?",
+                                new ButtonType("Edit"),
+                                new ButtonType("Add a new report at this location"),
+                                new ButtonType("Delete"),
+                                new ButtonType("Cancel", ButtonBar.ButtonData.BACK_PREVIOUS));
+                    }
 
-                        Alert reportEdit;
-                        if(Model.CURRENT_USER.getAccountType().isAuthorized(AccountType.Manager)) {
-                            reportEdit = new Alert(Alert.AlertType.CONFIRMATION, "Would you like to edit this quality report?",
-                                    new ButtonType("Edit"),
-                                    new ButtonType("Add a new report at this location"),
-                                    new ButtonType("Delete"),
-                                    new ButtonType("See History"),
-                                    new ButtonType("Cancel", ButtonBar.ButtonData.BACK_PREVIOUS));
-                        } else {
-                            reportEdit = new Alert(Alert.AlertType.CONFIRMATION, "Would you like to edit this quality report?",
-                                    new ButtonType("Edit"),
-                                    new ButtonType("Add a new report at this location"),
-                                    new ButtonType("Delete"),
-                                    new ButtonType("Cancel", ButtonBar.ButtonData.BACK_PREVIOUS));
-                        }
-//                    reportEdit.showAndWait();
-//                    if (reportEdit.getResult().getText().equals("Add a new report at this location")) {
-//                        EventHandler<WindowEvent> handler = event -> {
-//                            initializeMap(map.getCenter(), map.getZoom());
-//                            viewReportInit();
-//                        };
-//                        QualityReportController controller = (QualityReportController) createModalWindow("/fxml/sourceReport.fxml", "Add Source Report", handler);
-//                        controller.setReportLocation(report.getLocation());
-//                    }
-                        reportEdit.showAndWait();
-                        if (Model.CURRENT_USER.getAccountType().isAuthorized(AccountType.Manager) && reportEdit.getResult().getText().equals("See History")) {
-                            Set<QualityReport> qlists = Model.getInstance().getQualityReports();
-                            List<QualityReport> neighbors = new ArrayList<QualityReport>();
-                            for(QualityReport e : qlists) {
-                                if (Math.abs(e.getLocation().getLatitude() - report.getLocation().getLatitude()) <= 2.0) {
-                                    if (Math.abs(e.getLocation().getLongitude() - report.getLocation().getLongitude()) <= 2.0) {
-                                        neighbors.add(e);
-                                    }
-                                }
+                    reportEdit.showAndWait();
+                    if (Model.CURRENT_USER.getAccountType().isAuthorized(AccountType.Manager) && reportEdit.getResult().getText().equals("See History")) {
+                        Set<QualityReport> qlists = Model.getInstance().getQualityReports();
+                        List<QualityReport> neighbors = new ArrayList<QualityReport>();
+                        for(QualityReport e : qlists) {
+                            if(e.getLocation().distanceTo(report.getLocation()) <= 2.0) {
+                                neighbors.add(e);
                             }
-                            QGraphController controller;
-                            controller = (QGraphController) createModalWindow("/fxml/GraphView.fxml", "Graph");
-                            controller.QualityGraphInit(neighbors);
                         }
-
-                        //InfoWindow window = new InfoWindow(infoWindowOptions);
-                        //window.open(map, newMark);
-                    //}
+                        QGraphController controller;
+                        controller = (QGraphController) createModalWindow("/fxml/GraphView.fxml", "Graph");
+                        controller.QualityGraphInit(neighbors);
+                    }
                 });
-
-        activeMarkers.put(report, newMark);
+        
         map.addMarker(newMark);
     }
-
-    private void hideQualityReportsNear(Location l) {
-        for (Report closeReport : Model.getInstance().getQualityReportsNear(l)) {
-            closeReport.setHidden(true);
-            if (activeMarkers.containsKey(closeReport)) {
-                map.removeMarker(activeMarkers.get(closeReport));
-            }
-        }
-    }
-    private void hideSourceReportsNear(Location l) {
-        for (Report closeReport : Model.getInstance().getSourceReportsNear(l)) {
-            closeReport.setHidden(true);
-            if (activeMarkers.containsKey(closeReport)) {
-                map.removeMarker(activeMarkers.get(closeReport));
-            }
-        }
-    }
-
+    
     @Override
     public void mapInitialized() {
         initializeMap();

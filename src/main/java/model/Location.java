@@ -11,6 +11,10 @@ public class Location implements Serializable {
         this.lat = lat;
         this.lng = lng;
     }
+    
+    public double distanceTo(Location other) {
+        return Math.sqrt(Math.pow(lat - other.lat, 2) + Math.pow(lng - other.lng, 2));
+    }
 
     @Override
     public String toString() {
