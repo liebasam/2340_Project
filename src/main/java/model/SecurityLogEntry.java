@@ -3,6 +3,9 @@ package model;
 import java.io.Serializable;
 import java.util.Date;
 
+/**
+ * Represents a single entry in the security log
+ */
 final class SecurityLogEntry implements Serializable {
     enum EventType implements Serializable {
         LOGIN_ATTEMPT("LOGIN ATTEMPT"),

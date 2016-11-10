@@ -39,19 +39,18 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import model.Model;
 import model.AccountType;
+import model.User;
 import model.WaterSourceReport;
 import model.QualityReport;
 import model.Location;
 import netscape.javascript.JSObject;
 import java.io.IOException;
-import java.net.URL;
-import java.util.ResourceBundle;
 
+/**
+ * Controller for the parent window a logged in user interacts with
+ */
 public class MainAppController extends Controller implements MapComponentInitializedListener {
     
-    private ResourceBundle resources;
-    @FXML // URL location of the FXML file that was given to the FXMLLoader
-    private URL location;
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
         homeInit();
@@ -84,8 +83,7 @@ public class MainAppController extends Controller implements MapComponentInitial
         mapView.addMapInializedListener(this);
         addressTextField.setItems(searchList);
         address.bind(addressTextField.getEditor().textProperty());
-        viewQualityTab.setDisable(!Model.getInstance().getCurrentUser().getAccountType()
-                .isAuthorized(AccountType.Manager));
+        viewQualityTab.setDisable(!Model.getInstance().getCurrentUser().isAuthorized(AccountType.Manager));
     }
 
     private void addMarker(WaterSourceReport report) {
@@ -132,8 +130,10 @@ public class MainAppController extends Controller implements MapComponentInitial
         map.addUIEventHandler(newMark,
                 UIEventType.click,
                 (JSObject obj) -> {
+                    Model model = Model.getInstance();
+                    User user = model.getCurrentUser();
                     Alert reportEdit;
-                    if(Model.getInstance().getCurrentUser().getAccountType().isAuthorized(AccountType.Manager)) {
+                    if(user.isAuthorized(AccountType.Manager)) {
                         reportEdit = new Alert(Alert.AlertType.CONFIRMATION,
                                 "Would you like to edit this quality report?",
                                 new ButtonType("Edit"),
@@ -151,12 +151,12 @@ public class MainAppController extends Controller implements MapComponentInitial
                     }
 
                     reportEdit.showAndWait();
-                    if (Model.getInstance().getCurrentUser().getAccountType().isAuthorized(AccountType.Manager) &&
+                    if (user.isAuthorized(AccountType.Manager) &&
                             "See History".equals(reportEdit.getResult().getText())) {
 
                         QGraphController controller;
                         controller = (QGraphController) createModalWindow("/fxml/GraphView.fxml", "Graph");
-                        controller.QualityGraphInit(Model.getInstance().getQualityReportsNear(l));
+                        controller.QualityGraphInit(model.getQualityReportsNear(l));
                     }
                 });
         
@@ -308,7 +308,7 @@ public class MainAppController extends Controller implements MapComponentInitial
     MenuItem addQualityReportMenuItem;
 
     private void menuInit() {
-        boolean authorized = Model.getInstance().getCurrentUser().getAccountType().isAuthorized(AccountType.Worker);
+        boolean authorized = Model.getInstance().getCurrentUser().isAuthorized(AccountType.Worker);
         addQualityReportMenuItem.setVisible(authorized);
     }
 
@@ -357,7 +357,7 @@ public class MainAppController extends Controller implements MapComponentInitial
 
     @FXML
     private void onAddQualityReportPressed() {
-        if(Model.getInstance().getCurrentUser().getAccountType().isAuthorized(AccountType.Worker)) {
+        if(Model.getInstance().getCurrentUser().isAuthorized(AccountType.Worker)) {
             EventHandler<WindowEvent> handler = event -> {
                 initializeMap(map.getCenter(), map.getZoom());
                 viewQReportInit();

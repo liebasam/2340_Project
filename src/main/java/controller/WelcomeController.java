@@ -15,6 +15,9 @@ import model.Model;
 
 import java.io.IOException;
 
+/**
+ * Controller for the login/registration window
+ */
 public class WelcomeController extends Controller
 {
     @FXML

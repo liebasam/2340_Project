@@ -11,6 +11,9 @@ import model.Location;
 import model.Model;
 import model.QualityReport;
 
+/**
+ * Controller for the add quality report dialog
+ */
 public class QualityReportController extends Controller
 {
     private Location reportLocation = null;
@@ -59,7 +62,7 @@ public class QualityReportController extends Controller
         if (waterCondition == null) {
             createErrorMessage("Submit Report Error", "Please select a Water Condition");
         } else {
-            if(model.getCurrentUser().getAccountType().isAuthorized(AccountType.Worker)) {
+            if(model.getCurrentUser().isAuthorized(AccountType.Worker)) {
                 model.hideQualityReportsNear(reportLocation);
                 model.createQualityReport(reportLocation, waterCondition, virusPpm, contaminantPpm);
                 Alert message = createMessage("Submit Quality Report", "Success",

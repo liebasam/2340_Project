@@ -7,6 +7,9 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import model.Model;
 
+/**
+ * Starting point for the application
+ */
 public class AppLauncher extends Application
 {
     //Run -> Run 'AppLauncher'

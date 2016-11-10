@@ -3,6 +3,10 @@ package model;
 import java.io.Serializable;
 import java.util.Date;
 
+/**
+ * Represents a water source report, which is a water report with more qualitative
+ * details so that the average user can contribute
+ */
 public class WaterSourceReport implements Report, Serializable {
 
     private static Integer LAST_REPORT_NUMBER = 0;

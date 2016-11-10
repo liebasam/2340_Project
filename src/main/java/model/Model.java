@@ -17,6 +17,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * A singleton interface between the controller and the model
+ */
 public final class Model implements Serializable
 {
     private static final Model instance = new Model();
@@ -85,11 +88,11 @@ public final class Model implements Serializable
                 fis.close();
                 //System.out.println("Model loaded");
             } catch (FileNotFoundException e) {
-                //System.out.println("Could not find serialized file");
+                System.err.println("Could not find serialized file");
                 e.printStackTrace();
                 createAccount("user", "pass", AccountType.Admin);
             } catch (Exception e) {
-                //System.out.println("Failed to load model");
+                System.err.println("Failed to load model");
                 e.printStackTrace();
                 createAccount("user", "pass", AccountType.Admin);
             }
@@ -176,7 +179,7 @@ public final class Model implements Serializable
         if (CURRENT_USER == null) {
             throw new IllegalStateException("User is not logged in");
         }
-        if (!CURRENT_USER.getAccountType().isAuthorized(AccountType.Worker)) {
+        if (!CURRENT_USER.isAuthorized(AccountType.Worker)) {
             throw new IllegalStateException("Insufficient permissions");
         }
         QualityReport report = new QualityReport(CURRENT_USER, location, waterCondition, virusPpm, contaminantPpm);

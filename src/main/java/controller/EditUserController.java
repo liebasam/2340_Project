@@ -9,7 +9,11 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import model.AccountType;
 import model.Model;
+import model.User;
 
+/**
+ * Controller for the edit account dialog
+ */
 public class EditUserController extends Controller
 {
     @FXML
@@ -25,11 +29,11 @@ public class EditUserController extends Controller
     private void initialize() {
         accountTypeChoiceBox.getItems().setAll(AccountType.values());
         
-        Model model = Model.getInstance();
-        usernameField.setText(model.getCurrentUser().getUsername());
-        passwordField.setText(model.getCurrentUser().getPassword());
-        passwordConfirmField.setText(model.getCurrentUser().getPassword());
-        accountTypeChoiceBox.setValue(model.getCurrentUser().getAccountType());
+        User user = Model.getInstance().getCurrentUser();
+        usernameField.setText(user.getUsername());
+        passwordField.setText(user.getPassword());
+        passwordConfirmField.setText(user.getPassword());
+        accountTypeChoiceBox.setValue(user.getAccountType());
     }
     
     @FXML
@@ -47,6 +51,7 @@ public class EditUserController extends Controller
     @FXML
     private void onConfirmPressed() {
         Model model = Model.getInstance();
+        User user = model.getCurrentUser();
         String username = usernameField.getText();
         String password = passwordField.getText();
         String confPass = passwordConfirmField.getText();
@@ -58,7 +63,7 @@ public class EditUserController extends Controller
             createErrorMessage("Account Edit Error", "Passwords do not match");
         } else {
             String changes = "";
-            if(!username.equals(model.getCurrentUser().getUsername())) {
+            if(!username.equals(user.getUsername())) {
                 try {
                     model.modifyUserName(username);
                     changes += "Username changed to " + username + "\n";
@@ -66,7 +71,7 @@ public class EditUserController extends Controller
                     createErrorMessage("Account Edit Error", "Username already exists");
                 }
             }
-            if(!password.equals(model.getCurrentUser().getPassword())) {
+            if(!password.equals(user.getPassword())) {
                 try {
                     model.setPassword(password);
                     changes += "Password changed\n";
@@ -74,7 +79,7 @@ public class EditUserController extends Controller
                     createErrorMessage("Account Edit Error", "New password is invalid");
                 }
             }
-            if(!accountType.equals(model.getCurrentUser().getAccountType())) {
+            if(!accountType.equals(user.getAccountType())) {
                 model.setAccountType(accountType);
                 changes += "Account type changed to " + accountType.toString().toLowerCase();
                 

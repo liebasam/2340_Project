@@ -2,6 +2,9 @@ package model;
 
 import java.io.Serializable;
 
+/**
+ * Represents a single account
+ */
 public class User implements Serializable {
 
     private String username;
@@ -35,6 +38,15 @@ public class User implements Serializable {
      */
     public AccountType getAccountType() { return accountType; }
     void setAccountType(AccountType newAccountType) { accountType = newAccountType; }
+    
+    /**
+     * Returns whether this account type has sufficient permissions
+     * @param authLevel minimum authorization level required
+     * @return whether this account type is at or above authLevel
+     */
+    public boolean isAuthorized(AccountType authLevel) {
+        return accountType.isAuthorized(authLevel);
+    }
 
     @Override
     public String toString() { return getUsername(); }

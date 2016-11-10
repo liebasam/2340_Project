@@ -4,6 +4,9 @@ import com.lynden.gmapsfx.javascript.object.LatLong;
 
 import java.io.Serializable;
 
+/**
+ * Represents a (latitude, longitude) coordinate
+ */
 public class Location implements Serializable {
     private final double lat;
     private final double lng;

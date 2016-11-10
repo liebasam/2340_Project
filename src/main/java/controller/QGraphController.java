@@ -5,6 +5,9 @@ import model.QualityReport;
 
 import java.util.Collection;
 
+/**
+ * Controller for the quality report history graph window
+ */
 public class QGraphController extends Controller
 {
     @FXML

@@ -9,6 +9,9 @@ import model.Location;
 import model.Model;
 import model.WaterSourceReport;
 
+/**
+ * Controller for the add source report dialog
+ */
 public class SourceReportController extends Controller
 {
     private Location reportLocation = null;

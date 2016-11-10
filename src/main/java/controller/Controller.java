@@ -3,6 +3,10 @@ package controller;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
+/**
+ * Superclass for other controller classes to allow polymorphism and shared
+ * helper methods
+ */
 abstract class Controller
 {
     Stage stage;
