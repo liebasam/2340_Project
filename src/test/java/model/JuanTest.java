@@ -8,7 +8,7 @@ import java.util.Random;
 import static org.junit.Assert.*;
 
 /**
- * Created by Juan on 09/11/2016.
+ * @author Juan
  */
 public class JuanTest {
 
@@ -18,19 +18,19 @@ public class JuanTest {
 
 
     @Before
-    public void setup() {
+    public void setup() throws Exception{
         try {
             model.createAccount(username, password, AccountType.Manager);
         } catch(Exception e) {
-
+            ;
         }
     }
 
     @Test
     public void loginTest() {
         model.login(username, password);
-        assertEquals(model.CURRENT_USER.getUsername(), username.toLowerCase());
-        assertEquals(model.CURRENT_USER.getPassword(), password);
+        assertEquals(model.getCurrentUser().getUsername(), username.toLowerCase());
+        assertEquals(model.getCurrentUser().getPassword(), password);
         model.logout();
     }
 

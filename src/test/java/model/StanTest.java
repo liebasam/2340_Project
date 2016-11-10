@@ -8,11 +8,11 @@ import org.junit.Test;
  */
 
 import java.util.Set;
-
+/**
+ * @author Soo Hyung Park
+ */
 public class StanTest {
     private User userObj1;
-    private final String eric_user = "bird";
-    private final String eric_pass = "up";
     private final Location gatech = new Location(33.7756178, -84.396285);
     private final Location somewhere = new Location(33.7756178, -84.38392538);
 
@@ -24,6 +24,8 @@ public class StanTest {
     @Before
     public void setup() {
         model = Model.getTestInstance();
+        String eric_user = "bird";
+        String eric_pass = "up";
         userObj1 = model.createAccount(eric_user, eric_pass, AccountType.Manager);
         model.login(eric_user, eric_pass);
         model.createSourceReport(gatech.getLatitude(), gatech.getLongitude(),
@@ -39,6 +41,7 @@ public class StanTest {
 
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testNearbySourceReports() {
         WaterSourceReport waterbottle = new WaterSourceReport(userObj1, gatech, WaterSourceReport.SourceType.BOTTLED,
@@ -46,6 +49,7 @@ public class StanTest {
         Assert.assertTrue(containsIgnoreDateIDNumber(model.getSourceReportsNear(somewhere), waterbottle));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testHideNearbySourceReports() {
         model.createSourceReport(somewhere.getLatitude(), somewhere.getLongitude(), WaterSourceReport.SourceType
