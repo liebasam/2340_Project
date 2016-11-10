@@ -22,7 +22,7 @@ public class QualityReportController extends Controller
     @FXML
     private TextField contaminantPpmField;
     
-    public void setReportLocation(Location location) { reportLocation = location; }
+    void setReportLocation(Location location) { reportLocation = location; }
     
     @FXML
     private void initialize() {
@@ -44,29 +44,29 @@ public class QualityReportController extends Controller
         QualityReport.WaterCondition waterCondition = conditionTypeChoiceBox.getValue();
         double virusPpm;
         double contaminantPpm;
-        if(ControllerUtils.isEmpty(virusPpmField.getText(), contaminantPpmField.getText())) {
-            ControllerUtils.createErrorMessage(stage, "Submit Report Error", "One or more fields are empty");
+        if(isEmpty(virusPpmField.getText(), contaminantPpmField.getText())) {
+            createErrorMessage("Submit Report Error", "One or more fields are empty");
             return;
         }
         try {
             virusPpm = Double.parseDouble(virusPpmField.getText());
             contaminantPpm = Double.parseDouble(contaminantPpmField.getText());
         } catch (NumberFormatException e) {
-            ControllerUtils.createErrorMessage(stage, "Submit Report Error", "Please enter a valid number");
+            createErrorMessage("Submit Report Error", "Please enter a valid number");
             return;
         }
         
         if (waterCondition == null) {
-            ControllerUtils.createErrorMessage(stage, "Submit Report Error", "Please select a Water Condition");
+            createErrorMessage("Submit Report Error", "Please select a Water Condition");
         } else {
             if(model.getCurrentUser().getAccountType().isAuthorized(AccountType.Worker)) {
                 model.hideQualityReportsNear(reportLocation);
                 model.createQualityReport(reportLocation, waterCondition, virusPpm, contaminantPpm);
-                Alert message = ControllerUtils.createMessage(stage, "Submit Quality Report", "Success",
+                Alert message = createMessage("Submit Quality Report", "Success",
                         "Your water quality report has been added", Alert.AlertType.INFORMATION);
                 message.setOnCloseRequest(event -> stage.close());
             } else {
-                ControllerUtils.createErrorMessage(stage, "Submit Report Error", "Illegal Permissions");
+                createErrorMessage("Submit Report Error", "Illegal Permissions");
             }
         }
     }

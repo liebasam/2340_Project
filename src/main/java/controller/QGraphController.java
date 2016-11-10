@@ -11,15 +11,14 @@ public class QGraphController extends Controller
     private LineChart<String, Double> qualityGraph;
     
     @FXML
-    public void QualityGraphInit(Collection<QualityReport> qualityReports)
+    void QualityGraphInit(Collection<QualityReport> qualityReports)
     {
         LineChart.Series<String, Double> virusPpmSeries = new LineChart.Series<>();
         virusPpmSeries.setName("Virus PPM");
         LineChart.Series<String, Double> contaminantPpmSeries = new LineChart.Series<>();
         contaminantPpmSeries.setName("Contaminant PPM");
         for (QualityReport report : qualityReports) {
-            String date = report.getSubmissionDate().toString().substring(4, 16)
-                    + " " + report.getSubmissionDate().toString().substring(24, 28);
+            String date = report.getSubmissionDate().toString();
             Double virusPpm = report.getVirusPpm();
             Double contaminantPpm = report.getContaminantPpm();
             

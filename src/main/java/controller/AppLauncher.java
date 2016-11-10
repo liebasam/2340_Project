@@ -23,7 +23,7 @@ public class AppLauncher extends Application
             try {
                 Model.getInstance().save();
             } catch (Exception e) {
-                System.out.println("Could not save model");
+                //System.out.println("Could not save model");
                 e.printStackTrace();
             }
         });
@@ -32,8 +32,11 @@ public class AppLauncher extends Application
         WelcomeController controller = loader.getController();
         controller.setStage(primaryStage);
     }
-
-
+    
+    /**
+     * Launches the application
+     * @param args command line arguments
+     */
     public static void main(String[] args) {
         launch(args);
     }

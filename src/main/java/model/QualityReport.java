@@ -20,12 +20,21 @@ public class QualityReport implements Report, Serializable {
     @Override public Location getLocation() {return location;}
 
     private final WaterCondition waterCondition;
+    /**
+     * @return The relative safety of the water to drink
+     */
     public WaterCondition getWaterCondition() {return waterCondition;}
 
     private final Double virusPpm;
+    /**
+     * @return The virus concentration in parts per million
+     */
     public Double getVirusPpm() {return virusPpm;}
 
     private final Double contaminantPpm;
+    /**
+     * @return The contaminant concentration in parts per million
+     */
     public Double getContaminantPpm() {return contaminantPpm;}
 
     private boolean hidden;

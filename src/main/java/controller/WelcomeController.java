@@ -58,7 +58,7 @@ public class WelcomeController extends Controller
             Model.getInstance().login(username, password);
             showMainApp();
         } catch (IllegalArgumentException e) {
-            ControllerUtils.createErrorMessage(stage, "Login Error", "Invalid user/pass");
+            createErrorMessage("Login Error", "Invalid user/pass");
         }
     }
     
@@ -71,25 +71,38 @@ public class WelcomeController extends Controller
     }
     @FXML
     private void onRegisterPressed() {
+        final int MIN_PASS_LENGTH = 5;
+        
         String username = regUsernameField.getText();
         String password = regPasswordField.getText();
         String confPass = regPasswordConfirmField.getText();
 
-        if(ControllerUtils.isEmpty(username, password, confPass)) {
-            ControllerUtils.createErrorMessage(stage, "Registration Error", "Not all fields are filled out");
+        if(isEmpty(username, password, confPass)) {
+            createErrorMessage("Registration Error", "Not all fields are filled out");
         } else if (!password.equals(confPass)) {
-            ControllerUtils.createErrorMessage(stage, "Registration Error", "Passwords do not match");
+            createErrorMessage("Registration Error", "Passwords do not match");
+        } else if (!isValidUsername(username)) {
+            createErrorMessage("Registration Error", "Username must be lowercase and alphanumeric");
+        } else if(password.length() < MIN_PASS_LENGTH) {
+            createErrorMessage("Registration Error", "Password must be at least 6 characters");
         } else {
             try {
                 Model.getInstance().createAccount(username, password, regUserTypeChoiceBox.getValue());
                 String userType = regUserTypeChoiceBox.getValue().toString().toLowerCase();
-                ControllerUtils.createMessage(stage, "Registration", "Successfully registered", "New " + userType + " "
+                createMessage("Registration", "Successfully registered", "New " + userType + " "
                         + username + " created", Alert.AlertType.INFORMATION);
                 resetRegistration();
             } catch(IllegalArgumentException e) {
-                ControllerUtils.createErrorMessage(stage, "Registration Error", "Username already exists");
+                createErrorMessage("Registration Error", "Username already exists");
             }
         }
+    }
+    
+    private static boolean isValidUsername(String name) {
+        final boolean[] isValid = {(name.length() <= 15)};
+        name.chars().forEach(e -> isValid[0] = isValid[0] && (Character.isDigit(e) || (Character.isAlphabetic(e) &&
+                Character.isLowerCase(e))));
+        return isValid[0];
     }
 
     @FXML

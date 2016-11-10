@@ -19,8 +19,16 @@ import java.util.stream.Collectors;
 
 public final class Model implements Serializable
 {
-    private static Model instance = new Model();
+    private static final Model instance = new Model();
+    
+    /**
+     * @return the singleton instance of Model
+     */
     public static Model getInstance() { return instance; }
+    
+    /**
+     * @return a fresh instance for testing purposes
+     */
     public static Model getTestInstance() { return new Model(true); }
 
     private static final String FILE_DIRECTORY = "./savedata/";
@@ -28,16 +36,34 @@ public final class Model implements Serializable
 
     private int numUsers = 0;
     
-    
     private User CURRENT_USER;
+    /**
+     * @return the current logged in user, or null if logged out
+     */
     public User getCurrentUser() { return CURRENT_USER; }
+    
     private final Map<String, User> users = new HashMap<>();
+    /**
+     * @return a map of usernames to user objects
+     */
     public Map<String, User> getUsers() { return users; }
+    
     private final Set<SecurityLogEntry> securityLog = new HashSet<>();
+    /**
+     * @return the security log
+     */
     public Set<SecurityLogEntry> getSecurityLog() { return securityLog; }
+    
     private final Set<WaterSourceReport> waterSourceReports = new HashSet<>();
+    /**
+     * @return the set of water source reports
+     */
     public Set<WaterSourceReport> getWaterSourceReports() { return waterSourceReports; }
+    
     private final Set<QualityReport> qualityReports = new HashSet<>();
+    /**
+     * @return the set of quality reports
+     */
     public Set<QualityReport> getQualityReports() { return qualityReports; }
     
     private Model() {
@@ -57,13 +83,13 @@ public final class Model implements Serializable
                 this.qualityReports.addAll(obj.qualityReports);
                 ois.close();
                 fis.close();
-                System.out.println("Model loaded");
+                //System.out.println("Model loaded");
             } catch (FileNotFoundException e) {
-                System.out.println("Could not find serialized file");
+                //System.out.println("Could not find serialized file");
                 e.printStackTrace();
                 createAccount("user", "pass", AccountType.Admin);
             } catch (Exception e) {
-                System.out.println("Failed to load model");
+                //System.out.println("Failed to load model");
                 e.printStackTrace();
                 createAccount("user", "pass", AccountType.Admin);
             }
@@ -71,9 +97,10 @@ public final class Model implements Serializable
     }
 
     /**
-     * Creates a new username/password pair
+     * Creates a new user object
      * @param username Username
      * @param pw Password
+     * @param accountType The authorization level of the new user
      * @return The newly-created user
      * @throws IllegalArgumentException if username is already in use
      */
@@ -141,7 +168,7 @@ public final class Model implements Serializable
      * @param location Location of submission
      * @param waterCondition Water condition
      * @param virusPpm Virus Parts per Million
-     * @param contaminantPpm Contaminent Parts per Million
+     * @param contaminantPpm Contaminant Parts per Million
      * @return The newly-created quality report
      */
     public QualityReport createQualityReport(Location location, QualityReport.WaterCondition waterCondition,
@@ -170,6 +197,16 @@ public final class Model implements Serializable
                                              Double virusPpm, Double contaminantPpm) {
         return this.createQualityReport(new Location(lat, lng), waterCondition, virusPpm, contaminantPpm);
     }
+    
+    /**
+     * Gets all reports within 2 miles of the given location
+     * @param location Search origin
+     * @return Set of reports within 2 miles of location
+     */
+    private Set getReportsNear(Location location, Set<Report> reportsToCheck) {
+        final double NEAR_DIST_MILES = 2.0;
+        return getReportsNear(location, NEAR_DIST_MILES, reportsToCheck);
+    }
 
     /**
      * Gets all NON-HIDDEN reports within a distance of the given location
@@ -193,7 +230,7 @@ public final class Model implements Serializable
      * @return Set of reports within 2 miles of location
      */
     public Set getQualityReportsNear(Location location) {
-        return getReportsNear(location, 2.0, (Set) qualityReports);
+        return getReportsNear(location, (Set) qualityReports);
     }
     /**
      * Gets all NON-HIDDEN source reports within 2 miles of the given location
@@ -201,7 +238,7 @@ public final class Model implements Serializable
      * @return Set of reports within 2 miles of location
      */
     public Set getSourceReportsNear(Location location) {
-        return getReportsNear(location, 2.0, (Set) waterSourceReports);
+        return getReportsNear(location, (Set) waterSourceReports);
     }
     
     /**
@@ -275,6 +312,7 @@ public final class Model implements Serializable
 
     /**
      * Save the currently-held data
+     * @throws IOException if the data cannot successfully be saved
      */
     public void save() throws IOException {
         File file = new File(FILE_DIRECTORY + FILE_NAME_EXT);
@@ -285,7 +323,7 @@ public final class Model implements Serializable
         oos.writeObject(this);
         oos.close();
         fos.close();
-        System.out.println("Model saved");
+        //System.out.println("Model saved");
     }
 
 }

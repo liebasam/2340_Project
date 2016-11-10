@@ -45,7 +45,7 @@ final class SecurityLogEntry implements Serializable {
         return new SecurityLogEntry(null, userId, EventType.LOGIN_ATTEMPT, eventStatus);
     }
 
-    static SecurityLogEntry acountdelete(Integer issuerId, Integer userId) {
+    static SecurityLogEntry accountDelete(Integer issuerId, Integer userId) {
         return new SecurityLogEntry(issuerId, userId, EventType.ACCOUNT_DELETE, null);
     }
 
@@ -79,7 +79,7 @@ final class SecurityLogEntry implements Serializable {
                     "\nUser ID: " + this.objectId +
                     "\nStatus: " + this.eventStatus.toString();
         } else {
-            //TODO
+            //TOnotDO
             return eventType.toString();
         }
     }

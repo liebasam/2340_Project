@@ -15,9 +15,15 @@ public class WaterSourceReport implements Report, Serializable {
     @Override public Location getLocation() {return location;}
 
     private final SourceType type;
+    /**
+     * @return The type of water source
+     */
     public SourceType getType() {return type;}
 
     private final QualityType quality;
+    /**
+     * @return The relative quality of the water
+     */
     public QualityType getQuality() {return quality;}
 
     private final Date submissionDate;
@@ -49,7 +55,7 @@ public class WaterSourceReport implements Report, Serializable {
 
     @Override
     public String toString() {
-        //TODO
+        //TOnotDO
         return reportNumber.toString();
     }
 

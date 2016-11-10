@@ -43,12 +43,9 @@ import model.WaterSourceReport;
 import model.QualityReport;
 import model.Location;
 import netscape.javascript.JSObject;
-import java.util.List;
-import java.util.Set;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 public class MainAppController extends Controller implements MapComponentInitializedListener {
     
@@ -69,12 +66,12 @@ public class MainAppController extends Controller implements MapComponentInitial
     private GeocodingService geocodingService;
 
 
-    private ObservableList<String> searchList = FXCollections.observableArrayList();
+    private final ObservableList<String> searchList = FXCollections.observableArrayList();
 
     @FXML
     private ComboBox<String> addressTextField;
 
-    private StringProperty address = new SimpleStringProperty();
+    private final StringProperty address = new SimpleStringProperty();
 
     private GoogleMap map;
     @FXML
@@ -95,7 +92,7 @@ public class MainAppController extends Controller implements MapComponentInitial
         MarkerOptions opt = new MarkerOptions();
         Location l = report.getLocation();
         opt.position(new LatLong(l.getLatitude(), l.getLongitude()));
-        opt.title("Water type: "+ report.getType().toString()
+        opt.title("Water type: " + report.getType().toString()
                 + "\nWater quality: " + report.getQuality().toString()
                 + "\nSubmitted by: " + report.getSubmitter().getUsername()
                 + " on [" + report.getSubmissionDate().toString() + "]");
@@ -104,12 +101,9 @@ public class MainAppController extends Controller implements MapComponentInitial
         InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
         infoWindowOptions.content("<h2>" + report.getType().toString() + "</h2>"
                 + "Location: " + l.toString() + "<br>");
-        //infoWindowOptions.disableAutoPan(true);
         map.addUIEventHandler(newMark,
                 UIEventType.click,
                 (JSObject obj) -> {
-                    //InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
-                    //infoWindowOptions.content(l.getDescription());
                     Alert reportEdit = new Alert(Alert.AlertType.CONFIRMATION,
                             "Would you like to edit this source report?",
                             new ButtonType("Edit"),
@@ -121,9 +115,6 @@ public class MainAppController extends Controller implements MapComponentInitial
                     InfoWindow window = new InfoWindow(infoWindowOptions);
                     window.open(map, newMark);
                 });
-
-        //InfoWindow infoWindow = new InfoWindow(infoWindowOptions);
-        //infoWindow.open(map, newMark);
         
         map.addMarker(newMark);
     }
@@ -178,7 +169,9 @@ public class MainAppController extends Controller implements MapComponentInitial
     }
 
     private void initializeMap() {
-        initializeMap(new LatLong(40, 40), 9);
+        final LatLong start = new LatLong(40, 40);
+        final int startZoom = 9;
+        initializeMap(start, startZoom);
     }
 
     private void initializeMap(LatLong center, int zoomLevel) {
@@ -200,12 +193,12 @@ public class MainAppController extends Controller implements MapComponentInitial
     }
 
     @FXML
-    public void onAddressSearchButtonClicked() {
+    private void onAddressSearchButtonClicked() {
         geocodingService.geocode(address.get(), (GeocodingResult[] results, GeocoderStatus status) -> {
 
             LatLong latLong = null;
 
-            if( status == GeocoderStatus.ZERO_RESULTS) {
+            if(status == GeocoderStatus.ZERO_RESULTS) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "No locations matches with your search.");
                 alert.show();
                 return;
@@ -359,7 +352,7 @@ public class MainAppController extends Controller implements MapComponentInitial
         };
         SourceReportController controller = (SourceReportController) createModalWindow("/fxml/sourceReport.fxml",
                 "Add Source Report", handler);
-        controller.setReportLocation(new Location(map.getCenter().getLatitude(), map.getCenter().getLongitude()));
+        controller.setReportLocation(new Location(map.getCenter()));
     }
 
     @FXML
@@ -372,7 +365,7 @@ public class MainAppController extends Controller implements MapComponentInitial
             
             QualityReportController controller = (QualityReportController) createModalWindow("/fxml/qualityReport.fxml",
                     "Add Quality Report", handler);
-            controller.setReportLocation(new Location(map.getCenter().getLatitude(), map.getCenter().getLongitude()));
+            controller.setReportLocation(new Location(map.getCenter()));
         }
     }
 

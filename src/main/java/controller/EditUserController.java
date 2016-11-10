@@ -52,10 +52,10 @@ public class EditUserController extends Controller
         String confPass = passwordConfirmField.getText();
         AccountType accountType = accountTypeChoiceBox.getValue();
         
-        if(ControllerUtils.isEmpty(username, password, confPass)) {
-            ControllerUtils.createErrorMessage(stage, "Account Edit Error", "One or more fields are empty");
+        if(isEmpty(username, password, confPass)) {
+            createErrorMessage("Account Edit Error", "One or more fields are empty");
         } else if (!password.equals(confPass)) {
-            ControllerUtils.createErrorMessage(stage, "Account Edit Error", "Passwords do not match");
+            createErrorMessage("Account Edit Error", "Passwords do not match");
         } else {
             String changes = "";
             if(!username.equals(model.getCurrentUser().getUsername())) {
@@ -63,7 +63,7 @@ public class EditUserController extends Controller
                     model.modifyUserName(username);
                     changes += "Username changed to " + username + "\n";
                 } catch (IllegalArgumentException e) {
-                    ControllerUtils.createErrorMessage(stage, "Account Edit Error", "Username already exists");
+                    createErrorMessage("Account Edit Error", "Username already exists");
                 }
             }
             if(!password.equals(model.getCurrentUser().getPassword())) {
@@ -71,7 +71,7 @@ public class EditUserController extends Controller
                     model.setPassword(password);
                     changes += "Password changed\n";
                 } catch (IllegalArgumentException e) {
-                    ControllerUtils.createErrorMessage(stage, "Account Edit Error", "New password is invalid");
+                    createErrorMessage("Account Edit Error", "New password is invalid");
                 }
             }
             if(!accountType.equals(model.getCurrentUser().getAccountType())) {
@@ -83,7 +83,7 @@ public class EditUserController extends Controller
                 changes = "No changes made";
             }
             
-            Alert message = ControllerUtils.createMessage(stage, "Account Edit", "Successfully edited account",
+            Alert message = createMessage("Account Edit", "Successfully edited account",
                     changes, Alert.AlertType.INFORMATION);
             message.setOnCloseRequest(event -> stage.close());
         }
