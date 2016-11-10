@@ -14,7 +14,7 @@ public class JuanTest {
 
     private static final String username = "Leopold";
     private static final String password = "Ulysses";
-    private static final Model model = Model.getInstance();
+    private static final Model model = Model.getTestInstance();
 
 
     @Before
