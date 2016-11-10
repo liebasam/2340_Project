@@ -79,7 +79,7 @@ final class SecurityLogEntry implements Serializable {
                     "\nUser ID: " + this.objectId +
                     "\nStatus: " + this.eventStatus.toString();
         } else {
-            //TOnotDO
+            //TO_DO
             return eventType.toString();
         }
     }

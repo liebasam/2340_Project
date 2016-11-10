@@ -7,9 +7,9 @@
 <LineChart fx:id="qualityGraph" title="Quality Changes in area" xmlns="http://javafx.com/javafx/8.0.102-ea"
            xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.QGraphController">
     <xAxis>
-        <CategoryAxis label="Date" fx:id="xAxisPpm" />
+        <CategoryAxis label="Date" />
     </xAxis>
     <yAxis>
-        <NumberAxis fx:id="yAxisPpm" label="PPM" />
+        <NumberAxis label="PPM" />
     </yAxis>
 </LineChart>

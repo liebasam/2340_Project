@@ -136,7 +136,7 @@ public final class Model implements Serializable
      * @param l Location around which nearby quality reports will be hidden
      */
     public void hideQualityReportsNear(Location l) {
-        for (Report closeReport : (Set<Report>) Model.getInstance().getQualityReportsNear(l)) {
+        for (Report closeReport : (Set<Report>) getQualityReportsNear(l)) {
             closeReport.setHidden(true);
         }
     }
@@ -158,7 +158,7 @@ public final class Model implements Serializable
      * @param l Location around which nearby source reports will be hidden
      */
     public void hideSourceReportsNear(Location l) {
-        for (Report closeReport : (Set<Report>) Model.getInstance().getSourceReportsNear(l)) {
+        for (Report closeReport : (Set<Report>) getSourceReportsNear(l)) {
             closeReport.setHidden(true);
         }
     }
