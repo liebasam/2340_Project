@@ -25,10 +25,11 @@ public class EditUserController extends Controller
     private void initialize() {
         accountTypeChoiceBox.getItems().setAll(AccountType.values());
         
-        usernameField.setText(Model.CURRENT_USER.getUsername());
-        passwordField.setText(Model.CURRENT_USER.getPassword());
-        passwordConfirmField.setText(Model.CURRENT_USER.getPassword());
-        accountTypeChoiceBox.setValue(Model.CURRENT_USER.getAccountType());
+        Model model = Model.getInstance();
+        usernameField.setText(model.getCurrentUser().getUsername());
+        passwordField.setText(model.getCurrentUser().getPassword());
+        passwordConfirmField.setText(model.getCurrentUser().getPassword());
+        accountTypeChoiceBox.setValue(model.getCurrentUser().getAccountType());
     }
     
     @FXML
@@ -57,7 +58,7 @@ public class EditUserController extends Controller
             ControllerUtils.createErrorMessage(stage, "Account Edit Error", "Passwords do not match");
         } else {
             String changes = "";
-            if(!username.equals(Model.CURRENT_USER.getUsername())) {
+            if(!username.equals(model.getCurrentUser().getUsername())) {
                 try {
                     model.modifyUserName(username);
                     changes += "Username changed to " + username + "\n";
@@ -65,7 +66,7 @@ public class EditUserController extends Controller
                     ControllerUtils.createErrorMessage(stage, "Account Edit Error", "Username already exists");
                 }
             }
-            if(!password.equals(Model.CURRENT_USER.getPassword())) {
+            if(!password.equals(model.getCurrentUser().getPassword())) {
                 try {
                     model.setPassword(password);
                     changes += "Password changed\n";
@@ -73,12 +74,12 @@ public class EditUserController extends Controller
                     ControllerUtils.createErrorMessage(stage, "Account Edit Error", "New password is invalid");
                 }
             }
-            if(!accountType.equals(Model.CURRENT_USER.getAccountType())) {
+            if(!accountType.equals(model.getCurrentUser().getAccountType())) {
                 model.setAccountType(accountType);
                 changes += "Account type changed to " + accountType.toString().toLowerCase();
                 
             }
-            if(changes.equals("")) {
+            if(changes.length() < 1) {
                 changes = "No changes made";
             }
             

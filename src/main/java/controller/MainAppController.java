@@ -3,32 +3,51 @@ package controller;
 import com.lynden.gmapsfx.GoogleMapView;
 import com.lynden.gmapsfx.MapComponentInitializedListener;
 import com.lynden.gmapsfx.javascript.event.UIEventType;
-import com.lynden.gmapsfx.javascript.object.*;
 import com.lynden.gmapsfx.service.geocoding.GeocoderStatus;
 import com.lynden.gmapsfx.service.geocoding.GeocodingResult;
 import com.lynden.gmapsfx.service.geocoding.GeocodingService;
+import com.lynden.gmapsfx.javascript.object.GoogleMap;
+import com.lynden.gmapsfx.javascript.object.LatLong;
+import com.lynden.gmapsfx.javascript.object.MarkerOptions;
+import com.lynden.gmapsfx.javascript.object.Marker;
+import com.lynden.gmapsfx.javascript.object.InfoWindowOptions;
+import com.lynden.gmapsfx.javascript.object.InfoWindow;
+import com.lynden.gmapsfx.javascript.object.MapOptions;
+import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TableRow;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import model.*;
+import model.Model;
+import model.AccountType;
+import model.WaterSourceReport;
+import model.QualityReport;
+import model.Location;
 import netscape.javascript.JSObject;
-
+import java.util.List;
+import java.util.Set;
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 public class MainAppController extends Controller implements MapComponentInitializedListener {
@@ -70,7 +89,7 @@ public class MainAppController extends Controller implements MapComponentInitial
         mapView.addMapInializedListener(this);
         addressTextField.setItems(searchList);
         address.bind(addressTextField.getEditor().textProperty());
-        viewQualityTab.setDisable(!Model.CURRENT_USER.getAccountType().isAuthorized(AccountType.Manager));
+        viewQualityTab.setDisable(!Model.getInstance().getCurrentUser().getAccountType().isAuthorized(AccountType.Manager));
     }
 
     private void addMarker(WaterSourceReport report) {
@@ -123,7 +142,7 @@ public class MainAppController extends Controller implements MapComponentInitial
                 UIEventType.click,
                 (JSObject obj) -> {
                     Alert reportEdit;
-                    if(Model.CURRENT_USER.getAccountType().isAuthorized(AccountType.Manager)) {
+                    if(Model.getInstance().getCurrentUser().getAccountType().isAuthorized(AccountType.Manager)) {
                         reportEdit = new Alert(Alert.AlertType.CONFIRMATION, "Would you like to edit this quality report?",
                                 new ButtonType("Edit"),
                                 new ButtonType("Add a new report at this location"),
@@ -139,7 +158,7 @@ public class MainAppController extends Controller implements MapComponentInitial
                     }
 
                     reportEdit.showAndWait();
-                    if (Model.CURRENT_USER.getAccountType().isAuthorized(AccountType.Manager) && reportEdit.getResult().getText().equals("See History")) {
+                    if (Model.getInstance().getCurrentUser().getAccountType().isAuthorized(AccountType.Manager) && "See History".equals(reportEdit.getResult().getText())) {
                         Set<QualityReport> qlists = Model.getInstance().getQualityReports();
                         List<QualityReport> neighbors = qlists.stream()
                                 .filter(e ->
@@ -182,7 +201,7 @@ public class MainAppController extends Controller implements MapComponentInitial
     }
 
     @FXML
-    public void onAddressSearchButtonClicked(ActionEvent event) {
+    public void onAddressSearchButtonClicked() {
         geocodingService.geocode(address.get(), (GeocodingResult[] results, GeocoderStatus status) -> {
 
             LatLong latLong = null;
@@ -240,7 +259,7 @@ public class MainAppController extends Controller implements MapComponentInitial
         SourceHistoryTable.setRowFactory( tv -> {
             TableRow<WaterSourceReport> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
+                if ((event.getClickCount() == 2) && (! row.isEmpty()) ) {
                     WaterSourceReport rowData = row.getItem();
                 }
             });
@@ -294,7 +313,7 @@ public class MainAppController extends Controller implements MapComponentInitial
     MenuItem addQualityReportMenuItem;
 
     private void menuInit() {
-        boolean authorized = Model.CURRENT_USER.getAccountType().isAuthorized(AccountType.Worker);
+        boolean authorized = Model.getInstance().getCurrentUser().getAccountType().isAuthorized(AccountType.Worker);
         addQualityReportMenuItem.setVisible(authorized);
     }
 
@@ -342,7 +361,7 @@ public class MainAppController extends Controller implements MapComponentInitial
 
     @FXML
     private void onAddQualityReportPressed() {
-        if(Model.CURRENT_USER.getAccountType().isAuthorized(AccountType.Worker)) {
+        if(Model.getInstance().getCurrentUser().getAccountType().isAuthorized(AccountType.Worker)) {
             EventHandler<WindowEvent> handler = event -> {
                 initializeMap(map.getCenter(), map.getZoom());
                 viewQReportInit();

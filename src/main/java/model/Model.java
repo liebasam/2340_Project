@@ -3,14 +3,22 @@ package model;
 import model.WaterSourceReport.QualityType;
 import model.WaterSourceReport.SourceType;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.Serializable;
+import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class Model implements Serializable {
+public final class Model implements Serializable
+{
     private static Model instance = new Model();
     public static Model getInstance() { return instance; }
     public static Model getTestInstance() { return new Model(true); }
@@ -18,17 +26,19 @@ public class Model implements Serializable {
     private static final String FILE_DIRECTORY = "./savedata/";
     private static final String FILE_NAME_EXT = "model.ser";
 
-    private static int numUsers = 0;
-    public static User CURRENT_USER;
-
+    private int numUsers = 0;
+    
+    
+    private User CURRENT_USER;
+    public User getCurrentUser() { return CURRENT_USER; }
     private final Map<String, User> users = new HashMap<>();
-    public Map<String, User> getUsers() {return users;}
+    public Map<String, User> getUsers() { return users; }
     private final Set<SecurityLogEntry> securityLog = new HashSet<>();
-    public Set<SecurityLogEntry> getSecurityLog() {return securityLog;}
+    public Set<SecurityLogEntry> getSecurityLog() { return securityLog; }
     private final Set<WaterSourceReport> waterSourceReports = new HashSet<>();
-    public Set<WaterSourceReport> getWaterSourceReports() {return waterSourceReports;}
+    public Set<WaterSourceReport> getWaterSourceReports() { return waterSourceReports; }
     private final Set<QualityReport> qualityReports = new HashSet<>();
-    public Set<QualityReport> getQualityReports() {return qualityReports;}
+    public Set<QualityReport> getQualityReports() { return qualityReports; }
     
     private Model() {
         this(false);
@@ -71,7 +81,8 @@ public class Model implements Serializable {
         if (users.containsKey(username.toLowerCase())) {
             throw new IllegalArgumentException("Username is taken");
         }
-        User user = new User(username.toLowerCase(), pw, accountType, numUsers++);
+        User user = new User(username.toLowerCase(), pw, accountType, numUsers);
+        numUsers++;
 
         users.put(username.toLowerCase(), user);
         return user;
@@ -170,7 +181,7 @@ public class Model implements Serializable {
         //Degree of latitude is ~69 miles apart
         //lol 69
         return reportsToCheck.stream()
-                .filter(report -> !report.isHidden() && Math.abs(location.getLatitude() - report.getLocation().getLatitude()) * 69 < miles)
+                .filter(report -> !report.isHidden() && ((Math.abs(location.getLatitude() - report.getLocation().getLatitude()) * 69) < miles))
                 .filter(report -> distBetween(location, report.getLocation()) < miles)
                 .collect(Collectors.toSet());
     }
@@ -240,7 +251,7 @@ public class Model implements Serializable {
         if (CURRENT_USER == null) {
             throw new IllegalStateException("User is not logged in");
         }
-        if (newPass.equals("")) {
+        if (newPass.length() < 1) {
             throw new IllegalArgumentException("Invalid password");
         }
         CURRENT_USER.setPassword(newPass);

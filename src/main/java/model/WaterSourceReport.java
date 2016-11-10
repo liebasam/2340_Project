@@ -37,7 +37,8 @@ public class WaterSourceReport implements Report, Serializable {
         this.type = type;
         this.quality = quality;
         this.submissionDate = new Date();
-        this.reportNumber = LAST_REPORT_NUMBER++;
+        this.reportNumber = LAST_REPORT_NUMBER;
+        LAST_REPORT_NUMBER++;
         this.hidden = false;
     }
 

@@ -9,8 +9,6 @@ import org.junit.Test;
 
 import java.util.Set;
 
-import static org.junit.Assert.*;
-
 public class StanTest {
     private User userObj1;
     private final String eric_user = "bird";

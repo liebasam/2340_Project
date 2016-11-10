@@ -42,7 +42,8 @@ public class QualityReportController extends Controller
     private void onSubmitPressed() {
         Model model = Model.getInstance();
         QualityReport.WaterCondition waterCondition = conditionTypeChoiceBox.getValue();
-        double virusPpm, contaminantPpm;
+        double virusPpm;
+        double contaminantPpm;
         if(ControllerUtils.isEmpty(virusPpmField.getText(), contaminantPpmField.getText())) {
             ControllerUtils.createErrorMessage(stage, "Submit Report Error", "One or more fields are empty");
             return;
@@ -58,7 +59,7 @@ public class QualityReportController extends Controller
         if (waterCondition == null) {
             ControllerUtils.createErrorMessage(stage, "Submit Report Error", "Please select a Water Condition");
         } else {
-            if(Model.CURRENT_USER.getAccountType().isAuthorized(AccountType.Worker)) {
+            if(model.getCurrentUser().getAccountType().isAuthorized(AccountType.Worker)) {
                 model.hideQualityReportsNear(reportLocation);
                 model.createQualityReport(reportLocation, waterCondition, virusPpm, contaminantPpm);
                 Alert message = ControllerUtils.createMessage(stage, "Submit Quality Report", "Success",

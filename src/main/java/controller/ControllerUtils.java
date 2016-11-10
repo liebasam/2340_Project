@@ -3,7 +3,7 @@ package controller;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
-class ControllerUtils
+final class ControllerUtils
 {
     private ControllerUtils() {}
     
@@ -14,7 +14,7 @@ class ControllerUtils
      */
     public static boolean isEmpty(String... fields) {
         for (String field : fields) {
-            if (field == null || field.length() == 0) {
+            if ((field == null) || field.isEmpty()) {
                 return true;
             }
         }
@@ -54,7 +54,7 @@ class ControllerUtils
      */
     public static boolean isValidUsername(String name) {
         final boolean[] isValid = {(name.length() <= 15)};
-        name.chars().forEach(e -> isValid[0] = isValid[0] && ((e >= 48 && e <= 57) || (e >= 97 && e <= 122)));
+        name.chars().forEach(e -> isValid[0] = isValid[0] && (Character.isDigit(e) || (Character.isAlphabetic(e) && Character.isLowerCase(e))));
         return isValid[0];
     }
 

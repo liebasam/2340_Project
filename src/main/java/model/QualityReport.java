@@ -37,7 +37,8 @@ public class QualityReport implements Report, Serializable {
         this.location = location;
         this.submitter = submitter;
         this.submissionDate = new Date();
-        this.reportNumber = LAST_REPORT_NUMBER++;
+        this.reportNumber = LAST_REPORT_NUMBER;
+        LAST_REPORT_NUMBER++;
         this.waterCondition = waterCondition;
         this.virusPpm = virusPpm;
         this.contaminantPpm = contaminantPpm;
