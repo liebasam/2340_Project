@@ -7,6 +7,9 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import model.Model;
 
+/**
+ * Starting point for the application
+ */
 public class AppLauncher extends Application
 {
     //Run -> Run 'AppLauncher'
@@ -18,12 +21,12 @@ public class AppLauncher extends Application
         Parent root = loader.load();
     
         primaryStage.setTitle("Sign-in/Register");
-        primaryStage.setScene(new Scene(root, 400, 275));
+        primaryStage.setScene(new Scene(root));
         primaryStage.setOnHiding(event -> {
             try {
                 Model.getInstance().save();
             } catch (Exception e) {
-                System.out.println("Could not save model");
+                //System.out.println("Could not save model");
                 e.printStackTrace();
             }
         });
@@ -32,8 +35,11 @@ public class AppLauncher extends Application
         WelcomeController controller = loader.getController();
         controller.setStage(primaryStage);
     }
-
-
+    
+    /**
+     * Launches the application
+     * @param args command line arguments
+     */
     public static void main(String[] args) {
         launch(args);
     }

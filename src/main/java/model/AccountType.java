@@ -2,6 +2,9 @@ package model;
 
 import java.io.Serializable;
 
+/**
+ * Represents a user authentication level
+ */
 public enum AccountType implements Serializable
 {
     User(0),
@@ -12,7 +15,12 @@ public enum AccountType implements Serializable
     private final int value;
     AccountType(int value) { this.value = value; }
     
-    public boolean isAuthorized(AccountType authLevel) {
+    /**
+     * Returns whether this account type has sufficient permissions
+     * @param authLevel minimum authorization level required
+     * @return whether this account type is at or above authLevel
+     */
+    boolean isAuthorized(AccountType authLevel) {
         return value >= authLevel.value;
     }
 }

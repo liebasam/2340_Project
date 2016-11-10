@@ -3,41 +3,60 @@ package model;
 import java.io.Serializable;
 import java.util.Date;
 
+/**
+ * Represents a quality report, which is a water report with more exact and
+ * technical details on the water quality
+ */
 public class QualityReport implements Report, Serializable {
     private static Integer LAST_REPORT_NUMBER = 0;
 
     // StringProperty is needed in order to populate the 'View Reports' table
     private final User submitter;
-    public User getSubmitter() {return submitter;}
+    @Override public User getSubmitter() { return submitter; }
 
     private final Date submissionDate;
-    public Date getSubmissionDate() {return submissionDate;}
+    @Override public Date getSubmissionDate() { return submissionDate; }
 
     private final Integer reportNumber;
-    public Integer getReportNumber() {return reportNumber;}
+    @Override public Integer getReportNumber() { return reportNumber; }
 
     private final Location location;
-    public Location getLocation() {return location;}
+    @Override public Location getLocation() { return location; }
 
     private final WaterCondition waterCondition;
-    public WaterCondition getWaterCondition() {return waterCondition;}
+    /**
+     * @return The relative safety of the water to drink
+     */
+    public WaterCondition getWaterCondition() {return waterCondition; }
 
     private final Double virusPpm;
-    public Double getVirusPpm() {return virusPpm;}
+    /**
+     * @return The virus concentration in parts per million
+     */
+    public Double getVirusPpm() { return virusPpm; }
 
     private final Double contaminantPpm;
-    public Double getContaminantPpm() {return contaminantPpm;}
+    /**
+     * @return The contaminant concentration in parts per million
+     */
+    public Double getContaminantPpm() { return contaminantPpm; }
 
     private boolean hidden;
-    public boolean isHidden() {return hidden;}
-    public void setHidden(boolean hidden) {this.hidden = hidden;}
+    @Override public boolean isHidden() {return hidden;}
+    @Override public void setHidden(boolean hidden) {this.hidden = hidden; }
+    
+    private static Integer nextReportNumber() {
+        Integer next = LAST_REPORT_NUMBER;
+        LAST_REPORT_NUMBER++;
+        return next;
+    }
 
-    public QualityReport(User submitter, Location location, WaterCondition waterCondition,
+    QualityReport(User submitter, Location location, WaterCondition waterCondition,
                          Double virusPpm, Double contaminantPpm) {
         this.location = location;
         this.submitter = submitter;
         this.submissionDate = new Date();
-        this.reportNumber = LAST_REPORT_NUMBER++;
+        this.reportNumber = nextReportNumber();
         this.waterCondition = waterCondition;
         this.virusPpm = virusPpm;
         this.contaminantPpm = contaminantPpm;

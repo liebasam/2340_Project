@@ -9,7 +9,10 @@ import model.Location;
 import model.Model;
 import model.WaterSourceReport;
 
-class SourceReportController extends Controller
+/**
+ * Controller for the add source report dialog
+ */
+public class SourceReportController extends Controller
 {
     private Location reportLocation = null;
     
@@ -18,7 +21,7 @@ class SourceReportController extends Controller
     @FXML
     private ChoiceBox<WaterSourceReport.QualityType> qualityTypeChoiceBox;
     
-    public void setReportLocation(Location location) { reportLocation = location; }
+    void setReportLocation(Location location) { reportLocation = location; }
     
     @FXML
     private void initialize() {
@@ -40,13 +43,13 @@ class SourceReportController extends Controller
         WaterSourceReport.QualityType quality = qualityTypeChoiceBox.getValue();
         
         if(source == null) {
-            ControllerUtils.createErrorMessage(stage, "Submit Report Error", "Please select a source type");
+            createErrorMessage("Submit Report Error", "Please select a source type");
         } else if(quality == null) {
-            ControllerUtils.createErrorMessage(stage, "Submit Report Error", "Please select a quality type");
+            createErrorMessage("Submit Report Error", "Please select a quality type");
         } else {
             model.hideSourceReportsNear(reportLocation);
             model.createSourceReport(reportLocation, source, quality);
-            Alert message = ControllerUtils.createMessage(stage, "Submit Report", "Success",
+            Alert message = createMessage("Submit Report", "Success",
                     "Your water source report has been added", Alert.AlertType.INFORMATION);
             message.setOnCloseRequest(event -> stage.close());
         }
