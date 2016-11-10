@@ -178,10 +178,7 @@ public final class Model implements Serializable
      * @return Set of reports within miles of location
      */
     private Set<Report> getReportsNear(Location location, Double miles, Set<Report> reportsToCheck) {
-        //Degree of latitude is ~69 miles apart
-        //lol 69
         return reportsToCheck.stream()
-                .filter(report -> !report.isHidden() && ((Math.abs(location.getLatitude() - report.getLocation().getLatitude()) * 69) < miles))
                 .filter(report -> distBetween(location, report.getLocation()) < miles)
                 .collect(Collectors.toSet());
     }

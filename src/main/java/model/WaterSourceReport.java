@@ -9,10 +9,10 @@ public class WaterSourceReport implements Report, Serializable {
 
     // StringProperty is needed in order to populate the 'View Reports' table
     private final User submitter;
-    public User getSubmitter() {return submitter;}
+    @Override public User getSubmitter() {return submitter;}
 
     private final Location location;
-    public Location getLocation() {return location;}
+    @Override public Location getLocation() {return location;}
 
     private final SourceType type;
     public SourceType getType() {return type;}
@@ -21,24 +21,29 @@ public class WaterSourceReport implements Report, Serializable {
     public QualityType getQuality() {return quality;}
 
     private final Date submissionDate;
-    public Date getSubmissionDate() {return submissionDate;}
+    @Override public Date getSubmissionDate() {return submissionDate;}
 
     private final Integer reportNumber;
-    public Integer getReportNumber() {return reportNumber;}
+    @Override public Integer getReportNumber() {return reportNumber;}
 
     private boolean hidden;
-    public boolean isHidden() {return hidden;}
-    public void setHidden(boolean hidden) {this.hidden = hidden;}
+    @Override public boolean isHidden() {return hidden;}
+    @Override public void setHidden(boolean hidden) {this.hidden = hidden;}
+    
+    private static Integer nextReportNumber() {
+        Integer next = LAST_REPORT_NUMBER;
+        LAST_REPORT_NUMBER++;
+        return next;
+    }
 
-    public WaterSourceReport(User submitter, Location location,
+    WaterSourceReport(User submitter, Location location,
                              SourceType type, QualityType quality) {
         this.submitter = submitter;
         this.location = location;
         this.type = type;
         this.quality = quality;
         this.submissionDate = new Date();
-        this.reportNumber = LAST_REPORT_NUMBER;
-        LAST_REPORT_NUMBER++;
+        this.reportNumber = nextReportNumber();
         this.hidden = false;
     }
 

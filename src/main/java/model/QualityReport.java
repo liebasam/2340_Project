@@ -8,16 +8,16 @@ public class QualityReport implements Report, Serializable {
 
     // StringProperty is needed in order to populate the 'View Reports' table
     private final User submitter;
-    public User getSubmitter() {return submitter;}
+    @Override public User getSubmitter() {return submitter;}
 
     private final Date submissionDate;
-    public Date getSubmissionDate() {return submissionDate;}
+    @Override public Date getSubmissionDate() {return submissionDate;}
 
     private final Integer reportNumber;
-    public Integer getReportNumber() {return reportNumber;}
+    @Override public Integer getReportNumber() {return reportNumber;}
 
     private final Location location;
-    public Location getLocation() {return location;}
+    @Override public Location getLocation() {return location;}
 
     private final WaterCondition waterCondition;
     public WaterCondition getWaterCondition() {return waterCondition;}
@@ -29,16 +29,21 @@ public class QualityReport implements Report, Serializable {
     public Double getContaminantPpm() {return contaminantPpm;}
 
     private boolean hidden;
-    public boolean isHidden() {return hidden;}
-    public void setHidden(boolean hidden) {this.hidden = hidden;}
+    @Override public boolean isHidden() {return hidden;}
+    @Override public void setHidden(boolean hidden) {this.hidden = hidden;}
+    
+    private static Integer nextReportNumber() {
+        Integer next = LAST_REPORT_NUMBER;
+        LAST_REPORT_NUMBER++;
+        return next;
+    }
 
-    public QualityReport(User submitter, Location location, WaterCondition waterCondition,
+    QualityReport(User submitter, Location location, WaterCondition waterCondition,
                          Double virusPpm, Double contaminantPpm) {
         this.location = location;
         this.submitter = submitter;
         this.submissionDate = new Date();
-        this.reportNumber = LAST_REPORT_NUMBER;
-        LAST_REPORT_NUMBER++;
+        this.reportNumber = nextReportNumber();
         this.waterCondition = waterCondition;
         this.virusPpm = virusPpm;
         this.contaminantPpm = contaminantPpm;

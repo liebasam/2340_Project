@@ -83,7 +83,8 @@ public class WelcomeController extends Controller
             try {
                 Model.getInstance().createAccount(username, password, regUserTypeChoiceBox.getValue());
                 String userType = regUserTypeChoiceBox.getValue().toString().toLowerCase();
-                ControllerUtils.createMessage(stage, "Registration", "Successfully registered", "New " + userType + " " + username + " created", Alert.AlertType.INFORMATION);
+                ControllerUtils.createMessage(stage, "Registration", "Successfully registered", "New " + userType + " "
+                        + username + " created", Alert.AlertType.INFORMATION);
                 resetRegistration();
             } catch(IllegalArgumentException e) {
                 ControllerUtils.createErrorMessage(stage, "Registration Error", "Username already exists");

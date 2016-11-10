@@ -18,7 +18,7 @@ public class AppLauncher extends Application
         Parent root = loader.load();
     
         primaryStage.setTitle("Sign-in/Register");
-        primaryStage.setScene(new Scene(root, 400, 275));
+        primaryStage.setScene(new Scene(root));
         primaryStage.setOnHiding(event -> {
             try {
                 Model.getInstance().save();

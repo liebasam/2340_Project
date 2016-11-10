@@ -83,7 +83,8 @@ public class EditUserController extends Controller
                 changes = "No changes made";
             }
             
-            Alert message = ControllerUtils.createMessage(stage, "Account Edit", "Successfully edited account", changes, Alert.AlertType.INFORMATION);
+            Alert message = ControllerUtils.createMessage(stage, "Account Edit", "Successfully edited account",
+                    changes, Alert.AlertType.INFORMATION);
             message.setOnCloseRequest(event -> stage.close());
         }
     }

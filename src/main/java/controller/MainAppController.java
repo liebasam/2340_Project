@@ -52,8 +52,6 @@ import java.util.stream.Collectors;
 
 public class MainAppController extends Controller implements MapComponentInitializedListener {
     
-    private Stage stage;
-    public void setStage(Stage stage) { this.stage = stage; }
     private ResourceBundle resources;
     @FXML // URL location of the FXML file that was given to the FXMLLoader
     private URL location;
@@ -89,7 +87,8 @@ public class MainAppController extends Controller implements MapComponentInitial
         mapView.addMapInializedListener(this);
         addressTextField.setItems(searchList);
         address.bind(addressTextField.getEditor().textProperty());
-        viewQualityTab.setDisable(!Model.getInstance().getCurrentUser().getAccountType().isAuthorized(AccountType.Manager));
+        viewQualityTab.setDisable(!Model.getInstance().getCurrentUser().getAccountType()
+                .isAuthorized(AccountType.Manager));
     }
 
     private void addMarker(WaterSourceReport report) {
@@ -111,7 +110,8 @@ public class MainAppController extends Controller implements MapComponentInitial
                 (JSObject obj) -> {
                     //InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
                     //infoWindowOptions.content(l.getDescription());
-                    Alert reportEdit = new Alert(Alert.AlertType.CONFIRMATION, "Would you like to edit this source report?",
+                    Alert reportEdit = new Alert(Alert.AlertType.CONFIRMATION,
+                            "Would you like to edit this source report?",
                             new ButtonType("Edit"),
                             new ButtonType("Add a new report at this location"),
                             new ButtonType("Delete"),
@@ -143,14 +143,16 @@ public class MainAppController extends Controller implements MapComponentInitial
                 (JSObject obj) -> {
                     Alert reportEdit;
                     if(Model.getInstance().getCurrentUser().getAccountType().isAuthorized(AccountType.Manager)) {
-                        reportEdit = new Alert(Alert.AlertType.CONFIRMATION, "Would you like to edit this quality report?",
+                        reportEdit = new Alert(Alert.AlertType.CONFIRMATION,
+                                "Would you like to edit this quality report?",
                                 new ButtonType("Edit"),
                                 new ButtonType("Add a new report at this location"),
                                 new ButtonType("Delete"),
                                 new ButtonType("See History"),
                                 new ButtonType("Cancel", ButtonBar.ButtonData.BACK_PREVIOUS));
                     } else {
-                        reportEdit = new Alert(Alert.AlertType.CONFIRMATION, "Would you like to edit this quality report?",
+                        reportEdit = new Alert(Alert.AlertType.CONFIRMATION,
+                                "Would you like to edit this quality report?",
                                 new ButtonType("Edit"),
                                 new ButtonType("Add a new report at this location"),
                                 new ButtonType("Delete"),
@@ -158,15 +160,12 @@ public class MainAppController extends Controller implements MapComponentInitial
                     }
 
                     reportEdit.showAndWait();
-                    if (Model.getInstance().getCurrentUser().getAccountType().isAuthorized(AccountType.Manager) && "See History".equals(reportEdit.getResult().getText())) {
-                        Set<QualityReport> qlists = Model.getInstance().getQualityReports();
-                        List<QualityReport> neighbors = qlists.stream()
-                                .filter(e ->
-                                        e.getLocation().distanceTo(report.getLocation()) <= 2.0)
-                                .collect(Collectors.toList());
+                    if (Model.getInstance().getCurrentUser().getAccountType().isAuthorized(AccountType.Manager) &&
+                            "See History".equals(reportEdit.getResult().getText())) {
+
                         QGraphController controller;
                         controller = (QGraphController) createModalWindow("/fxml/GraphView.fxml", "Graph");
-                        controller.QualityGraphInit(neighbors);
+                        controller.QualityGraphInit(Model.getInstance().getQualityReportsNear(l));
                     }
                 });
         
@@ -217,12 +216,14 @@ public class MainAppController extends Controller implements MapComponentInitial
                 }
                 addressTextField.show();
                 addressTextField.getSelectionModel().select(0);
-                latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
+                latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry()
+                        .getLocation().getLongitude());
             } else {
                 searchList.clear();
                 searchList.add(results[0].getFormattedAddress());
                 addressTextField.getSelectionModel().select(0);
-                latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry().getLocation().getLongitude());
+                latLong = new LatLong(results[0].getGeometry().getLocation().getLatitude(), results[0].getGeometry()
+                        .getLocation().getLongitude());
             }
 
             map.setCenter(latLong);
@@ -299,7 +300,8 @@ public class MainAppController extends Controller implements MapComponentInitial
         qColDate.setCellValueFactory(new PropertyValueFactory<>("SubmissionDate"));
         qColUser.setCellValueFactory(new PropertyValueFactory<>("Submitter"));
         //colReportID.setCellValueFactory(new PropertyValueFactory<>("reportNumber"));
-        QualityHistoryTable.getColumns().setAll(qColUser, qColDate, qColLocation, qColWaterCon, qColVirPpm, qColContPpm);
+        QualityHistoryTable.getColumns().setAll(qColUser, qColDate, qColLocation,
+                qColWaterCon, qColVirPpm, qColContPpm);
     }
     private ObservableList<QualityReport> getQualityReports() {
         return FXCollections.observableArrayList(Model.getInstance().getQualityReports());
@@ -355,7 +357,8 @@ public class MainAppController extends Controller implements MapComponentInitial
             initializeMap(map.getCenter(), map.getZoom());
             viewReportInit();
         };
-        SourceReportController controller = (SourceReportController) createModalWindow("/fxml/sourceReport.fxml", "Add Source Report", handler);
+        SourceReportController controller = (SourceReportController) createModalWindow("/fxml/sourceReport.fxml",
+                "Add Source Report", handler);
         controller.setReportLocation(new Location(map.getCenter().getLatitude(), map.getCenter().getLongitude()));
     }
 
@@ -366,7 +369,9 @@ public class MainAppController extends Controller implements MapComponentInitial
                 initializeMap(map.getCenter(), map.getZoom());
                 viewQReportInit();
             };
-            QualityReportController controller = (QualityReportController) createModalWindow("/fxml/qualityReport.fxml", "Add Quality Report", handler);
+            
+            QualityReportController controller = (QualityReportController) createModalWindow("/fxml/qualityReport.fxml",
+                    "Add Quality Report", handler);
             controller.setReportLocation(new Location(map.getCenter().getLatitude(), map.getCenter().getLongitude()));
         }
     }

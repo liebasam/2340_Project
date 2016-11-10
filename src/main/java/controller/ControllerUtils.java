@@ -37,7 +37,8 @@ final class ControllerUtils
      * @param message The message's body text (ie message)
      * @param alertType The type of alert the message is
      */
-    public static Alert createMessage(Stage stage, String title, String header, String message, Alert.AlertType alertType) {
+    public static Alert createMessage(Stage stage, String title, String header, String message,
+                                      Alert.AlertType alertType) {
         Alert alert = new Alert(alertType);
         alert.initOwner(stage);
         alert.setTitle(title);
@@ -54,7 +55,8 @@ final class ControllerUtils
      */
     public static boolean isValidUsername(String name) {
         final boolean[] isValid = {(name.length() <= 15)};
-        name.chars().forEach(e -> isValid[0] = isValid[0] && (Character.isDigit(e) || (Character.isAlphabetic(e) && Character.isLowerCase(e))));
+        name.chars().forEach(e -> isValid[0] = isValid[0] && (Character.isDigit(e) || (Character.isAlphabetic(e) &&
+                Character.isLowerCase(e))));
         return isValid[0];
     }
 
