@@ -19,10 +19,9 @@ public class StanTest {
     private final Location somewhere = new Location(33.7756178, -84.38392538);
 
 
-    private User userObj2;
-    private final String user2 = "tim";
 
     private Model model;
+
 
     @Before
     public void setup() {
@@ -48,16 +47,18 @@ public class StanTest {
                 WaterSourceReport.QualityType.POTABLE);
         Assert.assertTrue(containsIgnoreDateIDNumber(model.getSourceReportsNear(somewhere), waterbottle));
     }
-//
+
     @Test
     public void testHideNearbySourceReports() {
+        model.createSourceReport(somewhere.getLatitude(), somewhere.getLongitude(), WaterSourceReport.SourceType
+                .BOTTLED, WaterSourceReport.QualityType.WASTE);
         model.hideSourceReportsNear(somewhere);
         Set<WaterSourceReport> rpt_set = model.getSourceReportsNear(somewhere);
-        System.out.print(rpt_set.size() + " ");
         for (WaterSourceReport e : rpt_set) {
             Assert.assertTrue(e.isHidden());
         }
     }
+
 
     private boolean containsIgnoreDateIDNumber(Set<WaterSourceReport> set, WaterSourceReport find) {
         for (WaterSourceReport e : set) {
