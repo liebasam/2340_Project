@@ -19,7 +19,6 @@ public class AppLauncher extends Application
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/fxml/welcome.fxml"));
         Parent root = loader.load();
-    
         primaryStage.setTitle("Sign-in/Register");
         primaryStage.setScene(new Scene(root));
         primaryStage.setOnHiding(event -> {
@@ -31,7 +30,6 @@ public class AppLauncher extends Application
             }
         });
         primaryStage.show();
-        
         WelcomeController controller = loader.getController();
         controller.setStage(primaryStage);
     }
