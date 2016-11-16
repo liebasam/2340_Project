@@ -19,14 +19,6 @@ public class AppLauncher extends Application
     
         primaryStage.setTitle("Sign-in/Register");
         primaryStage.setScene(new Scene(root, 400, 275));
-        primaryStage.setOnHiding(event -> {
-            try {
-                Model.getInstance().save();
-            } catch (Exception e) {
-                System.out.println("Could not save model");
-                e.printStackTrace();
-            }
-        });
         primaryStage.show();
         
         WelcomeController controller = loader.getController();
@@ -35,6 +27,7 @@ public class AppLauncher extends Application
 
 
     public static void main(String[] args) {
+        Model.load();
         launch(args);
     }
 }

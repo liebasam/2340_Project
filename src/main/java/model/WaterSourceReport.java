@@ -31,12 +31,12 @@ public class WaterSourceReport implements Report, Serializable {
     public void setHidden(boolean hidden) {this.hidden = hidden;}
 
     public WaterSourceReport(User submitter, Location location,
-                             SourceType type, QualityType quality) {
+                             SourceType type, QualityType quality, Date date) {
         this.submitter = submitter;
         this.location = location;
         this.type = type;
         this.quality = quality;
-        this.submissionDate = new Date();
+        this.submissionDate = date;
         this.reportNumber = LAST_REPORT_NUMBER++;
         this.hidden = false;
     }

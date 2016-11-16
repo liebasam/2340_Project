@@ -9,7 +9,7 @@ import model.Location;
 import model.Model;
 import model.WaterSourceReport;
 
-class SourceReportController extends Controller
+public class SourceReportController extends Controller
 {
     private Location reportLocation = null;
     

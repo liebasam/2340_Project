@@ -29,7 +29,7 @@ public class User implements Serializable {
     /**
      * make a new user
      */
-    User(String Username, String Password, AccountType accountType, Integer Id) {
+    public User(String Username, String Password, AccountType accountType, Integer Id) {
         username = Username;
         password = Password;
         this.accountType = accountType;

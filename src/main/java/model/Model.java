@@ -1,19 +1,19 @@
 package model;
 
+import jdbc.DataAccessObject;
 import model.WaterSourceReport.QualityType;
 import model.WaterSourceReport.SourceType;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.sql.SQLException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Model implements Serializable {
+
     private static Model instance = new Model();
     public static Model getInstance() { return instance; }
-    public static Model getTestInstance() { return new Model(true); }
+    public static Model getTestInstance() throws SQLException { return new Model(true); }
 
     private static final String FILE_DIRECTORY = "./savedata/";
     private static final String FILE_NAME_EXT = "model.ser";
@@ -21,14 +21,16 @@ public class Model implements Serializable {
     private static int numUsers = 0;
     public static User CURRENT_USER;
 
-    private final Map<String, User> users = new HashMap<>();
+    private static Map<String, User> users = new HashMap<>();
     public Map<String, User> getUsers() {return users;}
     private final Set<SecurityLogEntry> securityLog = new HashSet<>();
     public Set<SecurityLogEntry> getSecurityLog() {return securityLog;}
-    private final Set<WaterSourceReport> waterSourceReports = new HashSet<>();
+    private static Set<WaterSourceReport> waterSourceReports = new HashSet<>();
     public Set<WaterSourceReport> getWaterSourceReports() {return waterSourceReports;}
-    private final Set<QualityReport> qualityReports = new HashSet<>();
+    private static Set<QualityReport> qualityReports = new HashSet<>();
     public Set<QualityReport> getQualityReports() {return qualityReports;}
+
+    private static DataAccessObject dao = null;
     
     private Model() {
         this(false);
@@ -38,25 +40,21 @@ public class Model implements Serializable {
         if(!testInstance) {
             //Attempt to load the model
             try {
-                FileInputStream fis = new FileInputStream(FILE_DIRECTORY + FILE_NAME_EXT);
-                ObjectInputStream ois = new ObjectInputStream(fis);
-                Model obj = (Model) ois.readObject();
-                this.users.putAll(obj.users);
-                this.securityLog.addAll(obj.securityLog);
-                this.waterSourceReports.addAll(obj.waterSourceReports);
-                this.qualityReports.addAll(obj.qualityReports);
-                ois.close();
-                fis.close();
-                System.out.println("Model loaded");
-            } catch (FileNotFoundException e) {
-                System.out.println("Could not find serialized file");
+                dao = new DataAccessObject();
+            }catch (Exception e) {
                 e.printStackTrace();
-                createAccount("user", "pass", AccountType.Admin);
-            } catch (Exception e) {
-                System.out.println("Failed to load model");
-                e.printStackTrace();
-                createAccount("user", "pass", AccountType.Admin);
             }
+        }
+    }
+
+    public static void load() {
+        try {
+            dao = new DataAccessObject();
+            users = dao.getUsers();
+            waterSourceReports = dao.getSourceReports();
+            qualityReports = dao.getQualityReports();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -68,12 +66,22 @@ public class Model implements Serializable {
      * @throws IllegalArgumentException if username is already in use
      */
     public User createAccount(String username, String pw, AccountType accountType) {
-        if (users.containsKey(username.toLowerCase())) {
+        User user = null;
+        Integer id = username.hashCode();
+        try {
+            user = dao.getUser(username);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (user != null) {
             throw new IllegalArgumentException("Username is taken");
         }
-        User user = new User(username.toLowerCase(), pw, accountType, numUsers++);
-
-        users.put(username.toLowerCase(), user);
+        user = new User(username.toLowerCase(), pw, accountType, id);
+        try {
+            dao.insertUser("" + id, username, pw, accountType.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return user;
     }
 
@@ -88,8 +96,17 @@ public class Model implements Serializable {
         if (CURRENT_USER == null) {
             throw new IllegalStateException("User is not logged in");
         }
-        WaterSourceReport report = new WaterSourceReport(CURRENT_USER, location, source, quality);
-        waterSourceReports.add(report);
+        String latitude = (new Double(location.getLatitude())).toString();
+        String longitude =(new Double(location.getLongitude())).toString();
+        String id = (new Double(CURRENT_USER.hashCode())).toString() + latitude
+                + longitude;
+        WaterSourceReport report = new WaterSourceReport(CURRENT_USER, location, source, quality, new Date());
+        try {
+            dao.insertSourceReport(id.substring(0, Math.min(20, id.length())), CURRENT_USER.getUsername(), latitude,
+                    longitude, source.toString(), quality.toString(), false + "");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return report;
     }
     
@@ -141,7 +158,15 @@ public class Model implements Serializable {
         if (!CURRENT_USER.getAccountType().isAuthorized(AccountType.Worker)) {
             throw new IllegalStateException("Insufficient permissions");
         }
-        QualityReport report = new QualityReport(CURRENT_USER, location, waterCondition, virusPpm, contaminantPpm);
+        QualityReport report = new QualityReport(CURRENT_USER, location, waterCondition, new Date(), virusPpm,
+                contaminantPpm, false);
+        try {
+            dao.insertQualityReport(CURRENT_USER.hashCode() + "" + location.hashCode(), CURRENT_USER.getUsername(),
+                    location.getLatitude() + "", location.getLongitude() + "", waterCondition.toString(), virusPpm + "",
+                    contaminantPpm + "", false + "");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         qualityReports.add(report);
         return report;
     }
@@ -203,10 +228,20 @@ public class Model implements Serializable {
     public void modifyUserName(String updatedUserName) {
         if (CURRENT_USER == null) {
             throw new IllegalStateException("User is not logged in");
-        } else if (users.containsKey(updatedUserName.toLowerCase())) {
-            throw new IllegalArgumentException("Username is taken");
+        } else try {
+            if (dao.getUser(CURRENT_USER.getUsername()) != null) {
+                throw new IllegalArgumentException("Username is taken");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        
+        try {
+            dao.deleteUser(CURRENT_USER.getUsername());
+            dao.insertUser(CURRENT_USER.getId() + "", updatedUserName, CURRENT_USER.getPassword(),
+                    CURRENT_USER.getAccountType().toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         users.remove(CURRENT_USER.getUsername());
         users.put(updatedUserName, CURRENT_USER);
         CURRENT_USER.setUsername(updatedUserName);
@@ -219,7 +254,12 @@ public class Model implements Serializable {
      */
     public void login(String username, String pw) {
         logout();
-        User user = users.get(username.toLowerCase());
+        User user = null;
+        try {
+            user = dao.getUser(username);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         if (user == null) {
             securityLog.add(SecurityLogEntry.loginAttempt(null, SecurityLogEntry.EventStatus.INVALID_USER));
             throw new IllegalArgumentException("Invalid user/pass");
@@ -263,21 +303,6 @@ public class Model implements Serializable {
      */
     public void logout() {
         CURRENT_USER = null;
-    }
-
-    /**
-     * Save the currently-held data
-     */
-    public void save() throws IOException {
-        File file = new File(FILE_DIRECTORY + FILE_NAME_EXT);
-        file.getParentFile().mkdirs();
-        file.createNewFile();
-        FileOutputStream fos = new FileOutputStream(file);
-        ObjectOutputStream oos = new ObjectOutputStream(fos);
-        oos.writeObject(this);
-        oos.close();
-        fos.close();
-        System.out.println("Model saved");
     }
 
 }
