@@ -283,6 +283,13 @@ public class Model implements Serializable {
         if (newPass.equals("")) {
             throw new IllegalArgumentException("Invalid password");
         }
+        try {
+            dao.deleteUser(CURRENT_USER.getUsername());
+            dao.insertUser(CURRENT_USER.getId() + "", CURRENT_USER.getUsername(), newPass,
+                    CURRENT_USER.getAccountType().toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         CURRENT_USER.setPassword(newPass);
     }
 
