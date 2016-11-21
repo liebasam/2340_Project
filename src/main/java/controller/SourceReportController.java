@@ -38,7 +38,6 @@ public class SourceReportController extends Controller
     
     @FXML
     private void onSubmitPressed() {
-        Model model = Model.getInstance();
         WaterSourceReport.SourceType source = sourceTypeChoiceBox.getValue();
         WaterSourceReport.QualityType quality = qualityTypeChoiceBox.getValue();
         
@@ -47,8 +46,8 @@ public class SourceReportController extends Controller
         } else if(quality == null) {
             createErrorMessage("Submit Report Error", "Please select a quality type");
         } else {
-            model.hideSourceReportsNear(reportLocation);
-            model.createSourceReport(reportLocation, source, quality);
+            Model.hideSourceReportsNear(reportLocation);
+            Model.createSourceReport(reportLocation, source, quality);
             Alert message = createMessage("Submit Report", "Success",
                     "Your water source report has been added", Alert.AlertType.INFORMATION);
             message.setOnCloseRequest(event -> stage.close());

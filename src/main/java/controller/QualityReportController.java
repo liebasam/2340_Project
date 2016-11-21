@@ -43,7 +43,6 @@ public class QualityReportController extends Controller
     
     @FXML
     private void onSubmitPressed() {
-        Model model = Model.getInstance();
         QualityReport.WaterCondition waterCondition = conditionTypeChoiceBox.getValue();
         double virusPpm;
         double contaminantPpm;
@@ -62,9 +61,9 @@ public class QualityReportController extends Controller
         if (waterCondition == null) {
             createErrorMessage("Submit Report Error", "Please select a Water Condition");
         } else {
-            if(model.getCurrentUser().isAuthorized(AccountType.Worker)) {
-                model.hideQualityReportsNear(reportLocation);
-                model.createQualityReport(reportLocation, waterCondition, virusPpm, contaminantPpm);
+            if(Model.getCurrentUser().isAuthorized(AccountType.Worker)) {
+                Model.hideQualityReportsNear(reportLocation);
+                Model.createQualityReport(reportLocation, waterCondition, virusPpm, contaminantPpm);
                 Alert message = createMessage("Submit Quality Report", "Success",
                         "Your water quality report has been added", Alert.AlertType.INFORMATION);
                 message.setOnCloseRequest(event -> stage.close());

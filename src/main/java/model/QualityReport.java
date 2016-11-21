@@ -51,16 +51,20 @@ public class QualityReport implements Report, Serializable {
         return next;
     }
 
-    QualityReport(User submitter, Location location, WaterCondition waterCondition,
+    public QualityReport(User submitter, Location location, WaterCondition waterCondition,
                          Double virusPpm, Double contaminantPpm) {
+        this(submitter, location, waterCondition, virusPpm, contaminantPpm, new Date(), false);
+    }
+    public QualityReport(User submitter, Location location, WaterCondition waterCondition,
+                         Double virusPpm, Double contaminantPpm, Date date, boolean hidden) {
         this.location = location;
         this.submitter = submitter;
-        this.submissionDate = new Date();
+        this.submissionDate = date;
         this.reportNumber = nextReportNumber();
         this.waterCondition = waterCondition;
         this.virusPpm = virusPpm;
         this.contaminantPpm = contaminantPpm;
-        this.hidden = false;
+        this.hidden = hidden;
     }
 
     public enum WaterCondition implements Serializable {

@@ -24,7 +24,7 @@ public class AppLauncher extends Application
         primaryStage.setScene(new Scene(root, 400, 275));
         primaryStage.setOnHiding(event -> {
             try {
-                Model.getInstance().save();
+                Model.save();
             } catch (Exception e) {
                 //System.out.println("Could not save model");
                 e.printStackTrace();

@@ -29,7 +29,7 @@ public class EditUserController extends Controller
     private void initialize() {
         accountTypeChoiceBox.getItems().setAll(AccountType.values());
         
-        User user = Model.getInstance().getCurrentUser();
+        User user = Model.getCurrentUser();
         usernameField.setText(user.getUsername());
         passwordField.setText(user.getPassword());
         passwordConfirmField.setText(user.getPassword());
@@ -50,8 +50,7 @@ public class EditUserController extends Controller
     
     @FXML
     private void onConfirmPressed() {
-        Model model = Model.getInstance();
-        User user = model.getCurrentUser();
+        User user = Model.getCurrentUser();
         String username = usernameField.getText();
         String password = passwordField.getText();
         String confPass = passwordConfirmField.getText();
@@ -65,7 +64,7 @@ public class EditUserController extends Controller
             String changes = "";
             if(!username.equals(user.getUsername())) {
                 try {
-                    model.modifyUserName(username);
+                    Model.modifyUserName(username);
                     changes += "Username changed to " + username + "\n";
                 } catch (IllegalArgumentException e) {
                     createErrorMessage("Account Edit Error", "Username already exists");
@@ -73,14 +72,14 @@ public class EditUserController extends Controller
             }
             if(!password.equals(user.getPassword())) {
                 try {
-                    model.setPassword(password);
+                    Model.setPassword(password);
                     changes += "Password changed\n";
                 } catch (IllegalArgumentException e) {
                     createErrorMessage("Account Edit Error", "New password is invalid");
                 }
             }
             if(!accountType.equals(user.getAccountType())) {
-                model.setAccountType(accountType);
+                Model.setAccountType(accountType);
                 changes += "Account type changed to " + accountType.toString().toLowerCase();
                 
             }

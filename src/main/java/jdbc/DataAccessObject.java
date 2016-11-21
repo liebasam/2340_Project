@@ -9,9 +9,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Created by Juan on 01/11/2016.
- */
 public class DataAccessObject {
 
     private static Connection connection;
@@ -19,29 +16,25 @@ public class DataAccessObject {
     private static final String USER_TABLE = "Users";
     private static final String WATER_REPORT_TABLE = "WaterSourceReports";
     private static final String QUALITY_REPORT_TABLE = "QualityReports";
-
-    public DataAccessObject() throws SQLException {
-
-    }
+    private static final Map<String, User> usersCache = new HashMap<>();
+    private static Integer numUsers;
 
     private static void loadDriver() throws Exception {
-        try {
-            Class.forName("com.mysql.jdbc.Driver").newInstance();
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
+        Class.forName("com.mysql.jdbc.Driver").newInstance();
     }
 
-    private static void establishConnection() throws SQLException {
-        try {
-            loadDriver();
-            connection = DriverManager.getConnection("jdbc:mysql://50.62.209.113:3306",
-                            "Juan", "Ifrit2340");
-        } catch (SQLException e) {
-            // handle any errors
-            throw new SQLException("ERROR: Obtaining connection: " + e.getMessage());
-        } catch (Exception e) {
-            throw new SQLException("ERROR: Loading driver: " + e.getMessage());
+    private static void establishConnection() throws SQLException, Exception {
+        loadDriver();
+        connection = DriverManager.getConnection("jdbc:mysql://50.62.209.113:3306",
+                        "Juan", "Ifrit2340");
+        Statement statement = connection.createStatement();
+        statement.executeQuery("USE juanduquevan_");
+        ResultSet rs = statement.executeQuery("SELECT ID FROM Users ORDER BY ID DESC LIMIT 1");
+        if (!rs.next()) {
+            System.out.println("No users found");
+            numUsers = 0;
+        } else {
+            numUsers = rs.getInt("ID");
         }
     }
 
@@ -54,16 +47,35 @@ public class DataAccessObject {
         }
     }
 
-    public void insertUser(String id, String name, String password, String type) throws Exception {
-        this.establishConnection();
+    /**
+     * Inserts a user into the database and user cache
+     * @param name Username
+     * @param password Password
+     * @param type Account type
+     * @throws Exception
+     */
+    public static User insertUser(String name, String password, AccountType type) throws Exception {
+        establishConnection();
         Statement statement = connection.createStatement();
         statement.executeQuery("USE juanduquevan_");
-        statement.executeUpdate("INSERT INTO " + USER_TABLE + " VALUES ('" + id + "', '" + name + "', '" + password +
+        statement.executeUpdate("INSERT INTO " + USER_TABLE + " VALUES ('" + ++numUsers + "', '" + name + "', '" + password +
                 "', '" + type + "')");
-        this.closeConnection();
+        User user = new User(name, password, type, numUsers);
+        usersCache.put(name, user);
+        closeConnection();
+        return user;
     }
 
+    /**
+     * Gets a user from the database or user cache
+     * @param username Username of the user
+     * @return The User object, if it exists. Null otherwise
+     * @throws Exception
+     */
     public static User getUser(String username) throws Exception {
+        if (usersCache.get(username) != null) {
+            return usersCache.get(username);
+        }
         establishConnection();
         Statement statement = connection.createStatement();
         statement.executeQuery("USE juanduquevan_");
@@ -86,58 +98,59 @@ public class DataAccessObject {
             accountType = AccountType.Admin;
         }
         closeConnection();
-        return new User(name, password, accountType, id);
+        User userObj = new User(name, password, accountType, id);
+        usersCache.put(name, userObj);
+        return userObj;
     }
 
-    public Map<String,User> getUsers() throws Exception {
-        Map<String, User> users = new HashMap<>();
+    /**
+     * Deletes a user from the database and cache
+     * @param username Username of user to delete
+     * @throws Exception
+     */
+    public static void deleteUser(String username) throws Exception {
         establishConnection();
         Statement statement = connection.createStatement();
         statement.executeQuery("USE juanduquevan_");
-        ResultSet rs = statement.executeQuery("SELECT * FROM " + USER_TABLE);
-        if (!rs.next() ) {
-            return users;
-        }
-        while(rs.next()) {
-            Integer id = rs.getInt("ID");
-            String name = rs.getString("NAME");
-            String password = rs.getString("PASSWORD");
-            String type = rs.getString("TYPE");
-            AccountType accountType = null;
-            if("User".equals(type)) {
-                accountType = AccountType.User;
-            } else if("Worker".equals(type)) {
-                accountType = AccountType.Worker;
-            } else if("Manager".equals(type)) {
-                accountType = AccountType.Manager;
-            } else {
-                accountType = AccountType.Admin;
-            }
-            users.put(name, new User(name, password, accountType, id));
-        }
+        statement.executeUpdate("DELETE FROM " + USER_TABLE + " WHERE NAME = " + username);
+        usersCache.remove(username);
         closeConnection();
-        return users;
     }
 
-    public void deleteUser(String username) throws Exception {
-        this.establishConnection();
+    /**
+     * Edits a user's information
+     * @param username Username of user to change
+     * @param newName New username
+     * @param password New password
+     * @param type New account type
+     * @throws Exception
+     */
+    public static User editUser(String username, String newName, String password, AccountType type) throws Exception {
+        establishConnection();
         Statement statement = connection.createStatement();
         statement.executeQuery("USE juanduquevan_");
-        statement.executeUpdate("DELETE FROM " + USER_TABLE + " WHERE NAME = " + username);
-        this.closeConnection();
+        statement.executeUpdate("UPDATE " + USER_TABLE + " SET NAME='" + newName + "',PASSWORD='" + password + "',TYPE='" + type + "' WHERE NAME='" + username + "'");
+        User userObj = usersCache.get(username);
+        userObj.setUsername(newName);
+        userObj.setPassword(password);
+        userObj.setAccountType(type);
+        usersCache.remove(username);
+        usersCache.put(newName, userObj);
+        closeConnection();
+        return userObj;
     }
 
-    public void insertSourceReport(String id, String username, String latitude, String longitude, String source,
+    public static void insertSourceReport(String id, String username, String latitude, String longitude, String source,
                                   String quality, String hidden) throws Exception {
-        this.establishConnection();
+        establishConnection();
         Statement statement = connection.createStatement();
         statement.executeQuery("USE juanduquevan_");
         statement.executeUpdate("INSERT INTO " + WATER_REPORT_TABLE + " VALUES ('" + id + "', '" + username + "', '" +
                 latitude + "', '" + longitude + "', '" + source + "', '" + quality + "', NOW(), '" + hidden + "')");
-        this.closeConnection();
+        closeConnection();
     }
 
-    public Set<WaterSourceReport> getSourceReports() throws Exception{
+    public static Set<WaterSourceReport> getSourceReports() throws Exception{
         Set<WaterSourceReport> waterSourceReports = new HashSet<>();
         establishConnection();
         Statement statement = connection.createStatement();
@@ -185,20 +198,20 @@ public class DataAccessObject {
         return waterSourceReports;
     }
 
-    public void insertQualityReport(String id, String username, String latitude, String longitude, String condition,
+    public static void insertQualityReport(String id, String username, String latitude, String longitude, String condition,
                                    String virusPPM, String contaminantPPM, String hidden) throws Exception {
-        this.establishConnection();
+        establishConnection();
         Statement statement = connection.createStatement();
         statement.executeQuery("USE juanduquevan_");
         statement.executeUpdate("INSERT INTO " + QUALITY_REPORT_TABLE + " VALUES ('" + id + "', '" + username + "', '" +
                 latitude + "', '" + longitude + "', '" + condition + "', '" + virusPPM + "', '" + contaminantPPM
                 + "', NOW(), '" + hidden + "')");
-        this.closeConnection();
+        closeConnection();
     }
 
-    public Set<QualityReport> getQualityReports() throws Exception{
+    public static Set<QualityReport> getQualityReports() throws Exception{
         Set<QualityReport> qualityReports = new HashSet<>();
-        this.establishConnection();
+        establishConnection();
         Statement statement = connection.createStatement();
         statement.executeQuery("USE juanduquevan_");
         ResultSet rs = statement.executeQuery("SELECT * FROM " + QUALITY_REPORT_TABLE);
@@ -225,7 +238,7 @@ public class DataAccessObject {
                 waterCondition = QualityReport.WaterCondition.UNSAFE;
             }
 
-            QualityReport report = new QualityReport(user, location, waterCondition, date, virusPPM, contaminantPPM,
+            QualityReport report = new QualityReport(user, location, waterCondition, virusPPM, contaminantPPM, date,
                     hidden);
             qualityReports.add(report);
         }

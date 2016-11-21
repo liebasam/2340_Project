@@ -46,13 +46,18 @@ public class WaterSourceReport implements Report, Serializable {
         return next;
     }
 
-    WaterSourceReport(User submitter, Location location,
+    public WaterSourceReport(User submitter, Location location,
                              SourceType type, QualityType quality) {
+        this(submitter, location, type, quality, new Date());
+    }
+
+    public WaterSourceReport(User submitter, Location location,
+                             SourceType type, QualityType quality, Date date) {
         this.submitter = submitter;
         this.location = location;
         this.type = type;
         this.quality = quality;
-        this.submissionDate = new Date();
+        this.submissionDate = date;
         this.reportNumber = nextReportNumber();
         this.hidden = false;
     }
