@@ -5,6 +5,6 @@ From the project directory:
 
 2. `gradle jar`
 
-3. `java -jar build/libs/project_ifrit.jar`
+3. `gradle run`
 
-This should print `Successful launch!` to the console.
+The app should appear on the screen.

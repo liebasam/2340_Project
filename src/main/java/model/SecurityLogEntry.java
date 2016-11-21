@@ -3,7 +3,10 @@ package model;
 import java.io.Serializable;
 import java.util.Date;
 
-class SecurityLogEntry implements Serializable {
+/**
+ * Represents a single entry in the security log
+ */
+final class SecurityLogEntry implements Serializable {
     enum EventType implements Serializable {
         LOGIN_ATTEMPT("LOGIN ATTEMPT"),
         ACCOUNT_DELETE("ACCOUNT DELETE"),
@@ -45,7 +48,7 @@ class SecurityLogEntry implements Serializable {
         return new SecurityLogEntry(null, userId, EventType.LOGIN_ATTEMPT, eventStatus);
     }
 
-    static SecurityLogEntry acountdelete(Integer issuerId, Integer userId) {
+    static SecurityLogEntry accountDelete(Integer issuerId, Integer userId) {
         return new SecurityLogEntry(issuerId, userId, EventType.ACCOUNT_DELETE, null);
     }
 
@@ -79,7 +82,7 @@ class SecurityLogEntry implements Serializable {
                     "\nUser ID: " + this.objectId +
                     "\nStatus: " + this.eventStatus.toString();
         } else {
-            //TODO
+            //TO_DO
             return eventType.toString();
         }
     }
@@ -88,17 +91,17 @@ class SecurityLogEntry implements Serializable {
     public int hashCode() {
         int hash = 7;
         hash += this.timestamp.hashCode();
-        hash += this.issuerId == null ? 0 : this.issuerId.hashCode() * 3;
-        hash += this.objectId == null ? 0 : this.objectId.hashCode() * 5;
-        hash += this.eventType == null ? 0 : this.eventType.hashCode() * 7;
-        hash += this.eventStatus == null ? 0 : this.eventStatus.hashCode() * 11;
+        hash += (this.issuerId == null) ? 0 : (this.issuerId.hashCode() * 3);
+        hash += (this.objectId == null) ? 0 : (this.objectId.hashCode() * 5);
+        hash += (this.eventType == null) ? 0 : (this.eventType.hashCode() * 7);
+        hash += (this.eventStatus == null) ? 0 : (this.eventStatus.hashCode() * 11);
         return hash;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null) return false;
-        if (!SecurityLogEntry.class.isAssignableFrom(obj.getClass())) return false;
+        if (obj == null) { return false; }
+        if (!SecurityLogEntry.class.isAssignableFrom(obj.getClass())) { return false; }
         final SecurityLogEntry that = (SecurityLogEntry) obj;
         return !(!this.timestamp.equals(that.timestamp) || !this.issuerId.equals(that.issuerId) ||
                 !this.objectId.equals(that.objectId) || !this.eventType.equals(that.eventType) ||

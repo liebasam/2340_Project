@@ -1,5 +1,6 @@
 package model;
 
+import java.util.List;
 import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,17 +33,17 @@ public class KarelTest {
 
     @Test(expected = IllegalStateException.class)
     public void testCreateQualityReportNullUser() {
-        model.CURRENT_USER = null;
+        model.logout();
         model.createQualityReport(loc, WC, virusPPM, contaminantPPM);
     }
 
     @Test
     public void testCreateQualityReport() {
         model.login(username, password);
-        QualityReport QR = new QualityReport(model.CURRENT_USER,
+        QualityReport QR = new QualityReport(model.getCurrentUser(),
                 new Location(30.00, 50.00), WC, 100.00, 200.00);
         model.createQualityReport(loc, WC, virusPPM, contaminantPPM);
-        ArrayList<QualityReport> reports = new ArrayList<>();
+        List<QualityReport> reports = new ArrayList<>();
         reports.addAll(model.getQualityReports());
         assertEquals(QR.getLocation(), reports.get(0).getLocation());
         assertEquals(QR.getWaterCondition(), reports.get(0).getWaterCondition());

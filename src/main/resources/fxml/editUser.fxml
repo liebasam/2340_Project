@@ -12,9 +12,12 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="271.0" prefWidth="394.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.EditUserController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="271.0"
+            prefWidth="394.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.EditUserController">
     <AnchorPane minHeight="0.0" minWidth="0.0" onKeyPressed="#onKeyPressed" prefHeight="180.0" prefWidth="200.0">
-        <GridPane alignment="center" hgap="10" layoutY="61.0" prefHeight="179.0" prefWidth="252.0" vgap="10" AnchorPane.leftAnchor="50" AnchorPane.topAnchor="61.0">
+        <GridPane alignment="center" hgap="10" layoutY="61.0" prefHeight="179.0" prefWidth="252.0" vgap="10"
+                  AnchorPane.leftAnchor="50" AnchorPane.topAnchor="61.0">
             <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="139.0" minWidth="10.0" prefWidth="84.0" />
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="206.0" minWidth="10.0" prefWidth="158.0" />
@@ -40,12 +43,16 @@
 
                 <PasswordField fx:id="passwordConfirmField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
-                <ChoiceBox fx:id="accountTypeChoiceBox" prefHeight="25.0" prefWidth="979.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                <ChoiceBox fx:id="accountTypeChoiceBox" prefHeight="25.0" prefWidth="979.0" GridPane.columnIndex="1"
+                           GridPane.rowIndex="3" />
 
-                <HBox alignment="center" prefHeight="25.0" prefWidth="242.0" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                <HBox alignment="center" prefHeight="25.0" prefWidth="242.0" spacing="10" GridPane.columnIndex="1"
+                      GridPane.rowIndex="4">
                     <children>
-                        <Button mnemonicParsing="false" onAction="#onCancelPressed" prefHeight="25.0" prefWidth="81.0" text="Cancel" />
-                        <Button mnemonicParsing="false" onAction="#onConfirmPressed" prefHeight="25.0" prefWidth="70.0" text="Confirm" />
+                        <Button mnemonicParsing="false" onAction="#onCancelPressed" prefHeight="25.0" prefWidth="81.0"
+                                text="Cancel" />
+                        <Button mnemonicParsing="false" onAction="#onConfirmPressed" prefHeight="25.0" prefWidth="70.0"
+                                text="Confirm" />
                     </children></HBox>
 
             </children>
