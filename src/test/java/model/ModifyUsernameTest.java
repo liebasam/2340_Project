@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import java.util.Map;
 
-public class TaylorTest
+public class ModifyUsernameTest
 {
     private final String testUsername1 = "pizzadude";
     private final String testUsername2 = "lamplover";

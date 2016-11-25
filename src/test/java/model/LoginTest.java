@@ -10,7 +10,8 @@ import static org.junit.Assert.*;
 /**
  * @author Juan
  */
-public class JuanTest {
+public class LoginTest
+{
 
     private static final String username = "Leopold";
     private static final String password = "Ulysses";
