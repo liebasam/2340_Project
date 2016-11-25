@@ -162,7 +162,28 @@ public class MainAppController extends Controller implements MapComponentInitial
         
         map.addMarker(newMark);
     }
-    
+
+    private void addMarkerOnRightClick() {
+        map.addUIEventHandler(UIEventType.rightclick, (JSObject obj) -> {
+            JSObject rightClicked = (JSObject) obj.getMember("latLng");
+            Double lng = (Double) rightClicked.call("lng");
+            Double lat = (Double) rightClicked.call("lat");
+            Alert reportEdit = new Alert(Alert.AlertType.CONFIRMATION,
+                    "Would you like to add a source report?",
+                    new ButtonType("Add new report here"),
+                    new ButtonType("Cancel", ButtonBar.ButtonData.BACK_PREVIOUS));
+            reportEdit.showAndWait();
+
+            if ("Add new report here".equals(reportEdit.getResult().getText())) {
+                SourceReportController controller;
+                controller = (SourceReportController) createModalWindow("/fxml/sourceReport.fxml", "Source Report");
+                controller.initialize();
+                controller.setReportLocation(new Location(lat, lng));
+                mapInitialized();
+            }
+        });
+    }
+
     @Override
     public void mapInitialized() {
         initializeMap();
@@ -172,6 +193,7 @@ public class MainAppController extends Controller implements MapComponentInitial
         final LatLong start = new LatLong(40, 40);
         final int startZoom = 9;
         initializeMap(start, startZoom);
+        addMarkerOnRightClick();
     }
 
     private void initializeMap(LatLong center, int zoomLevel) {
