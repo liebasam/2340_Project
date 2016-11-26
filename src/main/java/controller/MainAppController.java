@@ -175,13 +175,16 @@ public class MainAppController extends Controller implements MapComponentInitial
             reportEdit.showAndWait();
 
             if ("Add new report here".equals(reportEdit.getResult().getText())) {
-                SourceReportController controller;
-                controller = (SourceReportController) createModalWindow("/fxml/sourceReport.fxml", "Source Report");
-                controller.initialize();
+
+                EventHandler<WindowEvent> handler = event -> {
+                    initializeMap(new LatLong(lat, lng), map.getZoom());
+                };
+                SourceReportController controller = (SourceReportController) createModalWindow("/fxml/sourceReport.fxml",
+                        "Add Source Report", handler);
                 controller.setReportLocation(new Location(lat, lng));
-                mapInitialized();
             }
         });
+        viewReportInit();
     }
 
     @Override
@@ -193,7 +196,6 @@ public class MainAppController extends Controller implements MapComponentInitial
         final LatLong start = new LatLong(40, 40);
         final int startZoom = 9;
         initializeMap(start, startZoom);
-        addMarkerOnRightClick();
     }
 
     private void initializeMap(LatLong center, int zoomLevel) {
@@ -212,6 +214,7 @@ public class MainAppController extends Controller implements MapComponentInitial
                 .forEachOrdered(this::addMarker);
     
         geocodingService = new GeocodingService();
+        addMarkerOnRightClick();
     }
 
     @FXML
