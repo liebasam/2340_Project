@@ -169,18 +169,27 @@ public class MainAppController extends Controller implements MapComponentInitial
             Double lng = (Double) rightClicked.call("lng");
             Double lat = (Double) rightClicked.call("lat");
             Alert reportEdit = new Alert(Alert.AlertType.CONFIRMATION,
-                    "Would you like to add a source report?",
-                    new ButtonType("Add new report here"),
+                    "Would you like to add a new report at this location?",
+                    new ButtonType("Source Report"),
+                    new ButtonType("Quality Report"),
                     new ButtonType("Cancel", ButtonBar.ButtonData.BACK_PREVIOUS));
             reportEdit.showAndWait();
 
-            if ("Add new report here".equals(reportEdit.getResult().getText())) {
+            if ("Source Report".equals(reportEdit.getResult().getText())) {
 
                 EventHandler<WindowEvent> handler = event -> {
                     initializeMap(new LatLong(lat, lng), map.getZoom());
                 };
                 SourceReportController controller = (SourceReportController) createModalWindow("/fxml/sourceReport.fxml",
                         "Add Source Report", handler);
+                controller.setReportLocation(new Location(lat, lng));
+            } else if ("Quality Report".equals(reportEdit.getResult().getText())) {
+
+                EventHandler<WindowEvent> handler = event -> {
+                    initializeMap(new LatLong(lat, lng), map.getZoom());
+                };
+                QualityReportController controller = (QualityReportController) createModalWindow("/fxml/qualityReport.fxml",
+                        "Add Quality Report", handler);
                 controller.setReportLocation(new Location(lat, lng));
             }
         });
