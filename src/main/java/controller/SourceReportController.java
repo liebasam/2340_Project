@@ -24,7 +24,7 @@ public class SourceReportController extends Controller
     void setReportLocation(Location location) { reportLocation = location; }
     
     @FXML
-    private void initialize() {
+    void initialize() {
         sourceTypeChoiceBox.getItems().setAll(WaterSourceReport.SourceType.values());
         qualityTypeChoiceBox.getItems().setAll(WaterSourceReport.QualityType.values());
     }
