@@ -27,7 +27,9 @@ dependencies {
     // testCompile dependency to testCompile 'org.testng:testng:6.8.1' and add
     // 'test.useTestNG()' to your build script.
     testCompile 'junit:junit:4.12'
+	testCompile group: "org.loadui", name: "testFx", version: "3.1.2"
     compile 'junit:junit:4.12'
+	compile group: "org.loadui", name: "testFx", version: "3.1.2"
     compile 'com.lynden:GMapsFX:2.0.9'
     compile 'mysql:mysql-connector-java:5.1.6'
 }

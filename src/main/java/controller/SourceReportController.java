@@ -6,7 +6,6 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import model.Location;
-import model.Model;
 import model.WaterSourceReport;
 
 /**
@@ -38,7 +37,6 @@ public class SourceReportController extends Controller
     
     @FXML
     private void onSubmitPressed() {
-        Model model = Model.getInstance();
         WaterSourceReport.SourceType source = sourceTypeChoiceBox.getValue();
         WaterSourceReport.QualityType quality = qualityTypeChoiceBox.getValue();
         

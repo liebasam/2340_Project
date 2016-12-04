@@ -16,18 +16,12 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane centerShape="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-            prefHeight="251.0" prefWidth="340.0" xmlns="http://javafx.com/javafx/8.0.60"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="controller.WelcomeController">
+<BorderPane centerShape="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="251.0" prefWidth="340.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.WelcomeController">
     <center>
-        <TabPane accessibleRole="PARENT" prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE"
-                 BorderPane.alignment="TOP_CENTER">
-            <Tab text="Login">
-                <AnchorPane minHeight="0.0" minWidth="0.0" onKeyPressed="#onLoginKeyPressed" prefHeight="200.0"
-                            prefWidth="300.0">
-                    <GridPane alignment="CENTER" hgap="10" vgap="10" AnchorPane.bottomAnchor="0.0"
-                              AnchorPane.leftAnchor="-20.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="20.0">
+        <TabPane accessibleRole="PARENT" prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="TOP_CENTER">
+            <Tab fx:id="loginTab" text="Login">
+                <AnchorPane minHeight="0.0" minWidth="0.0" onKeyPressed="#onLoginKeyPressed" prefHeight="200.0" prefWidth="300.0">
+                    <GridPane alignment="CENTER" hgap="10" vgap="10" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="-20.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="20.0">
                         <padding><Insets bottom="40" left="35" right="40" top="50" /></padding>
                         <Text text="Welcome" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="0" />
 
@@ -40,8 +34,8 @@
                         <PasswordField fx:id="passwordField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
                         <HBox alignment="center" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="4">
-                     <Button mnemonicParsing="false" onAction="#onCancelPressed" text="Cancel" />
-                            <Button onAction="#onSignInPressed" text="Sign In" />
+                     <Button fx:id="loginCancel" mnemonicParsing="false" onAction="#onCancelPressed" text="Cancel" />
+                            <Button fx:id="signIn" onAction="#onSignInPressed" text="Sign In" />
                         </HBox>
 
                         <Text GridPane.columnIndex="1" GridPane.rowIndex="6" />
@@ -61,12 +55,9 @@
                     </GridPane>
                 </AnchorPane>
             </Tab>
-            <Tab text="Register">
-                <AnchorPane minHeight="0.0" minWidth="0.0" onKeyPressed="#onRegisterKeyPressed" prefHeight="200"
-                            prefWidth="300.0">
-                    <GridPane alignment="center" hgap="10" layoutX="-20.0" layoutY="25.0" vgap="10"
-                              AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="-20.0" AnchorPane.rightAnchor="0.0"
-                              AnchorPane.topAnchor="25.0">
+            <Tab fx:id="regTab" text="Register">
+                <AnchorPane minHeight="0.0" minWidth="0.0" onKeyPressed="#onRegisterKeyPressed" prefHeight="200" prefWidth="300.0">
+                    <GridPane alignment="center" hgap="10" layoutX="-20.0" layoutY="25.0" vgap="10" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="-20.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
                         <padding><Insets bottom="40" left="35" right="40" top="50" /></padding>
                         <Text text="Welcome" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="0" />
 
@@ -84,12 +75,11 @@
 
                         <Label text="Auth Level:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
 
-                        <ChoiceBox fx:id="regUserTypeChoiceBox" prefWidth="150.0" GridPane.columnIndex="1"
-                                   GridPane.rowIndex="4" />
+                        <ChoiceBox fx:id="regUserTypeChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
 
                         <HBox alignment="center" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="5">
-                            <Button mnemonicParsing="false" onAction="#onCancelRegPressed" text="Cancel" />
-                            <Button onAction="#onRegisterPressed" text="Register" />
+                            <Button fx:id="regCancel" mnemonicParsing="false" onAction="#onCancelRegPressed" text="Cancel" />
+                            <Button fx:id="register" onAction="#onRegisterPressed" text="Register" />
                         </HBox>
 
                         <Text GridPane.columnIndex="1" GridPane.rowIndex="6" />

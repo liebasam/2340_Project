@@ -13,26 +13,23 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
-            prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="controller.MainAppController">
+<BorderPane fx:id="mainApp" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainAppController">
    <top>
        <MenuBar prefHeight="30.0" prefWidth="600.0" BorderPane.alignment="CENTER">
-           <Menu mnemonicParsing="false" text="Account">
-            <MenuItem mnemonicParsing="false" onAction="#onEditPressed" text="Edit" />
-               <MenuItem mnemonicParsing="false" onAction="#onLogoutPressed" text="Logout" />
+           <Menu fx:id="accountMenu" mnemonicParsing="false" text="Account">
+            <MenuItem fx:id="editMenu" mnemonicParsing="false" onAction="#onEditPressed" text="Edit" />
+               <MenuItem fx:id="logoutMenu" mnemonicParsing="false" onAction="#onLogoutPressed" text="Logout" />
                <MenuItem mnemonicParsing="false" onAction="#onExitPressed" text="Exit" />
            </Menu>
-         <Menu mnemonicParsing="false" text="Map">
+         <Menu fx:id="mapMenu" mnemonicParsing="false" text="Map">
            <items>
-               <Menu mnemonicParsing="false" text="Add">
+               <Menu fx:id="addMenu" mnemonicParsing="false" text="Add">
                  <items>
                    <MenuItem mnemonicParsing="false" onAction="#onAddSourceReportPressed" text="Source Report" />
-                     <MenuItem fx:id="addQualityReportMenuItem" mnemonicParsing="false"
-                               onAction="#onAddQualityReportPressed" text="Quality Report" />
+                     <MenuItem fx:id="addQualityReportMenuItem" mnemonicParsing="false" onAction="#onAddQualityReportPressed" text="Quality Report" />
                  </items>
                </Menu>
-             <MenuItem mnemonicParsing="false" onAction="#onResetPressed" text="Reset" />
+             <MenuItem fx:id="resetMenu" mnemonicParsing="false" onAction="#onResetPressed" text="Reset" />
            </items>
          </Menu>
        </MenuBar>
@@ -44,14 +41,9 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <GoogleMapView fx:id="mapView" layoutY="38.0" prefHeight="285.0" prefWidth="600.0"
-                                       AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0"
-                                       AnchorPane.rightAnchor="0" AnchorPane.topAnchor="38.0" />
-                        <Button layoutX="478.0" layoutY="1.0" mnemonicParsing="false"
-                                onAction="#onAddressSearchButtonClicked" prefHeight="35.0" prefWidth="116.0"
-                                text="Search" AnchorPane.rightAnchor="6.0" />
-                        <ComboBox fx:id="addressTextField" editable="true" layoutX="7.0" layoutY="1.0" prefHeight="35.0"
-                                  prefWidth="468.0" AnchorPane.leftAnchor="7.0" AnchorPane.rightAnchor="125.0" />
+                        <GoogleMapView fx:id="mapView" layoutY="38.0" prefHeight="285.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="38.0" />
+                        <Button layoutX="478.0" layoutY="1.0" mnemonicParsing="false" onAction="#onAddressSearchButtonClicked" prefHeight="35.0" prefWidth="116.0" text="Search" AnchorPane.rightAnchor="6.0" />
+                        <ComboBox fx:id="addressTextField" editable="true" layoutX="7.0" layoutY="1.0" prefHeight="35.0" prefWidth="468.0" AnchorPane.leftAnchor="7.0" AnchorPane.rightAnchor="125.0" />
                      </children></AnchorPane>
             </content>
           </Tab>
@@ -59,9 +51,7 @@
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <TableView fx:id="SourceHistoryTable" layoutX="14.0" layoutY="14.0" prefHeight="313.0"
-                                   prefWidth="578.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="14.0"
-                                   AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="14.0">
+                        <TableView fx:id="SourceHistoryTable" layoutX="14.0" layoutY="14.0" prefHeight="313.0" prefWidth="578.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="14.0">
                           <columns>
                             <TableColumn fx:id="colLocation" prefWidth="129.0" text="Location" />
                             <TableColumn fx:id="colSource" prefWidth="117.0" text="Type" />
@@ -78,9 +68,7 @@
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <TableView fx:id="QualityHistoryTable" layoutX="11.0" layoutY="12.0" prefHeight="313.0"
-                                   prefWidth="579.0" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="11.0"
-                                   AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="12.0">
+                        <TableView fx:id="QualityHistoryTable" layoutX="11.0" layoutY="12.0" prefHeight="313.0" prefWidth="579.0" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="11.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="12.0">
                            <columns>
                               <TableColumn fx:id="qColLocation" prefWidth="82.0" text="Location" />
                               <TableColumn fx:id="qColWaterCon" prefWidth="148.0" text="Water Condition" />

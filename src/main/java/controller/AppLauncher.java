@@ -32,6 +32,7 @@ public class AppLauncher extends Application
         primaryStage.show();
         WelcomeController controller = loader.getController();
         controller.setStage(primaryStage);
+        controller.setModel(Model.getInstance());
     }
     
     /**

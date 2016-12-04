@@ -25,15 +25,19 @@ public class EditUserController extends Controller
     @FXML
     private ChoiceBox<AccountType> accountTypeChoiceBox;
     
-    @FXML
-    private void initialize() {
-        accountTypeChoiceBox.getItems().setAll(AccountType.values());
-        
-        User user = Model.getInstance().getCurrentUser();
+    @Override
+    public void setModel(Model model) {
+        this.model = model;
+        User user = model.getCurrentUser();
         usernameField.setText(user.getUsername());
         passwordField.setText(user.getPassword());
         passwordConfirmField.setText(user.getPassword());
         accountTypeChoiceBox.setValue(user.getAccountType());
+    }
+    
+    @FXML
+    private void initialize() {
+        accountTypeChoiceBox.getItems().setAll(AccountType.values());
     }
     
     @FXML
@@ -50,7 +54,6 @@ public class EditUserController extends Controller
     
     @FXML
     private void onConfirmPressed() {
-        Model model = Model.getInstance();
         User user = model.getCurrentUser();
         String username = usernameField.getText();
         String password = passwordField.getText();
