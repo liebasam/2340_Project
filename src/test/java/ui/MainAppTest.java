@@ -1,48 +1,17 @@
 package ui;
 
-import controller.WelcomeController;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.input.KeyCode;
 import model.AccountType;
-import model.Model;
 import org.junit.Assert;
 import org.junit.Test;
 import static org.loadui.testfx.Assertions.assertNodeExists;
 import static org.loadui.testfx.Assertions.verifyThat;
 import static org.loadui.testfx.controls.Commons.hasText;
-import org.loadui.testfx.GuiTest;
 import org.loadui.testfx.exceptions.NoNodesFoundException;
 import org.loadui.testfx.exceptions.NoNodesVisibleException;
 
-public class MainAppTest extends GuiTest
+public class MainAppTest extends WaterReportingGUITest
 {
-    private Model model;
-    
-    @Override
-    public Parent getRootNode() {
-        model = Model.getTestInstance();
-        model.createAccount("user", "password", AccountType.User);
-        model.createAccount("worker", "password", AccountType.Worker);
-        model.createAccount("manager", "password", AccountType.Manager);
-        model.createAccount("admin", "password", AccountType.Admin);
-        
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/fxml/welcome.fxml"));
-        Parent root;
-        try {
-            root = loader.load();
-        } catch(Exception e) {
-            throw new RuntimeException("Error loading welcome.fxml");
-        }
-    
-        WelcomeController controller = loader.getController();
-        controller.setStage(stage);
-        controller.setModel(model);
-        
-        return root;
-    }
-    
     @Test
     public void testInvalidAddSourceReport() {
         login("admin");
@@ -253,23 +222,5 @@ public class MainAppTest extends GuiTest
     private void resetReports() {
         model.getWaterSourceReports().clear();
         model.getQualityReports().clear();
-    }
-    
-    private void changeLogin(String username) {
-        logout();
-        login(username);
-    }
-    
-    private void login(String username) {
-        click("#usernameField");
-        type(username);
-        push(KeyCode.TAB);
-        type("password");
-        push(KeyCode.ENTER);
-    }
-    
-    private void logout() {
-        click("#accountMenu");
-        click("#logoutMenu");
     }
 }

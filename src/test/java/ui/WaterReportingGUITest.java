@@ -3,6 +3,7 @@ package ui;
 import controller.WelcomeController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.input.KeyCode;
 import model.AccountType;
 import model.Model;
 import org.loadui.testfx.GuiTest;
@@ -33,5 +34,18 @@ public abstract class WaterReportingGUITest extends GuiTest
         controller.setModel(model);
         
         return root;
+    }
+    
+    protected void login(String username) {
+        click("#usernameField");
+        type(username);
+        push(KeyCode.TAB);
+        type("password");
+        push(KeyCode.ENTER);
+    }
+    
+    protected void logout() {
+        click("#accountMenu");
+        click("#logoutMenu");
     }
 }

@@ -1,41 +1,14 @@
 package ui;
 
-import controller.WelcomeController;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.input.KeyCode;
-import model.AccountType;
-import model.Model;
 import org.junit.Test;
-import org.loadui.testfx.GuiTest;
 import static org.loadui.testfx.controls.TextInputControls.clearTextIn;
 import static org.loadui.testfx.Assertions.assertNodeExists;
 import static org.loadui.testfx.Assertions.verifyThat;
 import static org.loadui.testfx.controls.Commons.hasText;
 
-public class WelcomeTest extends GuiTest
+public class WelcomeTest extends WaterReportingGUITest
 {
-    @Override
-    public Parent getRootNode() {
-        Model model = Model.getTestInstance();
-        model.createAccount("user", "password", AccountType.Admin);
-        
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/fxml/welcome.fxml"));
-        Parent root;
-        try {
-            root = loader.load();
-        } catch(Exception e) {
-            throw new RuntimeException("Error loading welcome.fxml");
-        }
-
-        WelcomeController controller = loader.getController();
-        controller.setStage(stage);
-        controller.setModel(model);
-        
-        return root;
-    }
-    
     @Test
     public void testInvalidLogin() {
         //all fields empty
@@ -99,11 +72,6 @@ public class WelcomeTest extends GuiTest
         assertNodeExists("#mainApp");
         
         logout();
-    }
-    
-    private void logout() {
-        click("#accountMenu");
-        click("#logoutMenu");
     }
     
     @Test
