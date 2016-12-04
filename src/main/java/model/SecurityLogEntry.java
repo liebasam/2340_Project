@@ -103,8 +103,8 @@ final class SecurityLogEntry implements Serializable {
         if (obj == null) { return false; }
         if (!SecurityLogEntry.class.isAssignableFrom(obj.getClass())) { return false; }
         final SecurityLogEntry that = (SecurityLogEntry) obj;
-        return !(!this.timestamp.equals(that.timestamp) || !this.issuerId.equals(that.issuerId) ||
-                !this.objectId.equals(that.objectId) || !this.eventType.equals(that.eventType) ||
-                !this.eventStatus.equals(that.eventStatus));
+        return this.timestamp.equals(that.timestamp) && ((this.issuerId == that.issuerId) || this.issuerId.equals(that.issuerId))
+                && this.objectId.equals(that.objectId) && this.eventType.equals(that.eventType)
+                && this.eventStatus.equals(that.eventStatus);
     }
 }

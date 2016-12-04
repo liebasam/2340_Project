@@ -1,24 +1,21 @@
 package model;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Set;
 
-public class NearbySourceReportTest
+public class NearbySourceReportsTest
 {
-    private final Location gatech = new Location(33.7756178, -84.396285);
-    private final Location somewhere = new Location(33.7756178, -84.38392538);
-    
-    private Model model;
-    
     @SuppressWarnings("unchecked")
     @Test
     public void testNearbySourceReports() {
-        model = Model.getTestInstance();
-        String eric_user = "bird";
-        String eric_pass = "up";
+        Model model = Model.getTestInstance();
+        final String eric_user = "bird";
+        final String eric_pass = "up";
+        final Location gatech = new Location(33.7756178, -84.396285);
+        final Location somewhere = new Location(33.7756178, -84.38392538);
+        
         User userObj1 = model.createAccount(eric_user, eric_pass, AccountType.Manager);
         model.login(eric_user, eric_pass);
         model.createSourceReport(gatech.getLatitude(), gatech.getLongitude(),
