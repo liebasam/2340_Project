@@ -55,26 +55,19 @@ public class MainAppController extends Controller implements MapComponentInitial
     void initialize() {
         homeInit();
         menuInit();
-        //viewReportInit();
-        //viewQReportInit();
+    }
+    
+    private void modelInit() {
+        viewQualityTab.setDisable(!model.getCurrentUser().isAuthorized(AccountType.Manager));
+        addQualityMenu.setVisible(model.getCurrentUser().isAuthorized(AccountType.Worker));
+        viewReportInit();
+        viewQReportInit();
     }
     
     @Override
     public void setModel(Model model) {
         this.model = model;
-        
-        //home model init
-        viewQualityTab.setDisable(!model.getCurrentUser().isAuthorized(AccountType.Manager));
-    
-        //menu model init
-        boolean authorized = model.getCurrentUser().isAuthorized(AccountType.Worker);
-        addQualityReportMenuItem.setVisible(authorized);
-        
-        //report model init
-        viewReportInit();
-        
-        //q report model init
-        viewQReportInit();
+        modelInit();
     }
 
     /*
@@ -363,7 +356,7 @@ public class MainAppController extends Controller implements MapComponentInitial
             ~ MENU BAR ~
      */
     @FXML
-    MenuItem addQualityReportMenuItem;
+    MenuItem addQualityMenu;
 
     private void menuInit() {
         
@@ -373,8 +366,7 @@ public class MainAppController extends Controller implements MapComponentInitial
     private void onEditPressed() {
         EventHandler<WindowEvent> handler = event -> {
             initializeMap(map.getCenter(), map.getZoom());
-            homeInit();
-            menuInit();
+            modelInit();
         };
         createModalWindow("/fxml/editUser.fxml", "Edit Account", handler);
     }

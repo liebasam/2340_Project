@@ -84,9 +84,8 @@ public class WelcomeTest extends GuiTest
         type("password");
         click("#signIn");
         assertNodeExists("#mainApp");
-        
-        click("#accountMenu");
-        click("#logoutMenu");
+    
+        logout();
     }
     
     @Test
@@ -99,6 +98,10 @@ public class WelcomeTest extends GuiTest
         push(KeyCode.ENTER);
         assertNodeExists("#mainApp");
         
+        logout();
+    }
+    
+    private void logout() {
         click("#accountMenu");
         click("#logoutMenu");
     }
