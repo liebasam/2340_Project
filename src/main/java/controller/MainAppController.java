@@ -54,7 +54,6 @@ public class MainAppController extends Controller implements MapComponentInitial
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
         homeInit();
-        menuInit();
     }
     
     private void modelInit() {
@@ -211,6 +210,7 @@ public class MainAppController extends Controller implements MapComponentInitial
             }
         });
         viewReportInit();
+        viewQReportInit();
     }
 
     @Override
@@ -357,10 +357,6 @@ public class MainAppController extends Controller implements MapComponentInitial
      */
     @FXML
     MenuItem addQualityMenu;
-
-    private void menuInit() {
-        
-    }
 
     @FXML
     private void onEditPressed() {
