@@ -20,7 +20,7 @@ public enum AccountType implements Serializable
      * @param authLevel minimum authorization level required
      * @return whether this account type is at or above authLevel
      */
-    boolean isAuthorized(AccountType authLevel) {
+    public boolean isAuthorized(AccountType authLevel) {
         return value >= authLevel.value;
     }
 }

@@ -54,9 +54,19 @@ public class MainAppController extends Controller implements MapComponentInitial
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
         homeInit();
-        menuInit();
+    }
+    
+    private void modelInit() {
+        viewQualityTab.setDisable(!model.getCurrentUser().isAuthorized(AccountType.Manager));
+        addQualityMenu.setVisible(model.getCurrentUser().isAuthorized(AccountType.Worker));
         viewReportInit();
         viewQReportInit();
+    }
+    
+    @Override
+    public void setModel(Model model) {
+        this.model = model;
+        modelInit();
     }
 
     /*
@@ -83,7 +93,6 @@ public class MainAppController extends Controller implements MapComponentInitial
         mapView.addMapInializedListener(this);
         addressTextField.setItems(searchList);
         address.bind(addressTextField.getEditor().textProperty());
-        viewQualityTab.setDisable(!Model.getInstance().getCurrentUser().isAuthorized(AccountType.Manager));
     }
 
     private void addMarker(WaterSourceReport report) {
@@ -130,7 +139,6 @@ public class MainAppController extends Controller implements MapComponentInitial
         map.addUIEventHandler(newMark,
                 UIEventType.click,
                 (JSObject obj) -> {
-                    Model model = Model.getInstance();
                     User user = model.getCurrentUser();
                     Alert reportEdit;
                     if(user.isAuthorized(AccountType.Manager)) {
@@ -168,11 +176,19 @@ public class MainAppController extends Controller implements MapComponentInitial
             JSObject rightClicked = (JSObject) obj.getMember("latLng");
             Double lng = (Double) rightClicked.call("lng");
             Double lat = (Double) rightClicked.call("lat");
-            Alert reportEdit = new Alert(Alert.AlertType.CONFIRMATION,
-                    "Would you like to add a new report at this location?",
-                    new ButtonType("Source Report"),
-                    new ButtonType("Quality Report"),
-                    new ButtonType("Cancel", ButtonBar.ButtonData.BACK_PREVIOUS));
+            Alert reportEdit;
+            if(model.getCurrentUser().isAuthorized(AccountType.Worker)) {
+                reportEdit = new Alert(Alert.AlertType.CONFIRMATION,
+                        "Would you like to add a new report at this location?",
+                        new ButtonType("Source Report"),
+                        new ButtonType("Quality Report"),
+                        new ButtonType("Cancel", ButtonBar.ButtonData.BACK_PREVIOUS));
+            } else {
+                reportEdit = new Alert(Alert.AlertType.CONFIRMATION,
+                        "Would you like to add a new report at this location?",
+                        new ButtonType("Source Report"),
+                        new ButtonType("Cancel", ButtonBar.ButtonData.BACK_PREVIOUS));
+            }
             reportEdit.showAndWait();
 
             if ("Source Report".equals(reportEdit.getResult().getText())) {
@@ -194,6 +210,7 @@ public class MainAppController extends Controller implements MapComponentInitial
             }
         });
         viewReportInit();
+        viewQReportInit();
     }
 
     @Override
@@ -215,10 +232,10 @@ public class MainAppController extends Controller implements MapComponentInitial
                 .mapType(MapTypeIdEnum.TERRAIN);
     
         map = mapView.createMap(mapOptions);
-        Model.getInstance().getWaterSourceReports().stream()
+        model.getWaterSourceReports().stream()
                 .filter(report -> !report.isHidden())
                 .forEachOrdered(this::addMarker);
-        Model.getInstance().getQualityReports().stream()
+        model.getQualityReports().stream()
                 .filter(report -> !report.isHidden())
                 .forEachOrdered(this::addMarker);
     
@@ -295,7 +312,7 @@ public class MainAppController extends Controller implements MapComponentInitial
         });
     }
     private ObservableList<WaterSourceReport> getWaterSourceReports() {
-        return FXCollections.observableArrayList(Model.getInstance().getWaterSourceReports());
+        return FXCollections.observableArrayList(model.getWaterSourceReports());
     }
 
 
@@ -331,7 +348,7 @@ public class MainAppController extends Controller implements MapComponentInitial
                 qColWaterCon, qColVirPpm, qColContPpm);
     }
     private ObservableList<QualityReport> getQualityReports() {
-        return FXCollections.observableArrayList(Model.getInstance().getQualityReports());
+        return FXCollections.observableArrayList(model.getQualityReports());
     }
 
     
@@ -339,19 +356,13 @@ public class MainAppController extends Controller implements MapComponentInitial
             ~ MENU BAR ~
      */
     @FXML
-    MenuItem addQualityReportMenuItem;
-
-    private void menuInit() {
-        boolean authorized = Model.getInstance().getCurrentUser().isAuthorized(AccountType.Worker);
-        addQualityReportMenuItem.setVisible(authorized);
-    }
+    MenuItem addQualityMenu;
 
     @FXML
     private void onEditPressed() {
         EventHandler<WindowEvent> handler = event -> {
             initializeMap(map.getCenter(), map.getZoom());
-            homeInit();
-            menuInit();
+            modelInit();
         };
         createModalWindow("/fxml/editUser.fxml", "Edit Account", handler);
     }
@@ -365,7 +376,7 @@ public class MainAppController extends Controller implements MapComponentInitial
 
     @FXML
     private void onLogoutPressed() throws Exception {
-        Model.getInstance().logout();
+        model.logout();
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/fxml/welcome.fxml"));
         Parent root = loader.load();
@@ -376,6 +387,7 @@ public class MainAppController extends Controller implements MapComponentInitial
 
         WelcomeController controller = loader.getController();
         controller.setStage(stage);
+        controller.setModel(model);
     }
 
     @FXML
@@ -391,7 +403,7 @@ public class MainAppController extends Controller implements MapComponentInitial
 
     @FXML
     private void onAddQualityReportPressed() {
-        if(Model.getInstance().getCurrentUser().isAuthorized(AccountType.Worker)) {
+        if(model.getCurrentUser().isAuthorized(AccountType.Worker)) {
             EventHandler<WindowEvent> handler = event -> {
                 initializeMap(map.getCenter(), map.getZoom());
                 viewQReportInit();
@@ -427,6 +439,7 @@ public class MainAppController extends Controller implements MapComponentInitial
 
             controller = loader.getController();
             controller.setStage(newStage);
+            controller.setModel(model);
         } catch (IOException e) {
             e.printStackTrace();
         }
