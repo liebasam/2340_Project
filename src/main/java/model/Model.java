@@ -47,6 +47,7 @@ public final class Model implements Serializable
 
     private Model(boolean testInstance) {
         if(!testInstance) {
+            this.load();
         }
     }
 

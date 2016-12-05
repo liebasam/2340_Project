@@ -35,7 +35,6 @@ public class AppLauncher extends Application
      * @param args command line arguments
      */
     public static void main(String[] args) {
-        Model.getInstance().load();
         launch(args);
     }
 }
