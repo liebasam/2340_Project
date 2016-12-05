@@ -55,14 +55,14 @@ public class MainAppController extends Controller implements MapComponentInitial
     void initialize() {
         homeInit();
     }
-    
+
     private void modelInit() {
         viewQualityTab.setDisable(!model.getCurrentUser().isAuthorized(AccountType.Manager));
         addQualityMenu.setVisible(model.getCurrentUser().isAuthorized(AccountType.Worker));
         viewReportInit();
         viewQReportInit();
     }
-    
+
     @Override
     public void setModel(Model model) {
         this.model = model;

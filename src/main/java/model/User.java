@@ -20,13 +20,13 @@ public class User implements Serializable {
      * @return The user's username
      */
     public String getUsername() { return username; }
-    void setUsername(String Username) { username = Username; }
+    public void setUsername(String Username) { username = Username; }
     
     /**
      * @return The user's password
      */
     public String getPassword() { return password; }
-    void setPassword(String Password) { password = Password; }
+    public void setPassword(String Password) { password = Password; }
     
     /**
      * @return The user's account ID
@@ -37,7 +37,7 @@ public class User implements Serializable {
      * @return The user's authorization level
      */
     public AccountType getAccountType() { return accountType; }
-    void setAccountType(AccountType newAccountType) { accountType = newAccountType; }
+    public void setAccountType(AccountType newAccountType) { accountType = newAccountType; }
     
     /**
      * Returns whether this account type has sufficient permissions
@@ -54,7 +54,7 @@ public class User implements Serializable {
     /**
      * Make a new user
      */
-    User(String Username, String Password, AccountType accountType, Integer Id) {
+    public User(String Username, String Password, AccountType accountType, Integer Id) {
         username = Username;
         password = Password;
         this.accountType = accountType;

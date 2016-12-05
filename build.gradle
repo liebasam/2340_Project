@@ -1,6 +1,7 @@
 // Apply the java plugin to add support for Java
 apply plugin: 'java'
 apply plugin: 'application'
+apply plugin: 'maven'
 mainClassName = 'controller.AppLauncher'
 sourceSets.main.java.srcDirs = ['src/main/java']
 sourceSets.main.resources.srcDir 'src/view'

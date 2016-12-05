@@ -20,23 +20,16 @@ public class AppLauncher extends Application
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/fxml/welcome.fxml"));
         Parent root = loader.load();
+    
         primaryStage.setTitle("Sign-in/Register");
-        primaryStage.setScene(new Scene(root));
-        primaryStage.setOnHiding(event -> {
-            try {
-                Model.getInstance().save();
-            } catch (Exception e) {
-                //System.out.println("Could not save model");
-                e.printStackTrace();
-            }
-        });
+        primaryStage.setScene(new Scene(root, 400, 275));
         primaryStage.getIcons().add(new Image("/icons/icon.png"));
         primaryStage.show();
         WelcomeController controller = loader.getController();
         controller.setStage(primaryStage);
         controller.setModel(Model.getInstance());
     }
-    
+
     /**
      * Launches the application
      * @param args command line arguments

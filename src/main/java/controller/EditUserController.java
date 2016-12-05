@@ -39,7 +39,7 @@ public class EditUserController extends Controller
     private void initialize() {
         accountTypeChoiceBox.getItems().setAll(AccountType.values());
     }
-    
+
     @FXML
     private void onCancelPressed() {
         stage.close();
@@ -102,7 +102,7 @@ public class EditUserController extends Controller
             message.setOnCloseRequest(event -> stage.close());
         }
     }
-    
+
     private static boolean isValidUsername(String name) {
         final boolean[] isValid = {(name.length() <= 15)};
         name.chars().forEach(e -> isValid[0] = isValid[0] && (Character.isDigit(e) || (Character.isAlphabetic(e) &&
