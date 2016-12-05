@@ -4,3 +4,4 @@ out/
 classes/
 *.xml
 *.ser
+*.iml

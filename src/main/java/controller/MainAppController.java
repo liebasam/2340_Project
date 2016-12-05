@@ -105,9 +105,6 @@ public class MainAppController extends Controller implements MapComponentInitial
                 + " on [" + report.getSubmissionDate().toString() + "]");
 
         Marker newMark = new Marker(opt);
-        InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
-        infoWindowOptions.content("<h2>" + report.getType().toString() + "</h2>"
-                + "Location: " + l.toString() + "<br>");
         map.addUIEventHandler(newMark,
                 UIEventType.click,
                 (JSObject obj) -> {
@@ -118,9 +115,6 @@ public class MainAppController extends Controller implements MapComponentInitial
                             new ButtonType("Delete"),
                             new ButtonType("Cancel", ButtonBar.ButtonData.BACK_PREVIOUS));
                     reportEdit.show();
-
-                    InfoWindow window = new InfoWindow(infoWindowOptions);
-                    window.open(map, newMark);
                 });
         
         map.addMarker(newMark);
