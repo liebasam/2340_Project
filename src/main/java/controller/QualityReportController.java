@@ -60,9 +60,9 @@ public class QualityReportController extends Controller
         if (waterCondition == null) {
             createErrorMessage("Submit Report Error", "Please select a Water Condition");
         } else {
-            if(Model.getCurrentUser().isAuthorized(AccountType.Worker)) {
-                Model.hideQualityReportsNear(reportLocation);
-                Model.createQualityReport(reportLocation, waterCondition, virusPpm, contaminantPpm);
+            if(model.getCurrentUser().isAuthorized(AccountType.Worker)) {
+                model.hideQualityReportsNear(reportLocation);
+                model.createQualityReport(reportLocation, waterCondition, virusPpm, contaminantPpm);
                 Alert message = createMessage("Submit Quality Report", "Success",
                         "Your water quality report has been added", Alert.AlertType.INFORMATION);
                 message.setOnCloseRequest(event -> stage.close());

@@ -14,18 +14,30 @@ import java.util.stream.Collectors;
  */
 public final class Model implements Serializable
 {
+    private static final Model instance = new Model();
+
+    /**
+     * @return the singleton instance of Model
+     */
+    public static Model getInstance() { return instance; }
+
+    /**
+     * @return a fresh instance for testing purposes
+     */
+    public static Model getTestInstance() { return new Model(true); }
+
     private static User CURRENT_USER;
     /**
      * @return the current logged in user, or null if logged out
      */
     public static User getCurrentUser() { return CURRENT_USER; }
 
-    private static Set<SecurityLogEntry> securityLog = new HashSet<>();
-    public static Set<SecurityLogEntry> getSecurityLog() {return securityLog;}
-    private static Set<WaterSourceReport> waterSourceReports = new HashSet<>();
-    public static Set<WaterSourceReport> getWaterSourceReports() {return waterSourceReports;}
-    private static Set<QualityReport> qualityReports = new HashSet<>();
-    public static Set<QualityReport> getQualityReports() {return qualityReports;}
+    private Set<SecurityLogEntry> securityLog = new HashSet<>();
+    public Set<SecurityLogEntry> getSecurityLog() {return securityLog;}
+    private Set<WaterSourceReport> waterSourceReports = new HashSet<>();
+    public Set<WaterSourceReport> getWaterSourceReports() {return waterSourceReports;}
+    private Set<QualityReport> qualityReports = new HashSet<>();
+    public Set<QualityReport> getQualityReports() {return qualityReports;}
 
     private static DataAccessObject dao = null;
 
@@ -38,17 +50,13 @@ public final class Model implements Serializable
         }
     }
 
-    public static void load() {
+    public void load() {
         try {
             waterSourceReports = DataAccessObject.getSourceReports();
             qualityReports = DataAccessObject.getQualityReports();
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public static void save() {
-        //???
     }
 
     /**
@@ -59,7 +67,7 @@ public final class Model implements Serializable
      * @return The newly-created user
      * @throws IllegalArgumentException if username is already in use
      */
-    public static User createAccount(String username, String pw, AccountType accountType) {
+    public User createAccount(String username, String pw, AccountType accountType) {
         User user = null;
         username = username.toLowerCase();
         try {
@@ -85,7 +93,7 @@ public final class Model implements Serializable
      * @param quality Quality type
      * @return The newly-created water source report
      */
-    public static WaterSourceReport createSourceReport(Location location, SourceType source, QualityType quality) {
+    public WaterSourceReport createSourceReport(Location location, SourceType source, QualityType quality) {
         if (CURRENT_USER == null) {
             throw new IllegalStateException("User is not logged in");
         }
@@ -100,6 +108,7 @@ public final class Model implements Serializable
         } catch (Exception e) {
             e.printStackTrace();
         }
+        waterSourceReports.add(report);
         return report;
     }
     
@@ -107,7 +116,7 @@ public final class Model implements Serializable
      * Hides all nearby quality reports
      * @param l Location around which nearby quality reports will be hidden
      */
-    public static void hideQualityReportsNear(Location l) {
+    public void hideQualityReportsNear(Location l) {
         for (Report closeReport : (Set<Report>) getQualityReportsNear(l)) {
             closeReport.setHidden(true);
         }
@@ -121,7 +130,7 @@ public final class Model implements Serializable
      * @param quality Quality type
      * @return The newly-created water source report
      */
-    public static WaterSourceReport createSourceReport(double lat, double lng, SourceType source, QualityType quality) {
+    public WaterSourceReport createSourceReport(double lat, double lng, SourceType source, QualityType quality) {
         return createSourceReport(new Location(lat, lng), source, quality);
     }
     
@@ -129,7 +138,7 @@ public final class Model implements Serializable
      * Hides all nearby quality reports
      * @param l Location around which nearby source reports will be hidden
      */
-    public static void hideSourceReportsNear(Location l) {
+    public void hideSourceReportsNear(Location l) {
         for (Report closeReport : (Set<Report>) getSourceReportsNear(l)) {
             closeReport.setHidden(true);
         }
@@ -143,7 +152,7 @@ public final class Model implements Serializable
      * @param contaminantPpm Contaminant Parts per Million
      * @return The newly-created quality report
      */
-    public static QualityReport createQualityReport(Location location, QualityReport.WaterCondition waterCondition,
+    public QualityReport createQualityReport(Location location, QualityReport.WaterCondition waterCondition,
                                              Double virusPpm, Double contaminantPpm) {
         if (CURRENT_USER == null) {
             throw new IllegalStateException("User is not logged in");
@@ -172,7 +181,7 @@ public final class Model implements Serializable
      * @param contaminantPpm Contaminant
      * @return The newly-created quality report
      */
-    public static QualityReport createQualityReport(double lat, double lng, QualityReport.WaterCondition waterCondition,
+    public QualityReport createQualityReport(double lat, double lng, QualityReport.WaterCondition waterCondition,
                                              Double virusPpm, Double contaminantPpm) {
         return createQualityReport(new Location(lat, lng), waterCondition, virusPpm, contaminantPpm);
     }
@@ -182,7 +191,7 @@ public final class Model implements Serializable
      * @param location Search origin
      * @return Set of reports within 2 miles of location
      */
-    private static Set getReportsNear(Location location, Set<Report> reportsToCheck) {
+    private Set getReportsNear(Location location, Set<Report> reportsToCheck) {
         final double NEAR_DIST_MILES = 2.0;
         return getReportsNear(location, NEAR_DIST_MILES, reportsToCheck);
     }
@@ -193,13 +202,13 @@ public final class Model implements Serializable
      * @param miles Distance from origin in miles
      * @return Set of reports within miles of location
      */
-    private static Set<Report> getReportsNear(Location location, Double miles, Set<Report> reportsToCheck) {
+    private Set<Report> getReportsNear(Location location, Double miles, Set<Report> reportsToCheck) {
         return reportsToCheck.stream()
                 .filter(report -> distBetween(location, report.getLocation()) < miles)
                 .collect(Collectors.toSet());
     }
 
-    private static double distBetween(Location loc1, Location loc2) {
+    private double distBetween(Location loc1, Location loc2) {
         return loc1.distanceTo(loc2);
     }
 
@@ -208,7 +217,7 @@ public final class Model implements Serializable
      * @param location Search origin
      * @return Set of reports within 2 miles of location
      */
-    public static Set getQualityReportsNear(Location location) {
+    public Set getQualityReportsNear(Location location) {
         return getReportsNear(location, (Set) qualityReports);
     }
     /**
@@ -216,7 +225,7 @@ public final class Model implements Serializable
      * @param location Search origin
      * @return Set of reports within 2 miles of location
      */
-    public static Set getSourceReportsNear(Location location) {
+    public Set getSourceReportsNear(Location location) {
         return getReportsNear(location, (Set) waterSourceReports);
     }
     
@@ -224,7 +233,7 @@ public final class Model implements Serializable
      * Modifies the username of a user
      * @param updatedUserName The new username of the user
      */
-    public static void modifyUserName(String updatedUserName) {
+    public void modifyUserName(String updatedUserName) {
         if (CURRENT_USER == null) {
             throw new IllegalStateException("User is not logged in");
         }
@@ -240,7 +249,7 @@ public final class Model implements Serializable
      * @param username Username
      * @param pw Password
      */
-    public static void login(String username, String pw) {
+    public void login(String username, String pw) {
         logout();
         User user = null;
         try {
@@ -264,7 +273,7 @@ public final class Model implements Serializable
      * Sets the current user's password
      * @param newPass The updated password
      */
-    public static void setPassword(String newPass) {
+    public void setPassword(String newPass) {
         if (CURRENT_USER == null) {
             throw new IllegalStateException("User is not logged in");
         }
@@ -279,7 +288,7 @@ public final class Model implements Serializable
      * Sets the permissions of the current user
      * @param type Account type to change to
      */
-    public static void setAccountType(AccountType type) {
+    public void setAccountType(AccountType type) {
         if (CURRENT_USER == null) {
             throw new IllegalStateException("User is not logged in");
         }
@@ -294,7 +303,7 @@ public final class Model implements Serializable
      * Logs out the current user. If no user is logged in,
      * nothing will happen.
      */
-    public static void logout() {
+    public void logout() {
         CURRENT_USER = null;
     }
 
