@@ -57,7 +57,7 @@ public class WelcomeController extends Controller
         String username = usernameField.getText();
         String password = passwordField.getText();
         try {
-            Model.login(username, password);
+            model.login(username, password);
             showMainApp();
         } catch (IllegalArgumentException e) {
             createErrorMessage("Login Error", "Invalid user/pass");
@@ -89,7 +89,7 @@ public class WelcomeController extends Controller
             createErrorMessage("Registration Error", "Password must be at least 6 characters");
         } else {
             try {
-                Model.createAccount(username, password, regUserTypeChoiceBox.getValue());
+                model.createAccount(username, password, regUserTypeChoiceBox.getValue());
                 String userType = regUserTypeChoiceBox.getValue().toString().toLowerCase();
                 createMessage("Registration", "Successfully registered", "New " + userType + " "
                         + username + " created", Alert.AlertType.INFORMATION);
@@ -149,6 +149,7 @@ public class WelcomeController extends Controller
 
             MainAppController mainAppCon = loader.getController();
             mainAppCon.setStage(stage);
+            mainAppCon.setModel(model);
 
         } catch (IOException e) {
             e.printStackTrace();

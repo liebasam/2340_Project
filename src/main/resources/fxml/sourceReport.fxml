@@ -10,12 +10,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="231.0"
-            prefWidth="376.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="controller.SourceReportController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="231.0" prefWidth="376.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.SourceReportController">
     <AnchorPane minHeight="0.0" minWidth="0.0" onKeyPressed="#onKeyPressed" prefHeight="180.0" prefWidth="200.0">
-        <GridPane alignment="center" hgap="10" layoutY="61.0" prefHeight="224.0" prefWidth="252.0" vgap="10"
-                  AnchorPane.leftAnchor="50" AnchorPane.topAnchor="61.0">
+        <GridPane alignment="center" hgap="10" layoutY="61.0" prefHeight="224.0" prefWidth="252.0" vgap="10" AnchorPane.leftAnchor="50" AnchorPane.topAnchor="61.0">
             <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="139.0" minWidth="25.0" prefWidth="84.0" />
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="206.0" minWidth="25.0" prefWidth="158.0" />
@@ -35,16 +32,12 @@
 
                 <Label text="Quality" GridPane.columnIndex="0" GridPane.rowIndex="1" />
 
-                <ChoiceBox fx:id="qualityTypeChoiceBox" prefHeight="40.0" prefWidth="979.0" GridPane.columnIndex="1"
-                           GridPane.rowIndex="1" />
+                <ChoiceBox fx:id="qualityTypeChoiceBox" prefHeight="40.0" prefWidth="979.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-                <HBox alignment="center" prefHeight="40.0" prefWidth="242.0" spacing="10" GridPane.columnIndex="1"
-                      GridPane.rowIndex="2">
+                <HBox alignment="center" prefHeight="40.0" prefWidth="242.0" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="2">
                     <children>
-                        <Button mnemonicParsing="false" onAction="#onCancelPressed" prefHeight="35.0" prefWidth="81.0"
-                                text="Cancel" />
-                        <Button mnemonicParsing="false" onAction="#onSubmitPressed" prefHeight="35.0" prefWidth="70.0"
-                                text="Submit" />
+                        <Button fx:id="cancel" mnemonicParsing="false" onAction="#onCancelPressed" prefHeight="35.0" prefWidth="81.0" text="Cancel" />
+                        <Button fx:id="submit" mnemonicParsing="false" onAction="#onSubmitPressed" prefHeight="35.0" prefWidth="70.0" text="Submit" />
                     </children>
                 </HBox>
             </children>

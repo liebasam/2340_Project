@@ -6,7 +6,6 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import model.Location;
-import model.Model;
 import model.WaterSourceReport;
 
 /**
@@ -24,7 +23,7 @@ public class SourceReportController extends Controller
     void setReportLocation(Location location) { reportLocation = location; }
     
     @FXML
-    private void initialize() {
+    void initialize() {
         sourceTypeChoiceBox.getItems().setAll(WaterSourceReport.SourceType.values());
         qualityTypeChoiceBox.getItems().setAll(WaterSourceReport.QualityType.values());
     }

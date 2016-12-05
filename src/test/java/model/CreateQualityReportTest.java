@@ -6,7 +6,8 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-public class KarelTest {
+public class CreateQualityReportTest
+{
     private final String username = "YoungClaptoid";
     private final String username1 = "MisterProper";
     private final String password = "resurrection";

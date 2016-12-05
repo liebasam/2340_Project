@@ -2,6 +2,7 @@ package controller;
 
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
+import model.Model;
 
 /**
  * Superclass for other controller classes to allow polymorphism and shared
@@ -9,8 +10,11 @@ import javafx.stage.Stage;
  */
 abstract class Controller
 {
-    Stage stage;
-    void setStage(Stage stage) { this.stage = stage; }
+    Stage stage = null;
+    public void setStage(Stage stage) { this.stage = stage; }
+    
+    Model model = null;
+    public void setModel(Model model) { this.model = model; }
     
     /**
      * Helper method for testing if a group of strings is non-null & non-empty

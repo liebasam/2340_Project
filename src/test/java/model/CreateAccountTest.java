@@ -6,7 +6,8 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class SamTest {
+public class CreateAccountTest
+{
     private User userObj1;
     private final String user1 = "user";
     private final String pass1 = "pass";

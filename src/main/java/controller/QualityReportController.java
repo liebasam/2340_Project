@@ -8,7 +8,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import model.AccountType;
 import model.Location;
-import model.Model;
 import model.QualityReport;
 
 /**

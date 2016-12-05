@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import model.Model;
 
@@ -30,9 +31,11 @@ public class AppLauncher extends Application
                 e.printStackTrace();
             }
         });
+        primaryStage.getIcons().add(new Image("/icons/icon.png"));
         primaryStage.show();
         WelcomeController controller = loader.getController();
         controller.setStage(primaryStage);
+        controller.setModel(Model.getInstance());
     }
 
     /**
