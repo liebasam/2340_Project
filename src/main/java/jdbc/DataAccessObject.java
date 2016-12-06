@@ -110,9 +110,10 @@ public class DataAccessObject {
      */
     public static void deleteUser(String username) throws Exception {
         establishConnection();
+        System.out.println(username);
         Statement statement = connection.createStatement();
         statement.executeQuery("USE juanduquevan_");
-        statement.executeUpdate("DELETE FROM " + USER_TABLE + " WHERE NAME = " + username);
+        statement.executeUpdate("DELETE FROM " + USER_TABLE + " WHERE NAME = \'" + username + "\'");
         usersCache.remove(username);
         closeConnection();
     }

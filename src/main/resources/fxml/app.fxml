@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane fx:id="mainApp" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainAppController">
+<BorderPane fx:id="mainApp" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainAppController">
    <top>
        <MenuBar prefHeight="30.0" prefWidth="600.0" BorderPane.alignment="CENTER">
            <Menu fx:id="accountMenu" mnemonicParsing="false" text="Account">
@@ -32,10 +32,15 @@
              <MenuItem fx:id="resetMenu" mnemonicParsing="false" onAction="#onResetPressed" text="Reset" />
            </items>
          </Menu>
+         <Menu fx:id="adminMenu" mnemonicParsing="false" text="Admin Tools">
+           <items>
+             <MenuItem mnemonicParsing="false" onAction="#onUserSettingsPressed" text="User settings" />
+           </items>
+         </Menu>
        </MenuBar>
    </top>
    <center>
-      <TabPane prefHeight="437.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+      <TabPane fx:id="tabPane" prefHeight="437.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
         <tabs>
           <Tab fx:id="homeTab" text="Home">
             <content>

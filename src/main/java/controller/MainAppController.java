@@ -21,22 +21,19 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonBar;
+import javafx.scene.chart.PieChart;
+import javafx.scene.control.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import jdbc.DataAccessObject;
 import model.Model;
 import model.AccountType;
 import model.User;
@@ -44,12 +41,17 @@ import model.WaterSourceReport;
 import model.QualityReport;
 import model.Location;
 import netscape.javascript.JSObject;
+
+import java.awt.*;
 import java.io.IOException;
 
 /**
  * Controller for the parent window a logged in user interacts with
  */
 public class MainAppController extends Controller implements MapComponentInitializedListener {
+
+    @FXML
+    Menu adminMenu;
     
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
@@ -59,6 +61,8 @@ public class MainAppController extends Controller implements MapComponentInitial
     private void modelInit() {
         viewQualityTab.setDisable(!model.getCurrentUser().isAuthorized(AccountType.Manager));
         addQualityMenu.setVisible(model.getCurrentUser().isAuthorized(AccountType.Worker));
+        adminMenu.setDisable(!model.getCurrentUser().isAuthorized(AccountType.Admin));
+
         viewReportInit();
         viewQReportInit();
     }
@@ -87,6 +91,7 @@ public class MainAppController extends Controller implements MapComponentInitial
     private GoogleMapView mapView;
     @FXML
     Tab viewQualityTab;
+
 
     @FXML // ResourceBundle that was given to the FXMLLoader
     private void homeInit() {
@@ -351,6 +356,8 @@ public class MainAppController extends Controller implements MapComponentInitial
         return FXCollections.observableArrayList(model.getQualityReports());
     }
 
+
+
     
     /*
             ~ MENU BAR ~
@@ -418,6 +425,13 @@ public class MainAppController extends Controller implements MapComponentInitial
     @FXML
     private void onResetPressed() { initializeMap(); }
 
+    @FXML
+    private void onUserSettingsPressed() {
+        System.out.println("WORKED");
+        createModalWindow("/fxml/deleteUserWindow.fxml",
+                "Delete User");
+    }
+
     private Controller createModalWindow(String path, String title) {
         return createModalWindow(path, title, event -> {});
     }
@@ -445,5 +459,11 @@ public class MainAppController extends Controller implements MapComponentInitial
         }
 
         return controller;
+    }
+
+    private void deleteUser(User user) throws Exception {
+        if (model.getCurrentUser().isAuthorized(AccountType.Admin)) {
+            DataAccessObject.deleteUser(user.getUsername());
+        }
     }
 }
