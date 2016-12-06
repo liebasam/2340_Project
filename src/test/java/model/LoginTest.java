@@ -12,19 +12,14 @@ import static org.junit.Assert.*;
  */
 public class LoginTest
 {
-
     private static final String username = "Leopold";
     private static final String password = "Ulysses";
     private final Model model = Model.getTestInstance();
 
 
     @Before
-    public void setup() throws Exception{
-        try {
-            model.createAccount(username, password, AccountType.Manager);
-        } catch(Exception e) {
-            ;
-        }
+    public void setup() {
+        model.createAccount(username, password, AccountType.Manager);
     }
 
     @Test

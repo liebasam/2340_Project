@@ -38,10 +38,9 @@ public class ModifyUsernameTest
     }
     
     private void testUsernameChange(String oldUsername, String newUsername) {
-        Map<String, User> users = model.getUsers();
-        Assert.assertFalse("Old username should not be kept", users.containsKey(oldUsername));
-        Assert.assertTrue("New username should be mapped to user", users.containsKey(newUsername));
-        Assert.assertEquals("User object should be updated", newUsername, users.get(newUsername).getUsername());
+        Assert.assertNull("Old username should not be kept", model.getUser(oldUsername));
+        Assert.assertNotNull("New username should be mapped to user", model.getUser(newUsername));
+        Assert.assertEquals("User object should be updated", newUsername, model.getUser(newUsername).getUsername());
     }
     
     @Test(expected = IllegalStateException.class)

@@ -1,18 +1,16 @@
 package model;
 
-import jdbc.DataAccessObject;
 import model.WaterSourceReport.QualityType;
 import model.WaterSourceReport.SourceType;
+import sun.plugin.dom.exception.InvalidStateException;
 
-import java.io.*;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * A singleton interface between the controller and the model
  */
-public final class Model implements Serializable
+public final class Model
 {
     private static final Model instance = new Model();
 
@@ -21,16 +19,17 @@ public final class Model implements Serializable
      */
     public static Model getInstance() { return instance; }
 
+    private final boolean isTestInstance;
     /**
      * @return a fresh instance for testing purposes
      */
     public static Model getTestInstance() { return new Model(true); }
 
-    private static User CURRENT_USER;
+    private User CURRENT_USER;
     /**
      * @return the current logged in user, or null if logged out
      */
-    public static User getCurrentUser() { return CURRENT_USER; }
+    public User getCurrentUser() { return CURRENT_USER; }
 
     private Set<SecurityLogEntry> securityLog = new HashSet<>();
     public Set<SecurityLogEntry> getSecurityLog() {return securityLog;}
@@ -39,22 +38,27 @@ public final class Model implements Serializable
     private Set<QualityReport> qualityReports = new HashSet<>();
     public Set<QualityReport> getQualityReports() {return qualityReports;}
 
-    private static DataAccessObject dao = null;
+    private Database database = null;
 
     private Model() {
         this(false);
     }
 
     private Model(boolean testInstance) {
-        if(!testInstance) {
-            this.load();
+        this.isTestInstance = testInstance;
+        if(testInstance) {
+            database = TestDatabase.getInstance();
+        } else {
+            database = SqlDatabase.getInstance();
         }
+    
+        this.load();
     }
 
     public void load() {
         try {
-            waterSourceReports = DataAccessObject.getSourceReports();
-            qualityReports = DataAccessObject.getQualityReports();
+            waterSourceReports = new HashSet<>(database.getSourceReports());
+            qualityReports = new HashSet<>(database.getQualityReports());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -72,7 +76,7 @@ public final class Model implements Serializable
         User user = null;
         username = username.toLowerCase();
         try {
-            user = DataAccessObject.getUser(username);
+            user = database.getUser(username);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -80,11 +84,30 @@ public final class Model implements Serializable
             throw new IllegalArgumentException("Username is taken");
         }
         try {
-            user = DataAccessObject.insertUser(username, pw, accountType);
+            user = database.insertUser(username, pw, accountType);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return user;
+    }
+    
+    /**
+     * Returns a user with this username. Can only be used with
+     * test instances.
+     * @param username Username
+     * @return A user with the specified username
+     */
+    public User getUser(String username) {
+        if(isTestInstance || CURRENT_USER.isAuthorized(AccountType.Admin)) {
+            try {
+                return database.getUser(username);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException("Unexpected error occurred");
+            }
+        } else {
+            throw new InvalidStateException("Illegal permissions");
+        }
     }
 
     /**
@@ -98,18 +121,15 @@ public final class Model implements Serializable
         if (CURRENT_USER == null) {
             throw new IllegalStateException("User is not logged in");
         }
-        String latitude = (new Double(location.getLatitude())).toString();
-        String longitude =(new Double(location.getLongitude())).toString();
-        String id = (new Double(CURRENT_USER.hashCode())).toString() + latitude
-                + longitude;
+
         WaterSourceReport report = new WaterSourceReport(CURRENT_USER, location, source, quality, new Date());
         try {
-            DataAccessObject.insertSourceReport(id.substring(0, Math.min(20, id.length())), CURRENT_USER.getUsername(), latitude,
-                    longitude, source.toString(), quality.toString(), false + "");
+            database.insertSourceReport(report);
         } catch (Exception e) {
             e.printStackTrace();
         }
         waterSourceReports.add(report);
+        
         return report;
     }
     
@@ -163,9 +183,7 @@ public final class Model implements Serializable
         }
         QualityReport report = new QualityReport(CURRENT_USER, location, waterCondition, virusPpm, contaminantPpm);
         try {
-            DataAccessObject.insertQualityReport(CURRENT_USER.hashCode() + "" + location.hashCode(), CURRENT_USER.getUsername(),
-                    location.getLatitude() + "", location.getLongitude() + "", waterCondition.toString(), virusPpm + "",
-                    contaminantPpm + "", false + "");
+            database.insertQualityReport(report);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -238,8 +256,19 @@ public final class Model implements Serializable
         if (CURRENT_USER == null) {
             throw new IllegalStateException("User is not logged in");
         }
+        
+        User user = null;
         try {
-            CURRENT_USER = DataAccessObject.editUser(CURRENT_USER.getUsername(), updatedUserName, CURRENT_USER.getPassword(), CURRENT_USER.getAccountType());
+            user = database.getUser(updatedUserName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (user != null) {
+            throw new IllegalArgumentException("Username is taken");
+        }
+        
+        try {
+            CURRENT_USER = database.editUser(CURRENT_USER.getUsername(), updatedUserName, CURRENT_USER.getPassword(), CURRENT_USER.getAccountType());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -253,8 +282,9 @@ public final class Model implements Serializable
     public void login(String username, String pw) {
         logout();
         User user = null;
+        username = username.toLowerCase();
         try {
-            user = DataAccessObject.getUser(username);
+            user = database.getUser(username);
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -277,9 +307,11 @@ public final class Model implements Serializable
     public void setPassword(String newPass) {
         if (CURRENT_USER == null) {
             throw new IllegalStateException("User is not logged in");
+        } else if(newPass == null || newPass.length() == 0) {
+            throw new IllegalArgumentException("Password cannot be empty");
         }
         try {
-            CURRENT_USER = DataAccessObject.editUser(CURRENT_USER.getUsername(), CURRENT_USER.getUsername(), newPass, CURRENT_USER.getAccountType());
+            CURRENT_USER = database.editUser(CURRENT_USER.getUsername(), CURRENT_USER.getUsername(), newPass, CURRENT_USER.getAccountType());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -294,7 +326,7 @@ public final class Model implements Serializable
             throw new IllegalStateException("User is not logged in");
         }
         try {
-            CURRENT_USER = DataAccessObject.editUser(CURRENT_USER.getUsername(), CURRENT_USER.getUsername(), CURRENT_USER.getPassword(), type);
+            CURRENT_USER = database.editUser(CURRENT_USER.getUsername(), CURRENT_USER.getUsername(), CURRENT_USER.getPassword(), type);
         } catch (Exception e) {
             e.printStackTrace();
         }

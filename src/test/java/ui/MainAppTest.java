@@ -39,25 +39,24 @@ public class MainAppTest extends WaterReportingGUITest
     @Test
     public void testAddSourceReport() {
         login("admin");
-        int startSourceReports = model.getWaterSourceReports().size();
 
         sleep(2000);
-    
-        rightClick("#mapView");
-        click("Source Report");
-        click("#cancel");
-        Assert.assertEquals(model.getWaterSourceReports().size(), startSourceReports);
         
         rightClick("#mapView");
         click("Source Report");
+        click("#cancel");
+        Assert.assertEquals(model.getWaterSourceReports().size(), 0);
+
+        rightClick("#mapView");
+        click("Source Report");
         addSourceReport("BOTTLED", "POTABLE", true);
-        Assert.assertEquals(model.getWaterSourceReports().size(), startSourceReports + 1);
-    
+        Assert.assertEquals(model.getWaterSourceReports().size(), 1);
+        
         click("#mapMenu");
         move("#addMenu");
         click("#addSourceMenu");
         addSourceReport("LAKE", "TREATABLE_MUDDY", false);
-        Assert.assertEquals(model.getWaterSourceReports().size(), startSourceReports + 2);
+        Assert.assertEquals(model.getWaterSourceReports().size(), 2);
         
         resetReports();
         logout();
@@ -117,25 +116,24 @@ public class MainAppTest extends WaterReportingGUITest
     @Test
     public void testAddQualityReport() {
         login("admin");
-        int startQualityReports = model.getQualityReports().size();
     
         sleep(2000);
     
         rightClick("#mapView");
         click("Quality Report");
         click("#cancel");
-        Assert.assertEquals(model.getQualityReports().size(), startQualityReports);
+        Assert.assertEquals(model.getQualityReports().size(), 0);
     
         rightClick("#mapView");
         click("Quality Report");
         addQualityReport("SAFE", "110", "240.34", true);
-        Assert.assertEquals(model.getQualityReports().size(), startQualityReports + 1);
+        Assert.assertEquals(model.getQualityReports().size(), 1);
     
         click("#mapMenu");
         move("#addMenu");
         click("#addQualityMenu");
         addQualityReport("UNSAFE", "17.11112", "44", false);
-        Assert.assertEquals(model.getQualityReports().size(), startQualityReports + 2);
+        Assert.assertEquals(model.getQualityReports().size(), 2);
         
         resetReports();
         logout();
