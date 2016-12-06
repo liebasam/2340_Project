@@ -99,9 +99,13 @@ public class MainAppController extends Controller implements MapComponentInitial
         MarkerOptions opt = new MarkerOptions();
         Location l = report.getLocation();
         opt.position(new LatLong(l.getLatitude(), l.getLongitude()));
+        String submittedBy = "<<USER NO LONGER EXIST>>";
+        if (report.getSubmitter() != null) {
+            submittedBy = report.getSubmitter().getUsername();
+        }
         opt.title("Water type: " + report.getType().toString()
                 + "\nWater quality: " + report.getQuality().toString()
-                + "\nSubmitted by: " + report.getSubmitter().getUsername()
+                + "\nSubmitted by: " + submittedBy
                 + " on [" + report.getSubmissionDate().toString() + "]");
 
         Marker newMark = new Marker(opt);
@@ -130,10 +134,14 @@ public class MainAppController extends Controller implements MapComponentInitial
         MarkerOptions opt = new MarkerOptions();
         Location l = report.getLocation();
         opt.position(new LatLong(l.getLatitude(), l.getLongitude()));
+        String submittedBy = "<<USER NO LONGER EXIST>>";
+        if (report.getSubmitter() != null) {
+            submittedBy = report.getSubmitter().getUsername();
+        }
         opt.title("Water condition: "+ report.getWaterCondition().toString()
                 + "\nVirus PPM: " + report.getVirusPpm()
                 + "\nContaminant PPM: " + report.getContaminantPpm()
-                + "\nSubmitted by: " + report.getSubmitter().getUsername()
+                + "\nSubmitted by: " + submittedBy
                 + " on [" + report.getSubmissionDate().toString() + "]");
         Marker newMark = new Marker(opt);
         map.addUIEventHandler(newMark,
