@@ -94,16 +94,20 @@ public class MainAppController extends Controller implements MapComponentInitial
         addressTextField.setItems(searchList);
         address.bind(addressTextField.getEditor().textProperty());
     }
-
+    
     private void addMarker(WaterSourceReport report) {
         MarkerOptions opt = new MarkerOptions();
         Location l = report.getLocation();
         opt.position(new LatLong(l.getLatitude(), l.getLongitude()));
+        String submittedBy = "<<USER NO LONGER EXIST>>";
+        if (report.getSubmitter() != null) {
+            submittedBy = report.getSubmitter().getUsername();
+        }
         opt.title("Water type: " + report.getType().toString()
                 + "\nWater quality: " + report.getQuality().toString()
-                + "\nSubmitted by: " + report.getSubmitter().getUsername()
+                + "\nSubmitted by: " + submittedBy
                 + " on [" + report.getSubmissionDate().toString() + "]");
-
+        
         Marker newMark = new Marker(opt);
         InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
         infoWindowOptions.content("<h2>" + report.getType().toString() + "</h2>"
@@ -118,22 +122,26 @@ public class MainAppController extends Controller implements MapComponentInitial
                             new ButtonType("Delete"),
                             new ButtonType("Cancel", ButtonBar.ButtonData.BACK_PREVIOUS));
                     reportEdit.show();
-
+                    
                     InfoWindow window = new InfoWindow(infoWindowOptions);
                     window.open(map, newMark);
                 });
         
         map.addMarker(newMark);
     }
-
+    
     private void addMarker(QualityReport report) {
         MarkerOptions opt = new MarkerOptions();
         Location l = report.getLocation();
         opt.position(new LatLong(l.getLatitude(), l.getLongitude()));
+        String submittedBy = "<<USER NO LONGER EXIST>>";
+        if (report.getSubmitter() != null) {
+            submittedBy = report.getSubmitter().getUsername();
+        }
         opt.title("Water condition: "+ report.getWaterCondition().toString()
                 + "\nVirus PPM: " + report.getVirusPpm()
                 + "\nContaminant PPM: " + report.getContaminantPpm()
-                + "\nSubmitted by: " + report.getSubmitter().getUsername()
+                + "\nSubmitted by: " + submittedBy
                 + " on [" + report.getSubmissionDate().toString() + "]");
         Marker newMark = new Marker(opt);
         map.addUIEventHandler(newMark,
@@ -157,11 +165,11 @@ public class MainAppController extends Controller implements MapComponentInitial
                                 new ButtonType("Delete"),
                                 new ButtonType("Cancel", ButtonBar.ButtonData.BACK_PREVIOUS));
                     }
-
+                    
                     reportEdit.showAndWait();
                     if (user.isAuthorized(AccountType.Manager) &&
                             "See History".equals(reportEdit.getResult().getText())) {
-
+                        
                         QGraphController controller;
                         controller = (QGraphController) createModalWindow("/fxml/GraphView.fxml", "Graph");
                         controller.QualityGraphInit(model.getQualityReportsNear(l));

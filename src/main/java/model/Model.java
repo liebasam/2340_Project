@@ -129,7 +129,7 @@ public final class Model
             e.printStackTrace();
         }
         waterSourceReports.add(report);
-        
+        load();
         return report;
     }
     
@@ -188,6 +188,7 @@ public final class Model
             e.printStackTrace();
         }
         qualityReports.add(report);
+        load();
         return report;
     }
 
