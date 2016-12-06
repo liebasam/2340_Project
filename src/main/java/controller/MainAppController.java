@@ -45,14 +45,37 @@ import model.QualityReport;
 import model.Location;
 import netscape.javascript.JSObject;
 import java.io.IOException;
+import java.util.Set;
 
 /**
  * Controller for the parent window a logged in user interacts with
  */
 public class MainAppController extends Controller implements MapComponentInitializedListener {
-    
+
+    private class UpdateThread implements Runnable {
+        public void run() {
+            System.out.println("Update thread started");
+            try {
+                Thread.sleep(300000);
+                while (!killUpdateThread) {
+                    System.out.println("Updating model");
+                    model.load();
+                    Thread.sleep(300000);
+                }
+                System.out.println("Update thread ended");
+            } catch (InterruptedException e) {
+                System.out.println("Update thread interrupted");
+            }
+        }
+    }
+
+    private Thread updateThread;
+    private boolean killUpdateThread = false;
+
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
+        updateThread = new Thread(new UpdateThread());
+        updateThread.start();
         homeInit();
     }
 
@@ -167,7 +190,7 @@ public class MainAppController extends Controller implements MapComponentInitial
                         controller.QualityGraphInit(model.getQualityReportsNear(l));
                     }
                 });
-        
+
         map.addMarker(newMark);
     }
 
@@ -230,17 +253,23 @@ public class MainAppController extends Controller implements MapComponentInitial
                 .zoom(zoomLevel)
                 .streetViewControl(false)
                 .mapType(MapTypeIdEnum.TERRAIN);
-    
-        map = mapView.createMap(mapOptions);
+        updateMap(center, zoomLevel);
+        geocodingService = new GeocodingService();
+        addMarkerOnRightClick();
+    }
+
+    private void updateMap(LatLong center, int zoomLevel) {
+        map = mapView.createMap(new MapOptions()
+                        .center(center)
+                        .zoom(zoomLevel)
+                        .streetViewControl(false)
+                        .mapType(MapTypeIdEnum.TERRAIN));
         model.getWaterSourceReports().stream()
                 .filter(report -> !report.isHidden())
                 .forEachOrdered(this::addMarker);
         model.getQualityReports().stream()
                 .filter(report -> !report.isHidden())
                 .forEachOrdered(this::addMarker);
-    
-        geocodingService = new GeocodingService();
-        addMarkerOnRightClick();
     }
 
     @FXML
@@ -369,6 +398,7 @@ public class MainAppController extends Controller implements MapComponentInitial
 
     @FXML
     private void onExitPressed() {
+        killUpdateThread = true;
         stage.close();
         Platform.exit();
         System.exit(0);
@@ -376,6 +406,7 @@ public class MainAppController extends Controller implements MapComponentInitial
 
     @FXML
     private void onLogoutPressed() throws Exception {
+        killUpdateThread = true;
         model.logout();
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/fxml/welcome.fxml"));
@@ -392,6 +423,7 @@ public class MainAppController extends Controller implements MapComponentInitial
 
     @FXML
     private void onAddSourceReportPressed() {
+        updateMap(map.getCenter(), map.getZoom());
         EventHandler<WindowEvent> handler = event -> {
             initializeMap(map.getCenter(), map.getZoom());
             viewReportInit();
@@ -403,6 +435,7 @@ public class MainAppController extends Controller implements MapComponentInitial
 
     @FXML
     private void onAddQualityReportPressed() {
+        updateMap(map.getCenter(), map.getZoom());
         if(model.getCurrentUser().isAuthorized(AccountType.Worker)) {
             EventHandler<WindowEvent> handler = event -> {
                 initializeMap(map.getCenter(), map.getZoom());
